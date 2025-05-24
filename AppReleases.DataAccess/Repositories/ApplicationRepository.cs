@@ -27,6 +27,14 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
         return ApplicationFromEntity(entity);
     }
 
+    public async Task<Application> GetApplicationByKeyAsync(string key)
+    {
+        var entity = await dbContext.Applications
+            .Where(x => x.Key == key)
+            .SingleAsync();
+        return ApplicationFromEntity(entity);
+    }
+
     public async Task<Application> CreateApplicationAsync(Application application)
     {
         var entity = EntityFromApplication(application);
