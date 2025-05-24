@@ -27,12 +27,18 @@ public class UserRepository(AppReleasesDbContext dbContext) : IUserRepository
         return entities.Select(UserFromEntity);
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<User> CreateUserAsync(string login, string passwordHash)
     {
-        var entity = EntityFromUser(user);
+        var entity = new UserEntity
+        {
+            UserId = Guid.NewGuid(),
+            Login = login,
+            PasswordHash = passwordHash,
+            CreatedAt = DateTime.UtcNow
+        };
         await dbContext.AddAsync(entity);
         await dbContext.SaveChangesAsync();
-        return user;
+        return UserFromEntity(entity);
     }
 
     public async Task UpdateUserAsync(Guid userId, string username, string passwordHash)
@@ -63,18 +69,6 @@ public class UserRepository(AppReleasesDbContext dbContext) : IUserRepository
             PasswordHash = entity.PasswordHash,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
-        };
-    }
-
-    private static UserEntity EntityFromUser(User user)
-    {
-        return new UserEntity()
-        {
-            UserId = user.Id,
-            Login = user.Login,
-            PasswordHash = user.PasswordHash,
-            CreatedAt = user.CreatedAt,
-            DeletedAt = user.DeletedAt,
         };
     }
 }
