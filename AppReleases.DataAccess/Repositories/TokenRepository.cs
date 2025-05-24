@@ -49,6 +49,7 @@ public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
             ExpiresAt = entity.ExpiresAt,
             RevokedAt = entity.RevokedAt,
             Type = entity.Type,
+            Name = entity.Name,
             ApplicationId = entity.ApplicationId,
         };
     }
@@ -63,6 +64,7 @@ public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
             ExpiresAt = token.ExpiresAt,
             RevokedAt = token.RevokedAt,
             Type = token.Type,
+            Name = token.Name,
             ApplicationId = token.ApplicationId,
         };
     }

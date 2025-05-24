@@ -13,6 +13,7 @@ public class TokenConfiguration : IEntityTypeConfiguration<TokenEntity>
         builder.Property(x => x.TokenId).IsRequired();
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.Type).IsRequired();
+        builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.IssuedAt).IsRequired();
         builder.Property(x => x.ExpiresAt).IsRequired();
         builder.Property(x => x.RevokedAt);
