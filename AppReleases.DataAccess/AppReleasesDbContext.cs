@@ -1,0 +1,25 @@
+﻿using AppReleases.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace AppReleases.DataAccess;
+
+public class AppReleasesDbContext : DbContext
+{
+    public DbSet<UserEntity> Users { get; init; }
+    public DbSet<TokenEntity> Tokens { get; init; }
+    public DbSet<ApplicationEntity> Applications { get; init; }
+    public DbSet<ReleaseEntity> Releases { get; init; }
+    public DbSet<AssetEntity> Assets { get; init; }
+    public DbSet<BranchEntity> Branches { get; init; }
+
+    public AppReleasesDbContext(DbContextOptions<AppReleasesDbContext> options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppReleasesDbContext).Assembly);
+    }
+}
