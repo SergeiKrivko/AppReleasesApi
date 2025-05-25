@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using System.Text;
 using AppReleases.Core.Abstractions;
-using AppReleases.Core.Enums;
 using AppReleases.Core.Models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,43 +17,37 @@ public class TokenService(ITokenRepository tokenRepository) : ITokenService
     public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
 
-    public Task<IEnumerable<Token>> GetAllTokensAsync(Guid userId)
+    public Task<IEnumerable<Token>> GetAllTokensAsync()
     {
-        return tokenRepository.GetAllTokensAsync(userId);
+        return tokenRepository.GetAllTokensAsync();
     }
 
-    public Task<string> CreateUserTokenAsync(Guid userId, string name, DateTime expiresAt)
+    public Task<string> CreateUserTokenAsync(string name, DateTime expiresAt)
     {
         var id = Guid.NewGuid();
 
         return CreateToken([
             new Claim("TokenId", id.ToString()),
-            new Claim("UserId", userId.ToString()),
         ], new Token
         {
             Id = id,
             Name = name,
-            OwnerId = userId,
-            Type = TokenType.User,
             IssuedAt = DateTime.UtcNow,
             ExpiresAt = expiresAt,
         });
     }
 
-    public Task<string> CreateApplicationTokenAsync(Guid userId, string name, Guid applicationId, DateTime expiresAt)
+    public Task<string> CreateApplicationTokenAsync(string name, Guid applicationId, DateTime expiresAt)
     {
         var id = Guid.NewGuid();
 
         return CreateToken([
             new Claim("TokenId", id.ToString()),
-            new Claim("UserId", userId.ToString()),
-            new Claim("ApplicationId", userId.ToString()),
+            new Claim("ApplicationId", applicationId.ToString()),
         ], new Token
         {
             Id = id,
             Name = name,
-            OwnerId = userId,
-            Type = TokenType.Application,
             IssuedAt = DateTime.UtcNow,
             ApplicationId = applicationId,
             ExpiresAt = expiresAt,

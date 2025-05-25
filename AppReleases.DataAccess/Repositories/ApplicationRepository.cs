@@ -13,12 +13,6 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
         return entities.Select(ApplicationFromEntity);
     }
 
-    public async Task<IEnumerable<Application>> GetAllApplicationsOfUserAsync(Guid userId)
-    {
-        var entities = await dbContext.Applications.Where(x => x.UserId == userId).ToArrayAsync();
-        return entities.Select(ApplicationFromEntity);
-    }
-
     public async Task<Application> GetApplicationByIdAsync(Guid applicationId)
     {
         var entity = await dbContext.Applications.FindAsync(applicationId);
@@ -74,7 +68,6 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Key = entity.Key,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
-            OwnerId = entity.UserId,
         };
     }
 
@@ -88,7 +81,6 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Key = application.Key,
             CreatedAt = application.CreatedAt,
             DeletedAt = application.DeletedAt,
-            UserId = application.OwnerId,
         };
     }
 }

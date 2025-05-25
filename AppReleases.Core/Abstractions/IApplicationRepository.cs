@@ -5,7 +5,6 @@ namespace AppReleases.Core.Abstractions;
 public interface IApplicationRepository
 {
     public Task<IEnumerable<Application>> GetAllApplicationsAsync();
-    public Task<IEnumerable<Application>> GetAllApplicationsOfUserAsync(Guid userId);
     public Task<Application> GetApplicationByIdAsync(Guid applicationId);
     public Task<Application> GetApplicationByKeyAsync(string key);
     public Task<Application> CreateApplicationAsync(Application application);

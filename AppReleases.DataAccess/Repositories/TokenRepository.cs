@@ -7,9 +7,11 @@ namespace AppReleases.DataAccess.Repositories;
 
 public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
 {
-    public async Task<IEnumerable<Token>> GetAllTokensAsync(Guid userId)
+    public async Task<IEnumerable<Token>> GetAllTokensAsync()
     {
-        var entities = await dbContext.Tokens.Where(e => e.UserId == userId).ToArrayAsync();
+        var entities = await dbContext.Tokens
+            .Where(x => x.RevokedAt == null && x.ExpiresAt > DateTime.UtcNow)
+            .ToArrayAsync();
         return entities.Select(TokenFromEntity);
     }
 
@@ -44,11 +46,9 @@ public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
         return new Token
         {
             Id = entity.TokenId,
-            OwnerId = entity.UserId,
             IssuedAt = entity.IssuedAt,
             ExpiresAt = entity.ExpiresAt,
             RevokedAt = entity.RevokedAt,
-            Type = entity.Type,
             Name = entity.Name,
             ApplicationId = entity.ApplicationId,
         };
@@ -59,11 +59,9 @@ public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
         return new TokenEntity
         {
             TokenId = token.Id,
-            UserId = token.OwnerId,
             IssuedAt = token.IssuedAt,
             ExpiresAt = token.ExpiresAt,
             RevokedAt = token.RevokedAt,
-            Type = token.Type,
             Name = token.Name,
             ApplicationId = token.ApplicationId,
         };

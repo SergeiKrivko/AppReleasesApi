@@ -73,7 +73,6 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         {
             Id = entity.ReleaseId,
             ApplicationId = entity.ApplicationId,
-            PublisherId = entity.UserId,
             CreatedAt = entity.CreatedAt,
             Platform = entity.Platform,
             ReleaseNotes = entity.ReleaseNotes,
@@ -89,7 +88,6 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         {
             ReleaseId = release.Id,
             ApplicationId = release.ApplicationId,
-            UserId = release.PublisherId,
             CreatedAt = release.CreatedAt,
             Platform = release.Platform,
             ReleaseNotes = release.ReleaseNotes,

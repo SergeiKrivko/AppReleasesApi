@@ -11,7 +11,6 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<ReleaseEntity>
         builder.HasKey(x => x.ReleaseId);
 
         builder.Property(x => x.ReleaseId).IsRequired();
-        builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.ApplicationId).IsRequired();
         builder.Property(x => x.Version).IsRequired();
         builder.Property(x => x.Platform).IsRequired();
@@ -24,11 +23,6 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<ReleaseEntity>
         builder.HasOne(x => x.Application)
             .WithMany(x => x.Releases)
             .HasForeignKey(x => x.ApplicationId)
-            .IsRequired();
-
-        builder.HasOne(x => x.User)
-            .WithMany(x => x.Releases)
-            .HasForeignKey(x => x.UserId)
             .IsRequired();
     }
 }

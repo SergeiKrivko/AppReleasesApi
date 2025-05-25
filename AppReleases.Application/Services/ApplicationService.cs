@@ -9,11 +9,6 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
         return applicationRepository.GetAllApplicationsAsync();
     }
 
-    public Task<IEnumerable<Core.Models.Application>> GetApplicationsByUserAsync(Guid userId)
-    {
-        return applicationRepository.GetAllApplicationsOfUserAsync(userId);
-    }
-
     public Task<Core.Models.Application> GetApplicationByIdAsync(Guid applicationId)
     {
         return applicationRepository.GetApplicationByIdAsync(applicationId);
@@ -24,7 +19,7 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
         return applicationRepository.GetApplicationByKeyAsync(key);
     }
 
-    public Task CreateApplicationAsync(Guid ownerId, string key, string name, string description)
+    public Task CreateApplicationAsync(string key, string name, string description)
     {
         var application = new Core.Models.Application()
         {
@@ -33,7 +28,6 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
             Name = name,
             Description = description,
             CreatedAt = DateTime.UtcNow,
-            OwnerId = ownerId
         };
         return applicationRepository.CreateApplicationAsync(application);
     }

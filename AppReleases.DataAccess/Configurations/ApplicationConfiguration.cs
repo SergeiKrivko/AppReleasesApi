@@ -14,13 +14,7 @@ public class ApplicationConfiguration : IEntityTypeConfiguration<ApplicationEnti
         builder.Property(x => x.Key).IsRequired();
         builder.Property(x => x.Name);
         builder.Property(x => x.Description);
-        builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.DeletedAt);
-
-        builder.HasOne(x => x.User)
-            .WithMany(x => x.Applications)
-            .HasForeignKey(x => x.UserId)
-            .IsRequired();
     }
 }

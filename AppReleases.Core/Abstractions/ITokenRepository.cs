@@ -4,7 +4,7 @@ namespace AppReleases.Core.Abstractions;
 
 public interface ITokenRepository
 {
-    public Task<IEnumerable<Token>> GetAllTokensAsync(Guid userId);
+    public Task<IEnumerable<Token>> GetAllTokensAsync();
     public Task<Token> GetTokenByIdAsync(Guid tokenId);
     public Task<Token> CreateTokenAsync(Token token);
     public Task MarkTokenAsRevokedAsync(Guid tokenId);

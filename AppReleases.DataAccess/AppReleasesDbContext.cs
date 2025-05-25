@@ -5,7 +5,6 @@ namespace AppReleases.DataAccess;
 
 public class AppReleasesDbContext : DbContext
 {
-    public DbSet<UserEntity> Users { get; init; }
     public DbSet<TokenEntity> Tokens { get; init; }
     public DbSet<ApplicationEntity> Applications { get; init; }
     public DbSet<ReleaseEntity> Releases { get; init; }
