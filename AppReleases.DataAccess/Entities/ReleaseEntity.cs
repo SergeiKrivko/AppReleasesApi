@@ -6,7 +6,7 @@ public class ReleaseEntity
 {
     public required Guid ReleaseId { get; init; }
     public required Guid ApplicationId { get; init; }
-    public required Version Version { get; init; }
+    public required string Version { get; init; }
     [MaxLength(32)] public required string Platform { get; init; }
     [MaxLength(10000)] public string? ReleaseNotes { get; init; }
     public required DateTime CreatedAt { get; init; }

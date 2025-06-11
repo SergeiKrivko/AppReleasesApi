@@ -17,8 +17,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<BasicAuthService>();
-
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
@@ -26,6 +24,10 @@ builder.Services.AddScoped<IReleaseRepository, ReleaseRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddScoped<BasicAuthService>();
+builder.Services.AddScoped<AuthorizationHelper>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Basic Auth", new OpenApiSecurityScheme
@@ -54,7 +56,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddDbContext<AppReleasesDbContext>(
-    options => { options.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONTEXT")); });
+    options => { options.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")); });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -62,11 +64,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = JwtBearerConfig.Issuer,
+            ValidIssuer = TokenService.Issuer,
             ValidateAudience = true,
-            ValidAudience = JwtBearerConfig.Audience,
+            ValidAudience = TokenService.Audience,
             ValidateLifetime = true,
-            IssuerSigningKey = JwtBearerConfig.GetSymmetricSecurityKey(),
+            IssuerSigningKey = TokenService.GetSymmetricSecurityKey(),
             ValidateIssuerSigningKey = true,
         };
     });
@@ -84,6 +86,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 
 app.Run();

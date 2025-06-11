@@ -16,9 +16,5 @@ public class TokenConfiguration : IEntityTypeConfiguration<TokenEntity>
         builder.Property(x => x.ExpiresAt).IsRequired();
         builder.Property(x => x.RevokedAt);
         builder.Property(x => x.Mask).IsRequired();
-
-        builder.HasOne(x => x.Application)
-            .WithMany(x => x.Tokens)
-            .HasForeignKey(x => x.Mask);
     }
 }

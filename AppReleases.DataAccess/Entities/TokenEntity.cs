@@ -10,6 +10,4 @@ public class TokenEntity
     public required DateTime ExpiresAt { get; init; }
     public DateTime? RevokedAt { get; init; }
     [MaxLength(256)] public required string Mask { get; init; }
-
-    public virtual ApplicationEntity? Application { get; init; }
 }

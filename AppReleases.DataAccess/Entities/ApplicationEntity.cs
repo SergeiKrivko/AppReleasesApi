@@ -13,5 +13,4 @@ public class ApplicationEntity
 
     public virtual ICollection<ReleaseEntity> Releases { get; init; } = [];
     public virtual ICollection<BranchEntity> Branches { get; init; } = [];
-    public virtual ICollection<TokenEntity> Tokens { get; init; } = [];
 }

@@ -76,7 +76,7 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
             CreatedAt = entity.CreatedAt,
             Platform = entity.Platform,
             ReleaseNotes = entity.ReleaseNotes,
-            Version = entity.Version,
+            Version = Version.Parse(entity.Version),
             IsObsolete = entity.IsObsolete,
             IsPrerelease = entity.IsPrerelease,
         };
@@ -91,7 +91,7 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
             CreatedAt = release.CreatedAt,
             Platform = release.Platform,
             ReleaseNotes = release.ReleaseNotes,
-            Version = release.Version,
+            Version = release.Version.ToString(),
             IsObsolete = release.IsObsolete,
             IsPrerelease = release.IsPrerelease,
         };
