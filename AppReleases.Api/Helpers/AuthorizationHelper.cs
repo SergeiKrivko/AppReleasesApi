@@ -4,39 +4,11 @@ using AspNetCore.Authentication.Basic;
 
 namespace AppReleases.Api.Helpers;
 
-public class AuthorizationHelper(ITokenService tokenService)
+public class AuthorizationHelper(ITokenService tokenService, BasicAuthService basicAuthService)
 {
-    public async Task<bool> VerifyUser(ClaimsPrincipal principal)
+    public bool VerifyAdmin(ClaimsPrincipal principal)
     {
         var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");
-        if (tokenIdClaim == null)
-        {
-            return true;
-        }
-        else
-        {
-            var tokenId = Guid.Parse(tokenIdClaim.Value);
-            var token = await tokenService.GetTokenByIdAsync(tokenId);
-            if (token.ExpiresAt < DateTime.UtcNow || token.RevokedAt < DateTime.UtcNow)
-                return false;
-            return token.ApplicationId == null;
-        }
-    }
-
-    public async Task<bool> VerifyUser(ClaimsPrincipal principal, Guid applicationId)
-    {
-        var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");
-        if (tokenIdClaim == null)
-        {
-            return true;
-        }
-        else
-        {
-            var tokenId = Guid.Parse(tokenIdClaim.Value);
-            var token = await tokenService.GetTokenByIdAsync(tokenId);
-            if (token.ExpiresAt < DateTime.UtcNow || token.RevokedAt < DateTime.UtcNow)
-                return false;
-            return token.ApplicationId == null || token.ApplicationId == applicationId;
-        }
+        return tokenIdClaim is null && principal.Identity?.Name == basicAuthService.Login;
     }
 }

@@ -22,34 +22,19 @@ public class TokenService(ITokenRepository tokenRepository) : ITokenService
         return tokenRepository.GetAllTokensAsync();
     }
 
-    public Task<string> CreateUserTokenAsync(string name, DateTime expiresAt)
+    public Task<string> CreateTokenAsync(string name, string mask, DateTime expiresAt)
     {
         var id = Guid.NewGuid();
 
         return CreateToken([
             new Claim("TokenId", id.ToString()),
+            new Claim("Mask", mask),
         ], new Token
         {
             Id = id,
             Name = name,
             IssuedAt = DateTime.UtcNow,
-            ExpiresAt = expiresAt,
-        });
-    }
-
-    public Task<string> CreateApplicationTokenAsync(string name, Guid applicationId, DateTime expiresAt)
-    {
-        var id = Guid.NewGuid();
-
-        return CreateToken([
-            new Claim("TokenId", id.ToString()),
-            new Claim("ApplicationId", applicationId.ToString()),
-        ], new Token
-        {
-            Id = id,
-            Name = name,
-            IssuedAt = DateTime.UtcNow,
-            ApplicationId = applicationId,
+            Mask = mask,
             ExpiresAt = expiresAt,
         });
     }

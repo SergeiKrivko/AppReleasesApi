@@ -9,7 +9,7 @@ public class TokenEntity
     public required DateTime IssuedAt { get; init; }
     public required DateTime ExpiresAt { get; init; }
     public DateTime? RevokedAt { get; init; }
-    public Guid? ApplicationId { get; init; }
+    [MaxLength(256)] public required string Mask { get; init; }
 
     public virtual ApplicationEntity? Application { get; init; }
 }
