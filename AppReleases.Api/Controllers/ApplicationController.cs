@@ -3,6 +3,7 @@ using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace AppReleases.Api.Controllers;
 
@@ -10,16 +11,30 @@ namespace AppReleases.Api.Controllers;
 [Route("api/v1/apps")]
 public class ApplicationController(
     AuthorizationHelper authorizationHelper,
-    IBranchService branchService,
+    ITokenService tokenService,
     IApplicationService applicationService) : Controller
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AppReleases.Core.Models.Application>>> GetAllApplications()
     {
+        var applications = await applicationService.GetAllApplicationsAsync();
         if (!authorizationHelper.VerifyAdmin(User))
-            return Unauthorized();
-        var result = await applicationService.GetAllApplicationsAsync();
-        return Ok(result);
+        {
+            Guid tokenId;
+            try
+            {
+                tokenId = Guid.Parse(User.Claims.Single(c => c.Type == "tokenId").Value);
+            }
+            catch (Exception)
+            {
+                return Unauthorized();
+            }
+            var token = await tokenService.GetTokenByIdAsync(tokenId);
+            var matcher = new Matcher();
+            matcher.AddInclude(token.Mask);
+            return Ok(applications.Where(a => matcher.Match(a.Key).HasMatches));
+        }
+        return Ok(applications);
     }
 
     [HttpGet("/{applicationId:guid}")]
