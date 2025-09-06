@@ -1,0 +1,20 @@
+<form class="container" [formGroup]="control">
+  <label tuiLabel>Идентификатор:</label>
+  <tui-textfield>
+    <input tuiTextfield formControlName="key"/>
+  </tui-textfield>
+
+  <label tuiLabel>Название:</label>
+  <tui-textfield>
+    <input tuiTextfield formControlName="name"/>
+  </tui-textfield>
+
+  <label tuiLabel>Описание:</label>
+  <tui-textfield>
+    <textarea tuiTextarea formControlName="description"></textarea>
+  </tui-textfield>
+
+  <div class="bottom-container" (click)="submit()">
+    <button tuiButton [loading]="loading">Создать</button>
+  </div>
+</form>

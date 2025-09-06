@@ -3,7 +3,7 @@ import {ApplicationEntity} from '../entities/application-entity';
 import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiClient, Application} from './api-client';
+import {ApiClient, Application, CreateApplicationSchema} from './api-client';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 
 interface ApplicationStore {
@@ -48,6 +48,18 @@ export class ApplicationService {
     return this.applications$.pipe(
       map(apps => apps.find(app => app.id == id)),
     );
+  }
+
+  createNewApplication(key: string, name: string, description: string): Observable<ApplicationEntity> {
+    return this.apiClient.apps(CreateApplicationSchema.fromJS({key, name, description})).pipe(
+      map(app => applicationToEntity(app)),
+      tap(app => {
+        const applications = getState(this.applications$$).applications;
+        patchState(this.applications$$, {
+          applications: applications.concat(app),
+        })
+      })
+    )
   }
 }
 

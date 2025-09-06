@@ -2,6 +2,9 @@
   <div class="header-container">
     <app-logo></app-logo>
   </div>
+  <div class="tools-container">
+    <button tuiButton iconStart="@tui.plus" size="m" (click)="newApp()">Создать</button>
+  </div>
   <div class="apps-container">
     @for (application of applications$ | async; track application.id) {
       <app-application-card [application]="application"></app-application-card>
