@@ -1,3 +1,8 @@
 <div class="container">
   <app-header></app-header>
+  <div class="branches-container">
+    @for (branch of branches$ | async; track branch.id) {
+      <app-branch-card [branch]="branch"></app-branch-card>
+    }
+  </div>
 </div>

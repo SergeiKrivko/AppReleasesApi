@@ -1,7 +1,7 @@
 <div class="container">
   <app-logo></app-logo>
   @if (selectedApplication$ | async; as selectedApplication) {
-    <h1>{{ selectedApplication.name }}</h1>
+    <h2>{{ selectedApplication.name }}</h2>
     <tui-segmented
       size="l"
     >

@@ -38,7 +38,7 @@ export class ApplicationService {
       map(resp => resp.map(applicationToEntity)),
       tap(apps => patchState(this.applications$$, {
         applications: apps,
-        loadingStatus: LoadingStatus.InProgress
+        loadingStatus: LoadingStatus.Completed
       })),
       switchMap(() => EMPTY)
     );

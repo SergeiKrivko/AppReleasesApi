@@ -4,6 +4,7 @@ import {TuiRoot} from '@taiga-ui/core';
 import {ApplicationService} from './services/application.service';
 import {merge, Observable} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {BranchService} from './services/branch.service';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 })
 export class App implements OnInit {
   private readonly applicationService = inject(ApplicationService);
+  private readonly branchService = inject(BranchService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly title = signal('Avalux Releases');
@@ -27,6 +29,7 @@ export class App implements OnInit {
   private mainObservables(): Observable<undefined> {
     return merge(
       this.applicationService.loadApplications(),
+      this.branchService.loadBranchesOnApplicationChange$$,
     );
   }
 }

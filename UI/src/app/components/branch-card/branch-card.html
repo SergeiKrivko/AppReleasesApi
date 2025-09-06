@@ -1,0 +1,30 @@
+<div
+  tuiAppearance="floating"
+  tuiCardLarge
+>
+  <div class="container">
+    <h3 class="branch-name">{{ branch().name }}</h3>
+
+    <span class="duration-label">
+      @if (branch().duration) {
+        {{ branch().duration }}
+      } @else {
+        По умолчанию
+      }
+    </span>
+    <button
+      size="s"
+      tuiIconButton
+      type="button"
+      iconStart="@tui.pencil"
+      appearance="flat"
+    ></button>
+    <button
+      size="s"
+      tuiIconButton
+      type="button"
+      iconStart="@tui.trash"
+      appearance="flat-destructive"
+    ></button>
+  </div>
+</div>

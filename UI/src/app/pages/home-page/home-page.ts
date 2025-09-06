@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Logo} from '../../components/logo/logo';
 import {ApplicationService} from '../../services/application.service';
 import {AsyncPipe} from '@angular/common';
@@ -13,7 +13,8 @@ import {ApplicationCard} from '../../components/application-card/application-car
     ApplicationCard
   ],
   templateUrl: './home-page.html',
-  styleUrl: './home-page.scss'
+  styleUrl: './home-page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePage {
   private readonly applicationService = inject(ApplicationService);

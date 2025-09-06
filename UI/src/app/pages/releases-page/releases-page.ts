@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {ApplicationService} from '../../services/application.service';
 import {ActivatedRoute} from '@angular/router';
 import {NEVER, switchMap, tap} from 'rxjs';
@@ -12,7 +12,8 @@ import {Header} from '../../components/header/header';
     Header
   ],
   templateUrl: './releases-page.html',
-  styleUrl: './releases-page.scss'
+  styleUrl: './releases-page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReleasesPage implements OnInit {
   private readonly applicationService = inject(ApplicationService);

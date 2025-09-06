@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Logo} from '../logo/logo';
 import {TuiButton} from '@taiga-ui/core';
 import {IsActiveMatchOptions, RouterLink, RouterLinkActive} from '@angular/router';
@@ -18,7 +18,8 @@ import {AsyncPipe} from '@angular/common';
     RouterLinkActive
   ],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrl: './header.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header {
   private readonly applicationService = inject(ApplicationService);
