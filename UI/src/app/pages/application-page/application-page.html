@@ -1,3 +1,29 @@
 <div class="container">
   <app-header></app-header>
+  <form class="grid-container" [formGroup]="control">
+    <label tuiLabel class="label">Ключ:</label>
+    <tui-textfield class="value">
+      <input tuiTextfield [readOnly]="true" formControlName="key"/>
+    </tui-textfield>
+    <label tuiLabel class="label">Название:</label>
+    <tui-textfield class="value">
+      <input tuiTextfield [readOnly]="!isEditing" formControlName="name"/>
+    </tui-textfield>
+    <label tuiLabel class="label">Описание:</label>
+    <tui-textfield>
+      <textarea tuiTextarea [readOnly]="!isEditing" formControlName="description"></textarea>
+    </tui-textfield>
+    <label tuiLabel class="label">Основная ветка:</label>
+    <tui-textfield class="value">
+      <input tuiTextfield [readOnly]="!isEditing" formControlName="mainBranch"/>
+    </tui-textfield>
+  </form>
+  <div class="buttons-container">
+    @if (!isEditing){
+      <button tuiButton size="m" iconStart="@tui.pencil" (click)="startEditing()">Редактировать</button>
+    } @else {
+      <button tuiButton size="m" iconStart="@tui.save" appearance="primary-destructive" (click)="cancelChanges()">Отменить</button>
+      <button tuiButton size="m" iconStart="@tui.save" (click)="saveChanges()">Сохранить</button>
+    }
+  </div>
 </div>

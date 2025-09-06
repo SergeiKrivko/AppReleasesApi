@@ -91,7 +91,7 @@ export class ApiClient {
      * @param body (optional)
      * @return OK
      */
-    apps(body: CreateApplicationSchema | undefined): Observable<Application> {
+    appsPOST(body: CreateApplicationSchema | undefined): Observable<Application> {
         let url_ = this.baseUrl + "/api/v1/apps";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -108,11 +108,11 @@ export class ApiClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processApps(response_);
+            return this.processAppsPOST(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processApps(response_ as any);
+                    return this.processAppsPOST(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Application>;
                 }
@@ -121,7 +121,7 @@ export class ApiClient {
         }));
     }
 
-    protected processApps(response: HttpResponseBase): Observable<Application> {
+    protected processAppsPOST(response: HttpResponseBase): Observable<Application> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -146,8 +146,8 @@ export class ApiClient {
     /**
      * @return OK
      */
-    anonymousGET(applicationId: string): Observable<Application> {
-        let url_ = this.baseUrl + "/{applicationId}";
+    appsGET(applicationId: string): Observable<Application> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
         url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
@@ -162,11 +162,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousGET(response_);
+            return this.processAppsGET(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousGET(response_ as any);
+                    return this.processAppsGET(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Application>;
                 }
@@ -175,7 +175,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousGET(response: HttpResponseBase): Observable<Application> {
+    protected processAppsGET(response: HttpResponseBase): Observable<Application> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -201,8 +201,8 @@ export class ApiClient {
      * @param body (optional)
      * @return OK
      */
-    anonymousPUT(applicationId: string, body: CreateApplicationSchema | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/{applicationId}";
+    appsPUT(applicationId: string, body: UpdateApplicationSchema | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
         url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
@@ -220,11 +220,11 @@ export class ApiClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousPUT(response_);
+            return this.processAppsPUT(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousPUT(response_ as any);
+                    return this.processAppsPUT(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -233,7 +233,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousPUT(response: HttpResponseBase): Observable<void> {
+    protected processAppsPUT(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -255,8 +255,8 @@ export class ApiClient {
     /**
      * @return OK
      */
-    anonymousDELETE(applicationId: string): Observable<void> {
-        let url_ = this.baseUrl + "/{applicationId}";
+    appsDELETE(applicationId: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
         url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
@@ -270,11 +270,11 @@ export class ApiClient {
         };
 
         return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousDELETE(response_);
+            return this.processAppsDELETE(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousDELETE(response_ as any);
+                    return this.processAppsDELETE(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -283,7 +283,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousDELETE(response: HttpResponseBase): Observable<void> {
+    protected processAppsDELETE(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -307,7 +307,7 @@ export class ApiClient {
      * @return OK
      */
     search(applicationKey: string | undefined): Observable<Application> {
-        let url_ = this.baseUrl + "/search?";
+        let url_ = this.baseUrl + "/api/v1/apps/search?";
         if (applicationKey === null)
             throw new Error("The parameter 'applicationKey' cannot be null.");
         else if (applicationKey !== undefined)
@@ -422,7 +422,7 @@ export class ApiClient {
      * @param body (optional)
      * @return OK
      */
-    branches(applicationId: string, body: CreateBranchSchema | undefined): Observable<Branch> {
+    branchesPOST(applicationId: string, body: CreateBranchSchema | undefined): Observable<Branch> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
@@ -442,11 +442,11 @@ export class ApiClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processBranches(response_);
+            return this.processBranchesPOST(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processBranches(response_ as any);
+                    return this.processBranchesPOST(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Branch>;
                 }
@@ -455,7 +455,7 @@ export class ApiClient {
         }));
     }
 
-    protected processBranches(response: HttpResponseBase): Observable<Branch> {
+    protected processBranchesPOST(response: HttpResponseBase): Observable<Branch> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -478,18 +478,16 @@ export class ApiClient {
     }
 
     /**
-     * @param applicationId (optional)
      * @return OK
      */
-    anonymousGET2(applicationId: string | undefined, branchId: string): Observable<Branch> {
-        let url_ = this.baseUrl + "/{branchId}?";
+    branchesGET(applicationId: string, branchId: string): Observable<Branch> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches/{branchId}";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
         if (branchId === undefined || branchId === null)
             throw new Error("The parameter 'branchId' must be defined.");
         url_ = url_.replace("{branchId}", encodeURIComponent("" + branchId));
-        if (applicationId === null)
-            throw new Error("The parameter 'applicationId' cannot be null.");
-        else if (applicationId !== undefined)
-            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -501,11 +499,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousGET2(response_);
+            return this.processBranchesGET(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousGET2(response_ as any);
+                    return this.processBranchesGET(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Branch>;
                 }
@@ -514,7 +512,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousGET2(response: HttpResponseBase): Observable<Branch> {
+    protected processBranchesGET(response: HttpResponseBase): Observable<Branch> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -537,19 +535,17 @@ export class ApiClient {
     }
 
     /**
-     * @param applicationId (optional)
      * @param body (optional)
      * @return OK
      */
-    anonymousPUT2(applicationId: string | undefined, branchId: string, body: UpdateBranchSchema | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/{branchId}?";
+    branchesPUT(applicationId: string, branchId: string, body: UpdateBranchSchema | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches/{branchId}";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
         if (branchId === undefined || branchId === null)
             throw new Error("The parameter 'branchId' must be defined.");
         url_ = url_.replace("{branchId}", encodeURIComponent("" + branchId));
-        if (applicationId === null)
-            throw new Error("The parameter 'applicationId' cannot be null.");
-        else if (applicationId !== undefined)
-            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -564,11 +560,11 @@ export class ApiClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousPUT2(response_);
+            return this.processBranchesPUT(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousPUT2(response_ as any);
+                    return this.processBranchesPUT(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -577,7 +573,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousPUT2(response: HttpResponseBase): Observable<void> {
+    protected processBranchesPUT(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -597,18 +593,16 @@ export class ApiClient {
     }
 
     /**
-     * @param applicationId (optional)
      * @return OK
      */
-    anonymousDELETE2(applicationId: string | undefined, branchId: string): Observable<void> {
-        let url_ = this.baseUrl + "/{branchId}?";
+    branchesDELETE(applicationId: string, branchId: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches/{branchId}";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
         if (branchId === undefined || branchId === null)
             throw new Error("The parameter 'branchId' must be defined.");
         url_ = url_.replace("{branchId}", encodeURIComponent("" + branchId));
-        if (applicationId === null)
-            throw new Error("The parameter 'applicationId' cannot be null.");
-        else if (applicationId !== undefined)
-            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -619,11 +613,11 @@ export class ApiClient {
         };
 
         return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAnonymousDELETE2(response_);
+            return this.processBranchesDELETE(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAnonymousDELETE2(response_ as any);
+                    return this.processBranchesDELETE(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -632,7 +626,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAnonymousDELETE2(response: HttpResponseBase): Observable<void> {
+    protected processBranchesDELETE(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -876,6 +870,7 @@ export class Application implements IApplication {
     createdAt!: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     mainBranch!: string | undefined;
+    defaultDuration?: string | undefined;
 
     constructor(data?: IApplication) {
         if (data) {
@@ -895,6 +890,7 @@ export class Application implements IApplication {
             this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
             this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
             this.mainBranch = _data["mainBranch"];
+            this.defaultDuration = _data["defaultDuration"];
         }
     }
 
@@ -914,6 +910,7 @@ export class Application implements IApplication {
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
         data["mainBranch"] = this.mainBranch;
+        data["defaultDuration"] = this.defaultDuration;
         return data;
     }
 }
@@ -926,6 +923,7 @@ export interface IApplication {
     createdAt: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     mainBranch: string | undefined;
+    defaultDuration?: string | undefined;
 }
 
 export class Branch implements IBranch {
@@ -935,6 +933,7 @@ export class Branch implements IBranch {
     createdAt?: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     duration?: string | undefined;
+    useDefaultDuration?: boolean;
 
     constructor(data?: IBranch) {
         if (data) {
@@ -953,6 +952,7 @@ export class Branch implements IBranch {
             this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
             this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
             this.duration = _data["duration"];
+            this.useDefaultDuration = _data["useDefaultDuration"];
         }
     }
 
@@ -971,6 +971,7 @@ export class Branch implements IBranch {
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
         data["duration"] = this.duration;
+        data["useDefaultDuration"] = this.useDefaultDuration;
         return data;
     }
 }
@@ -982,12 +983,14 @@ export interface IBranch {
     createdAt?: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     duration?: string | undefined;
+    useDefaultDuration?: boolean;
 }
 
 export class CreateApplicationSchema implements ICreateApplicationSchema {
     key!: string | undefined;
     name!: string | undefined;
     description!: string | undefined;
+    mainBranch?: string | undefined;
 
     constructor(data?: ICreateApplicationSchema) {
         if (data) {
@@ -1003,6 +1006,7 @@ export class CreateApplicationSchema implements ICreateApplicationSchema {
             this.key = _data["key"];
             this.name = _data["name"];
             this.description = _data["description"];
+            this.mainBranch = _data["mainBranch"];
         }
     }
 
@@ -1018,6 +1022,7 @@ export class CreateApplicationSchema implements ICreateApplicationSchema {
         data["key"] = this.key;
         data["name"] = this.name;
         data["description"] = this.description;
+        data["mainBranch"] = this.mainBranch;
         return data;
     }
 }
@@ -1026,10 +1031,13 @@ export interface ICreateApplicationSchema {
     key: string | undefined;
     name: string | undefined;
     description: string | undefined;
+    mainBranch?: string | undefined;
 }
 
 export class CreateBranchSchema implements ICreateBranchSchema {
     name!: string | undefined;
+    duration?: string | undefined;
+    useDefaultDuration?: boolean;
 
     constructor(data?: ICreateBranchSchema) {
         if (data) {
@@ -1043,6 +1051,8 @@ export class CreateBranchSchema implements ICreateBranchSchema {
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
+            this.duration = _data["duration"];
+            this.useDefaultDuration = _data["useDefaultDuration"];
         }
     }
 
@@ -1056,12 +1066,16 @@ export class CreateBranchSchema implements ICreateBranchSchema {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        data["duration"] = this.duration;
+        data["useDefaultDuration"] = this.useDefaultDuration;
         return data;
     }
 }
 
 export interface ICreateBranchSchema {
     name: string | undefined;
+    duration?: string | undefined;
+    useDefaultDuration?: boolean;
 }
 
 export class CreateTokenSchema implements ICreateTokenSchema {
@@ -1164,8 +1178,57 @@ export interface IToken {
     mask: string | undefined;
 }
 
+export class UpdateApplicationSchema implements IUpdateApplicationSchema {
+    name!: string | undefined;
+    description!: string | undefined;
+    mainBranch!: string | undefined;
+    defaultDuration?: string | undefined;
+
+    constructor(data?: IUpdateApplicationSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.mainBranch = _data["mainBranch"];
+            this.defaultDuration = _data["defaultDuration"];
+        }
+    }
+
+    static fromJS(data: any): UpdateApplicationSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateApplicationSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["mainBranch"] = this.mainBranch;
+        data["defaultDuration"] = this.defaultDuration;
+        return data;
+    }
+}
+
+export interface IUpdateApplicationSchema {
+    name: string | undefined;
+    description: string | undefined;
+    mainBranch: string | undefined;
+    defaultDuration?: string | undefined;
+}
+
 export class UpdateBranchSchema implements IUpdateBranchSchema {
     duration?: string | undefined;
+    useDefaultDuration?: boolean;
 
     constructor(data?: IUpdateBranchSchema) {
         if (data) {
@@ -1179,6 +1242,7 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
     init(_data?: any) {
         if (_data) {
             this.duration = _data["duration"];
+            this.useDefaultDuration = _data["useDefaultDuration"];
         }
     }
 
@@ -1192,12 +1256,14 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["duration"] = this.duration;
+        data["useDefaultDuration"] = this.useDefaultDuration;
         return data;
     }
 }
 
 export interface IUpdateBranchSchema {
     duration?: string | undefined;
+    useDefaultDuration?: boolean;
 }
 
 export class ApiException extends Error {

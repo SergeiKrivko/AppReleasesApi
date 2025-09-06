@@ -3,8 +3,9 @@ import {ApplicationEntity} from '../entities/application-entity';
 import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiClient, Application, CreateApplicationSchema} from './api-client';
-import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
+import {ApiClient, Application, CreateApplicationSchema, UpdateApplicationSchema} from './api-client';
+import {EMPTY, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {duration} from 'moment';
 
 interface ApplicationStore {
   applications: ApplicationEntity[];
@@ -51,7 +52,7 @@ export class ApplicationService {
   }
 
   createNewApplication(key: string, name: string, description: string): Observable<ApplicationEntity> {
-    return this.apiClient.apps(CreateApplicationSchema.fromJS({key, name, description})).pipe(
+    return this.apiClient.appsPOST(CreateApplicationSchema.fromJS({key, name, description})).pipe(
       map(app => applicationToEntity(app)),
       tap(app => {
         const applications = getState(this.applications$$).applications;
@@ -61,6 +62,43 @@ export class ApplicationService {
       })
     )
   }
+
+  updateApplication(
+    id: string,
+    name: string | undefined,
+    description: string | undefined,
+    mainBranch: string | undefined,
+    defaultDuration: string | undefined
+  ): Observable<undefined> {
+    return this.applicationById(id).pipe(
+      switchMap(old => this.apiClient.appsPUT(
+        id, UpdateApplicationSchema.fromJS({
+          name: name ?? old?.name,
+          description: description ?? old?.description,
+          mainBranch: mainBranch ?? old?.mainBranch,
+          defaultDuration: defaultDuration ?? old?.defaultDuration,
+        }))),
+      switchMap(() => this.reloadApplicationById(id))
+    );
+  }
+
+  private reloadApplicationById(id: string): Observable<undefined> {
+    return this.apiClient.appsGET(id).pipe(
+      map(applicationToEntity),
+      tap(app => {
+        const state = getState(this.applications$$);
+        const applications = state.applications.filter(a => a.id != id);
+        if (state.selectedApplication?.id == id)
+          patchState(this.applications$$, {
+            applications: applications.concat(app),
+            selectedApplication: app,
+          });
+        else
+          patchState(this.applications$$, {applications: applications.concat(app)});
+      }),
+      switchMap(() => NEVER),
+    )
+  }
 }
 
 const applicationToEntity = (application: Application): ApplicationEntity => ({
@@ -68,6 +106,8 @@ const applicationToEntity = (application: Application): ApplicationEntity => ({
   key: application.key ?? "",
   name: application.name ?? "",
   description: application.description,
+  mainBranch: application.mainBranch ?? "main",
+  defaultDuration: application.defaultDuration ? duration(application.defaultDuration) : null,
   createdAt: application.createdAt,
   deletedAt: application.deletedAt ?? null,
 });
