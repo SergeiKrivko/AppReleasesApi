@@ -1,14 +1,35 @@
 .container {
   height: 100vh;
   width: 100vw;
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+  }
   display: flex;
   flex-direction: column;
+  padding: 0 5rem;
 
   .header-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 4rem;
+    padding: 1rem;
+  }
+
+  .apps-container {
+    display: grid;
+    gap: 1rem; /* промежуток между карточками */
+    padding: 1rem;
+
+    @media (max-width: 800px) {
+      grid-template-columns: repeat(1, 1fr); /* 1 карточка в ряд */
+    }
+    @media ((min-width: 801px) and (max-width: 1200px)) {
+      grid-template-columns: repeat(2, 1fr); /* 3 карточки в ряд */
+    }
+    @media (min-width: 1201px) {
+      grid-template-columns: repeat(3, 1fr); /* 3 карточки в ряд */
+    }
+
   }
 }

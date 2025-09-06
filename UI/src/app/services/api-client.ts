@@ -20,7 +20,7 @@ export const API_BASE_URL = "API_BASE_URL";
 @Injectable({
     providedIn: 'root'
 })
-export class Client {
+export class ApiClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -875,6 +875,7 @@ export class Application implements IApplication {
     description?: string | undefined;
     createdAt!: moment.Moment;
     deletedAt?: moment.Moment | undefined;
+    mainBranch!: string | undefined;
 
     constructor(data?: IApplication) {
         if (data) {
@@ -893,6 +894,7 @@ export class Application implements IApplication {
             this.description = _data["description"];
             this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
             this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
+            this.mainBranch = _data["mainBranch"];
         }
     }
 
@@ -911,6 +913,7 @@ export class Application implements IApplication {
         data["description"] = this.description;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
+        data["mainBranch"] = this.mainBranch;
         return data;
     }
 }
@@ -922,6 +925,7 @@ export interface IApplication {
     description?: string | undefined;
     createdAt: moment.Moment;
     deletedAt?: moment.Moment | undefined;
+    mainBranch: string | undefined;
 }
 
 export class Branch implements IBranch {

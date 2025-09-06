@@ -27,7 +27,7 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
             Id = Guid.NewGuid(),
             ApplicationId = applicationId,
             Name = name,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             Duration = null,
         };
         await branchRepository.CreateBranchAsync(branch);

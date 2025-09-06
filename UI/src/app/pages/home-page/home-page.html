@@ -1,5 +1,11 @@
+<link rel="stylesheet" href="../../../../../../ScheduleAI/ui/src/styles.scss">
 <div class="container">
   <div class="header-container">
     <app-logo></app-logo>
+  </div>
+  <div class="apps-container">
+    @for (application of applications$ | async; track application.id) {
+      <app-application-card [application]="application"></app-application-card>
+    }
   </div>
 </div>

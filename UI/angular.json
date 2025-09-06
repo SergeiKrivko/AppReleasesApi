@@ -25,7 +25,10 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "@taiga-ui/core/styles/taiga-ui-theme.less",
+              "@taiga-ui/core/styles/taiga-ui-fonts.less",
+              "@taiga-ui/addon-mobile/styles/taiga-ui-mobile.less"
             ]
           },
           "configurations": {
