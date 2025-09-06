@@ -3,11 +3,13 @@ import {Header} from '../../components/header/header';
 import {ApplicationService} from '../../services/application.service';
 import {ActivatedRoute} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {first, NEVER, switchMap, tap} from 'rxjs';
+import {first, map, NEVER, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
-import {TuiTextarea} from '@taiga-ui/kit';
+import {TuiCheckbox, TuiInputNumber, TuiRadioList, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
+import {AsyncPipe} from '@angular/common';
+import {duration} from 'moment';
 
 @Component({
   standalone: true,
@@ -20,7 +22,11 @@ import {ApplicationEntity} from '../../entities/application-entity';
     TuiTextfieldDirective,
     TuiTextarea,
     TuiLabel,
-    TuiButton
+    TuiButton,
+    TuiRadioList,
+    TuiCheckbox,
+    TuiInputNumber,
+    AsyncPipe
   ],
   templateUrl: './application-page.html',
   styleUrl: './application-page.scss',
@@ -59,7 +65,10 @@ export class ApplicationPage implements OnInit {
       name: application.name,
       description: application.description ?? "",
       mainBranch: application.mainBranch,
+      unlimitedDuration: application.defaultDuration === null,
+      durationDays: application.defaultDuration?.asDays() ?? 0,
     });
+    this.control.disable();
   }
 
   protected control = new FormGroup({
@@ -67,28 +76,37 @@ export class ApplicationPage implements OnInit {
     name: new FormControl<string>(""),
     description: new FormControl<string>(""),
     mainBranch: new FormControl<string>(""),
+    unlimitedDuration: new FormControl<boolean>(false),
+    durationDays: new FormControl<number>(0),
   })
+
+  protected durationIsLimited$ = this.control.valueChanges.pipe(
+    map(value => !(value.unlimitedDuration ?? false))
+  );
 
   protected isEditing: boolean = false;
 
   protected startEditing() {
     this.isEditing = true;
+    this.control.enable();
   }
 
   protected saveChanges() {
     this.isEditing = false;
+    this.control.disable();
     if (this.applicationId)
       this.applicationService.updateApplication(
         this.applicationId,
         this.control.value.name ?? undefined,
         this.control.value.description ?? undefined,
         this.control.value.mainBranch ?? undefined,
-        undefined
+        this.control.value.unlimitedDuration ? null : duration(this.control.value.durationDays, 'day')
       ).subscribe();
   }
 
   protected cancelChanges() {
     this.isEditing = false;
+    this.control.disable();
     if (this.applicationId) {
       this.applicationService.applicationById(this.applicationId).pipe(
         tap(app => {

@@ -4,8 +4,8 @@ import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ApiClient, Application, CreateApplicationSchema, UpdateApplicationSchema} from './api-client';
-import {EMPTY, map, NEVER, Observable, switchMap, tap} from 'rxjs';
-import {duration} from 'moment';
+import {EMPTY, first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {Duration, duration} from 'moment';
 
 interface ApplicationStore {
   applications: ApplicationEntity[];
@@ -68,15 +68,17 @@ export class ApplicationService {
     name: string | undefined,
     description: string | undefined,
     mainBranch: string | undefined,
-    defaultDuration: string | undefined
+    defaultDuration: Duration | null | undefined
   ): Observable<undefined> {
+    console.log("updating application")
     return this.applicationById(id).pipe(
+      first(),
       switchMap(old => this.apiClient.appsPUT(
         id, UpdateApplicationSchema.fromJS({
           name: name ?? old?.name,
           description: description ?? old?.description,
           mainBranch: mainBranch ?? old?.mainBranch,
-          defaultDuration: defaultDuration ?? old?.defaultDuration,
+          defaultDuration: (defaultDuration ?? old?.defaultDuration)?.asMilliseconds(),
         }))),
       switchMap(() => this.reloadApplicationById(id))
     );

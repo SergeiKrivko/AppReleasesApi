@@ -37,7 +37,7 @@ public class ApplicationController(
         return Ok(applications.Where(a => matcher.Match(a.Key).HasMatches));
     }
 
-    [HttpGet("/{applicationId:guid}")]
+    [HttpGet("{applicationId:guid}")]
     public async Task<ActionResult<AppReleases.Core.Models.Application>> GetApplicationById(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -46,7 +46,7 @@ public class ApplicationController(
         return Ok(application);
     }
 
-    [HttpGet("/search")]
+    [HttpGet("search")]
     public async Task<ActionResult<AppReleases.Core.Models.Application>> SearchApplication(
         [FromQuery] string applicationKey)
     {
@@ -68,7 +68,7 @@ public class ApplicationController(
         return Ok(result);
     }
 
-    [HttpPut("/{applicationId:guid}")]
+    [HttpPut("{applicationId:guid}")]
     public async Task<ActionResult> UpdateApplication(Guid applicationId, [FromBody] UpdateApplicationSchema schema)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -79,7 +79,7 @@ public class ApplicationController(
         return Ok();
     }
 
-    [HttpDelete("/{applicationId:guid}")]
+    [HttpDelete("{applicationId:guid}")]
     public async Task<ActionResult> DeleteApplication(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);

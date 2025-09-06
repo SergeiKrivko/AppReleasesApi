@@ -25,6 +25,23 @@
       grid-column-start: 2;
       grid-column-end: 3;
     }
+
+    .duration-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      .duration-days-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+
+        .duration-days-field {
+          width: 10rem;
+        }
+      }
+    }
   }
 
   .buttons-container {

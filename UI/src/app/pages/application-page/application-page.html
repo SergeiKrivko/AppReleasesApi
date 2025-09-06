@@ -7,22 +7,39 @@
     </tui-textfield>
     <label tuiLabel class="label">Название:</label>
     <tui-textfield class="value">
-      <input tuiTextfield [readOnly]="!isEditing" formControlName="name"/>
+      <input tuiTextfield formControlName="name"/>
     </tui-textfield>
     <label tuiLabel class="label">Описание:</label>
     <tui-textfield>
-      <textarea tuiTextarea [readOnly]="!isEditing" formControlName="description"></textarea>
+      <textarea tuiTextarea formControlName="description"></textarea>
     </tui-textfield>
     <label tuiLabel class="label">Основная ветка:</label>
     <tui-textfield class="value">
-      <input tuiTextfield [readOnly]="!isEditing" formControlName="mainBranch"/>
+      <input tuiTextfield formControlName="mainBranch"/>
     </tui-textfield>
+    <label tuiLabel class="label">Время жизни релиза по умолчанию:</label>
+    <div class="value duration-container">
+      <label tuiLabel>
+        <input size="m" tuiCheckbox type="checkbox" formControlName="unlimitedDuration"/>
+        Не ограничено
+      </label>
+      @if (durationIsLimited$ | async) {
+        <div class="duration-days-container">
+          <tui-textfield class="duration-days-field">
+            <input tuiInputNumber formControlName="durationDays"/>
+          </tui-textfield>
+          <label tuiLabel>дней</label>
+        </div>
+      }
+    </div>
   </form>
   <div class="buttons-container">
-    @if (!isEditing){
+    @if (!isEditing) {
       <button tuiButton size="m" iconStart="@tui.pencil" (click)="startEditing()">Редактировать</button>
     } @else {
-      <button tuiButton size="m" iconStart="@tui.save" appearance="primary-destructive" (click)="cancelChanges()">Отменить</button>
+      <button tuiButton size="m" iconStart="@tui.save" appearance="primary-destructive" (click)="cancelChanges()">
+        Отменить
+      </button>
       <button tuiButton size="m" iconStart="@tui.save" (click)="saveChanges()">Сохранить</button>
     }
   </div>

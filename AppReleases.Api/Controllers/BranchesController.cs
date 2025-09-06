@@ -23,7 +23,7 @@ public class BranchesController(
         return Ok(result);
     }
 
-    [HttpGet("/{branchId:guid}")]
+    [HttpGet("{branchId:guid}")]
     public async Task<ActionResult<Branch>> GetApplicationBranchById(Guid applicationId, Guid branchId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -46,7 +46,7 @@ public class BranchesController(
         return Ok(branch);
     }
 
-    [HttpPut("/{branchId:guid}")]
+    [HttpPut("{branchId:guid}")]
     public async Task<ActionResult> UpdateApplicationBranch(Guid applicationId, Guid branchId,
         [FromBody] UpdateBranchSchema schema)
     {
@@ -62,7 +62,7 @@ public class BranchesController(
         return Ok();
     }
 
-    [HttpDelete("/{branchId:guid}")]
+    [HttpDelete("{branchId:guid}")]
     public async Task<ActionResult> DeleteApplicationBranch(Guid applicationId, Guid branchId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
