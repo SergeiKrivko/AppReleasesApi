@@ -7,5 +7,5 @@ public class Branch
     public required string Name { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
-    public bool IsMerged { get; init; }
+    public TimeSpan? Duration { get; init; }
 }

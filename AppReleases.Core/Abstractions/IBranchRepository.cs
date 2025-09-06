@@ -9,6 +9,5 @@ public interface IBranchRepository
     public Task<Branch> GetBranchByNameAsync(Guid applicationId, string name);
     public Task CreateBranchAsync(Branch branch);
     public Task DeleteBranchAsync(Guid branchId);
-    public Task MarkBranchAsMergedAsync(Guid branchId);
-    public Task DeleteBranchAsMergedAsync(Guid branchId);
+    public Task UpdateBranchAsync(Guid branchId, TimeSpan? duration);
 }

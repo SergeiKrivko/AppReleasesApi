@@ -51,23 +51,12 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task MarkBranchAsMergedAsync(Guid branchId)
+    public async Task UpdateBranchAsync(Guid branchId, TimeSpan? duration)
     {
         await dbContext.Branches
             .Where(x => x.BranchId == branchId)
             .ExecuteUpdateAsync(x => x
-                .SetProperty(e => e.IsMerged, true)
-            );
-        await dbContext.SaveChangesAsync();
-    }
-
-    public async Task DeleteBranchAsMergedAsync(Guid branchId)
-    {
-        await dbContext.Branches
-            .Where(x => x.BranchId == branchId)
-            .ExecuteUpdateAsync(x => x
-                .SetProperty(e => e.IsMerged, true)
-                .SetProperty(e => e.DeletedAt, DateTime.UtcNow)
+                .SetProperty(e => e.Duration, duration)
             );
         await dbContext.SaveChangesAsync();
     }
@@ -81,7 +70,7 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             Name = entity.Name,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
-            IsMerged = entity.IsMerged,
+            Duration = entity.Duration,
         };
     }
 
@@ -94,7 +83,7 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             Name = branch.Name,
             CreatedAt = branch.CreatedAt,
             DeletedAt = branch.DeletedAt,
-            IsMerged = branch.IsMerged,
+            Duration = branch.Duration,
         };
     }
 }
