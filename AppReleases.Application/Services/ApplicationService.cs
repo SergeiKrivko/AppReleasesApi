@@ -19,7 +19,7 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
         return applicationRepository.GetApplicationByKeyAsync(key);
     }
 
-    public Task CreateApplicationAsync(string key, string name, string description)
+    public async Task<Core.Models.Application> CreateApplicationAsync(string key, string name, string description)
     {
         var application = new Core.Models.Application()
         {
@@ -29,7 +29,8 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
             Description = description,
             CreatedAt = DateTime.UtcNow,
         };
-        return applicationRepository.CreateApplicationAsync(application);
+        await applicationRepository.CreateApplicationAsync(application);
+        return application;
     }
 
     public Task UpdateApplicationAsync(Guid applicationId, string name, string description)
