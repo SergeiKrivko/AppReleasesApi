@@ -2,7 +2,7 @@
 
 namespace AppReleases.Application.Services;
 
-public class ApplicationService(IApplicationRepository applicationRepository) : IApplicationService
+public class ApplicationService(IApplicationRepository applicationRepository, IBranchService branchService) : IApplicationService
 {
     public Task<IEnumerable<Core.Models.Application>> GetAllApplicationsAsync()
     {
@@ -19,17 +19,20 @@ public class ApplicationService(IApplicationRepository applicationRepository) : 
         return applicationRepository.GetApplicationByKeyAsync(key);
     }
 
-    public async Task<Core.Models.Application> CreateApplicationAsync(string key, string name, string description)
+    public async Task<Core.Models.Application> CreateApplicationAsync(string key, string name, string description, string? mainBranch = null)
     {
-        var application = new Core.Models.Application()
+        mainBranch ??= "main";
+        var application = new Core.Models.Application
         {
             Id = Guid.NewGuid(),
             Key = key,
             Name = name,
             Description = description,
+            MainBranch = mainBranch,
             CreatedAt = DateTime.UtcNow,
         };
         await applicationRepository.CreateApplicationAsync(application);
+        await branchService.CreateBranchAsync(application.Id, mainBranch);
         return application;
     }
 

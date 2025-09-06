@@ -18,23 +18,23 @@ public class ApplicationController(
     public async Task<ActionResult<IEnumerable<AppReleases.Core.Models.Application>>> GetAllApplications()
     {
         var applications = await applicationService.GetAllApplicationsAsync();
-        if (!authorizationHelper.VerifyAdmin(User))
+        if (authorizationHelper.VerifyAdmin(User))
+            return Ok(applications);
+
+        Guid tokenId;
+        try
         {
-            Guid tokenId;
-            try
-            {
-                tokenId = Guid.Parse(User.Claims.Single(c => c.Type == "tokenId").Value);
-            }
-            catch (Exception)
-            {
-                return Unauthorized();
-            }
-            var token = await tokenService.GetTokenByIdAsync(tokenId);
-            var matcher = new Matcher();
-            matcher.AddInclude(token.Mask);
-            return Ok(applications.Where(a => matcher.Match(a.Key).HasMatches));
+            tokenId = Guid.Parse(User.Claims.Single(c => c.Type == "tokenId").Value);
         }
-        return Ok(applications);
+        catch (Exception)
+        {
+            return Unauthorized();
+        }
+
+        var token = await tokenService.GetTokenByIdAsync(tokenId);
+        var matcher = new Matcher();
+        matcher.AddInclude(token.Mask);
+        return Ok(applications.Where(a => matcher.Match(a.Key).HasMatches));
     }
 
     [HttpGet("/{applicationId:guid}")]
@@ -47,7 +47,8 @@ public class ApplicationController(
     }
 
     [HttpGet("/search")]
-    public async Task<ActionResult<AppReleases.Core.Models.Application>> SearchApplication([FromQuery] string applicationKey)
+    public async Task<ActionResult<AppReleases.Core.Models.Application>> SearchApplication(
+        [FromQuery] string applicationKey)
     {
         if (!await authorizationHelper.VerifyApplication(User, applicationKey))
             return Unauthorized();
@@ -61,7 +62,7 @@ public class ApplicationController(
     {
         if (!await authorizationHelper.VerifyApplication(User, schema.Key))
             return Unauthorized();
-        var result = applicationService.CreateApplicationAsync(schema.Key, schema.Name, schema.Description);
+        var result = await applicationService.CreateApplicationAsync(schema.Key, schema.Name, schema.Description);
         return Ok(result);
     }
 

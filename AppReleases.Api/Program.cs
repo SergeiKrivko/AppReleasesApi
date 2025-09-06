@@ -17,11 +17,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IReleaseRepository, ReleaseRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -30,7 +41,7 @@ builder.Services.AddScoped<AuthorizationHelper>();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Basic Auth", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
     {
         Description = "Authorization with login and password",
         Name = "Basic Auth",
@@ -78,6 +89,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseCors();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -86,5 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
