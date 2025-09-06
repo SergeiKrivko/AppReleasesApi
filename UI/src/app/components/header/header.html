@@ -1,10 +1,13 @@
-<link rel="stylesheet" href="../../../../../../ScheduleAI/ui/src/app/app.component.scss">
 <div class="container">
   <app-logo></app-logo>
-  <div class="buttons-container">
-    <button size="m" tuiButton type="button">Приложения</button>
-    <button size="m" tuiButton type="button">Релизы</button>
-    <button size="m" tuiButton type="button">Ветки</button>
-    <button size="m" tuiButton type="button">Токены</button>
-  </div>
+  @if (selectedApplication$ | async; as selectedApplication) {
+    <h1>{{ selectedApplication.name }}</h1>
+    <tui-segmented
+      size="l"
+    >
+      <button type="button" [routerLink]="'app/' + selectedApplication.id">Конфигурация</button>
+      <button type="button" [routerLink]="'app/' + selectedApplication.id + '/releases'">Релизы</button>
+      <button type="button" [routerLink]="'app/' + selectedApplication.id + '/branches'">Ветки</button>
+    </tui-segmented>
+  }
 </div>

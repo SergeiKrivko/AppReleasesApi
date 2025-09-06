@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {ApplicationEntity} from '../entities/application-entity';
 import {LoadingStatus} from '../entities/loading-status';
-import {patchState, signalState} from '@ngrx/signals';
+import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ApiClient, Application} from './api-client';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
@@ -28,7 +28,8 @@ export class ApplicationService {
   readonly selectedApplication$ = toObservable(this.applications$$.selectedApplication);
 
   selectApplication(application: ApplicationEntity | null) {
-    patchState(this.applications$$, {selectedApplication: application});
+    if (getState(this.applications$$).selectedApplication?.id !== application?.id)
+      patchState(this.applications$$, {selectedApplication: application});
   }
 
   loadApplications(): Observable<undefined> {
@@ -40,6 +41,12 @@ export class ApplicationService {
         loadingStatus: LoadingStatus.InProgress
       })),
       switchMap(() => EMPTY)
+    );
+  }
+
+  applicationById(id: string): Observable<ApplicationEntity | undefined> {
+    return this.applications$.pipe(
+      map(apps => apps.find(app => app.id == id)),
     );
   }
 }

@@ -3,6 +3,7 @@
   tuiHeader
   tuiSurface="floating"
   class="container"
+  [routerLink]="'app/' + application().id"
 >
   <h3>{{ application().name }}</h3>
   <p>{{ application().description }}</p>
