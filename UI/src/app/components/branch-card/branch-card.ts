@@ -1,7 +1,17 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {TuiCard} from '@taiga-ui/layout';
-import {TuiAppearance, TuiButton, TuiDataList, TuiDropdown} from '@taiga-ui/core';
+import {
+  TuiAppearance,
+  TuiButton,
+  TuiDataList,
+  TuiDialogContext,
+  TuiDialogService,
+  TuiDropdown,
+  TuiLabel
+} from '@taiga-ui/core';
 import {BranchEntity} from '../../entities/branch-entity';
+	import {type PolymorpheusContent} from '@taiga-ui/polymorpheus';
+import {TuiRadio} from '@taiga-ui/kit';
 
 @Component({
   standalone: true,
@@ -11,14 +21,22 @@ import {BranchEntity} from '../../entities/branch-entity';
     TuiAppearance,
     TuiButton,
     TuiDataList,
-    TuiDropdown
+    TuiDropdown,
+    TuiLabel,
+    TuiRadio
   ],
   templateUrl: './branch-card.html',
   styleUrl: './branch-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BranchCard {
+  private readonly dialogs = inject(TuiDialogService);
+
   branch = input.required<BranchEntity>();
+
+  protected showDialog(content: PolymorpheusContent<TuiDialogContext>): void {
+    this.dialogs.open(content).subscribe();
+  }
 
   protected open = false;
 }

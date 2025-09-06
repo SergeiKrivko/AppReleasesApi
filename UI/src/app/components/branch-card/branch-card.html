@@ -18,6 +18,7 @@
       type="button"
       iconStart="@tui.pencil"
       appearance="flat"
+      (click)="showDialog(editDialog)"
     ></button>
     <button
       size="s"
@@ -28,3 +29,40 @@
     ></button>
   </div>
 </div>
+
+<ng-template
+  #editDialog
+>
+  <h2>{{ branch().name }}</h2>
+  <h4>Время жизни релизов:</h4>
+  <p>
+    <label tuiLabel>
+      <input
+        name="test"
+        tuiRadio
+        type="radio"
+      />
+      По умолчанию
+    </label>
+  </p>
+  <p>
+    <label tuiLabel>
+      <input
+        name="test"
+        tuiRadio
+        type="radio"
+      />
+      Не удалять
+    </label>
+  </p>
+  <p>
+    <label tuiLabel>
+      <input
+        name="test"
+        tuiRadio
+        type="radio"
+      />
+      Выбрать время
+    </label>
+  </p>
+</ng-template>
