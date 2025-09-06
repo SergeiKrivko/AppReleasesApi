@@ -51,12 +51,13 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateBranchAsync(Guid branchId, TimeSpan? duration)
+    public async Task UpdateBranchAsync(Guid branchId, TimeSpan? duration, bool useDefaultDuration = true)
     {
         await dbContext.Branches
             .Where(x => x.BranchId == branchId)
             .ExecuteUpdateAsync(x => x
                 .SetProperty(e => e.Duration, duration)
+                .SetProperty(e => e.UseDefaultDuration, useDefaultDuration)
             );
         await dbContext.SaveChangesAsync();
     }

@@ -9,6 +9,7 @@ public class ApplicationEntity
     [MaxLength(100)] public required string Name { get; init; }
     [MaxLength(10000)] public string? Description { get; init; }
     [MaxLength(100)] public required string MainBranch { get; init; }
+    public TimeSpan? DefaultDuration { get; init; }
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
 

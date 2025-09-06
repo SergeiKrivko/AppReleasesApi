@@ -37,13 +37,16 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
         return application;
     }
 
-    public async Task UpdateApplicationAsync(Guid applicationId, string name, string description)
+    public async Task UpdateApplicationAsync(Guid applicationId, string name, string description, string mainBranch,
+        TimeSpan? defaultDuration = null)
     {
         await dbContext.Applications
             .Where(x => x.ApplicationId == applicationId)
             .ExecuteUpdateAsync(x => x
                 .SetProperty(e => e.Name, name)
                 .SetProperty(e => e.Description, description)
+                .SetProperty(e => e.MainBranch, mainBranch)
+                .SetProperty(e => e.DefaultDuration, defaultDuration)
             );
         await dbContext.SaveChangesAsync();
     }

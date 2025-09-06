@@ -14,7 +14,8 @@ public class ApplicationConfiguration : IEntityTypeConfiguration<ApplicationEnti
         builder.Property(x => x.Key).IsRequired();
         builder.Property(x => x.Name);
         builder.Property(x => x.Description);
-        builder.Property(x => x.MainBranch);
+        builder.Property(x => x.MainBranch).IsRequired();
+        builder.Property(x => x.DefaultDuration).HasDefaultValue(null);
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.DeletedAt);
     }

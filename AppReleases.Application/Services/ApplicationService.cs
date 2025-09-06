@@ -2,7 +2,8 @@
 
 namespace AppReleases.Application.Services;
 
-public class ApplicationService(IApplicationRepository applicationRepository, IBranchService branchService) : IApplicationService
+public class ApplicationService(IApplicationRepository applicationRepository, IBranchService branchService)
+    : IApplicationService
 {
     public Task<IEnumerable<Core.Models.Application>> GetAllApplicationsAsync()
     {
@@ -19,7 +20,10 @@ public class ApplicationService(IApplicationRepository applicationRepository, IB
         return applicationRepository.GetApplicationByKeyAsync(key);
     }
 
-    public async Task<Core.Models.Application> CreateApplicationAsync(string key, string name, string description, string? mainBranch = null)
+    private static TimeSpan DefaultDuration { get; } = TimeSpan.FromDays(30);
+
+    public async Task<Core.Models.Application> CreateApplicationAsync(string key, string name, string description,
+        string? mainBranch = null)
     {
         mainBranch ??= "main";
         var application = new Core.Models.Application
@@ -29,16 +33,18 @@ public class ApplicationService(IApplicationRepository applicationRepository, IB
             Name = name,
             Description = description,
             MainBranch = mainBranch,
+            DefaultDuration = DefaultDuration,
             CreatedAt = DateTime.UtcNow,
         };
         await applicationRepository.CreateApplicationAsync(application);
-        await branchService.CreateBranchAsync(application.Id, mainBranch);
+        await branchService.CreateBranchAsync(application.Id, mainBranch, null, false);
         return application;
     }
 
-    public Task UpdateApplicationAsync(Guid applicationId, string name, string description)
+    public Task UpdateApplicationAsync(Guid applicationId, string name, string description, string mainBranch,
+        TimeSpan? defaultDuration)
     {
-        return applicationRepository.UpdateApplicationAsync(applicationId, name, description);
+        return applicationRepository.UpdateApplicationAsync(applicationId, name, description, mainBranch, defaultDuration);
     }
 
     public Task DeleteApplicationAsync(Guid applicationId)

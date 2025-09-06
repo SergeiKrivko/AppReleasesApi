@@ -9,4 +9,5 @@ public class Application
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
     public required string MainBranch { get; init; }
+    public TimeSpan? DefaultDuration { get; init; }
 }

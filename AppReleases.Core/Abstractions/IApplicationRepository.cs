@@ -8,6 +8,6 @@ public interface IApplicationRepository
     public Task<Application> GetApplicationByIdAsync(Guid applicationId);
     public Task<Application> GetApplicationByKeyAsync(string key);
     public Task<Application> CreateApplicationAsync(Application application);
-    public Task UpdateApplicationAsync(Guid applicationId, string name, string description);
+    public Task UpdateApplicationAsync(Guid applicationId, string name, string description, string mainBranch, TimeSpan? defaultDuration = null);
     public Task DeleteApplicationAsync(Guid applicationId);
 }

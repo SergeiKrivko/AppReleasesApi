@@ -16,6 +16,7 @@ public class BranchConfiguration : IEntityTypeConfiguration<BranchEntity>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.DeletedAt);
         builder.Property(x => x.Duration).HasDefaultValue(null);
+        builder.Property(x => x.UseDefaultDuration).HasDefaultValue(true).IsRequired();
 
         builder.HasMany(x => x.Releases)
             .WithOne(x => x.Branch)

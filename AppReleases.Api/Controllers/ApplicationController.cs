@@ -62,17 +62,20 @@ public class ApplicationController(
     {
         if (!await authorizationHelper.VerifyApplication(User, schema.Key))
             return Unauthorized();
-        var result = await applicationService.CreateApplicationAsync(schema.Key, schema.Name, schema.Description);
+        var result =
+            await applicationService.CreateApplicationAsync(schema.Key, schema.Name, schema.Description,
+                schema.MainBranch);
         return Ok(result);
     }
 
     [HttpPut("/{applicationId:guid}")]
-    public async Task<ActionResult> UpdateApplication(Guid applicationId, [FromBody] CreateApplicationSchema schema)
+    public async Task<ActionResult> UpdateApplication(Guid applicationId, [FromBody] UpdateApplicationSchema schema)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
-        await applicationService.UpdateApplicationAsync(applicationId, schema.Name, schema.Description);
+        await applicationService.UpdateApplicationAsync(applicationId, schema.Name, schema.Description,
+            schema.MainBranch, schema.DefaultDuration);
         return Ok();
     }
 

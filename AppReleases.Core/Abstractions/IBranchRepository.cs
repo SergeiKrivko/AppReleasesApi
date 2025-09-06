@@ -9,5 +9,5 @@ public interface IBranchRepository
     public Task<Branch> GetBranchByNameAsync(Guid applicationId, string name);
     public Task CreateBranchAsync(Branch branch);
     public Task DeleteBranchAsync(Guid branchId);
-    public Task UpdateBranchAsync(Guid branchId, TimeSpan? duration);
+    public Task UpdateBranchAsync(Guid branchId, TimeSpan? duration, bool useDefaultDuration = true);
 }

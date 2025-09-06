@@ -8,4 +8,5 @@ public class Branch
     public DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
     public TimeSpan? Duration { get; init; }
+    public bool UseDefaultDuration { get; init; } = true;
 }

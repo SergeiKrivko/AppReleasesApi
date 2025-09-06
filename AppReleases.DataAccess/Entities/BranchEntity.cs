@@ -10,6 +10,7 @@ public class BranchEntity
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
     public TimeSpan? Duration { get; init; }
+    public bool UseDefaultDuration { get; init; }
 
     public virtual ICollection<ReleaseEntity> Releases { get; init; } = [];
     public virtual ApplicationEntity Application { get; init; } = null!;
