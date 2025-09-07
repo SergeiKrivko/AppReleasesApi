@@ -7,40 +7,23 @@ namespace AppReleases.DataAccess.Repositories;
 
 public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseRepository
 {
-    public async Task<IEnumerable<Release>> GetAllReleasesAsync(Guid applicationId)
+    public async Task<IEnumerable<Release>> GetAllReleasesAsync(Guid branchId)
     {
-        var entities = await dbContext.Releases.ToArrayAsync();
+        var entities = await dbContext.Releases
+            .Where(x => x.BranchId == branchId)
+            .ToArrayAsync();
         return entities.Select(ReleaseFromEntity);
     }
 
-    public async Task<Release> GetLatestReleaseAsync(Guid applicationId, bool includeBranches = false)
+    public async Task<Release?> GetLatestReleaseAsync(Guid branchId, string platform)
     {
-        ReleaseEntity entity;
-        if (includeBranches)
-        {
-            entity = await dbContext.Releases
-                .Where(x => x.ApplicationId == applicationId)
-                .OrderBy(x => x.CreatedAt)
-                .LastAsync();
-        }
-        else
-        {
-            entity = await dbContext.Releases
-                .Where(x => x.ApplicationId == applicationId)
-                .Where(x => x.BranchId == null)
-                .OrderBy(x => x.CreatedAt)
-                .LastAsync();
-        }
-        return ReleaseFromEntity(entity);
-    }
-
-    public async Task<Release> GetLatestReleaseForBranchAsync(Guid applicationId, Guid branchId)
-    {
-        var entity = await dbContext.Releases
-            .Where(x => x.ApplicationId == applicationId && x.BranchId == branchId)
-            .OrderBy(x => x.CreatedAt)
-            .LastAsync();
-        return ReleaseFromEntity(entity);
+        var entities = await dbContext.Releases
+            .Where(x => x.BranchId == branchId && x.Platform == platform)
+            .ToArrayAsync();
+        return entities
+            .Select(ReleaseFromEntity)
+            .OrderByDescending(x => x.Version)
+            .FirstOrDefault();
     }
 
     public async Task<Release> GetReleaseByIdAsync(Guid id)
@@ -57,13 +40,19 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         return release;
     }
 
-    public async Task UpdateReleaseAsync(Guid id, string notes, bool isObsolete = false)
+    public async Task UpdateReleaseAsync(Guid id, string notes)
     {
         await dbContext.Releases.Where(x => x.ReleaseId == id)
             .ExecuteUpdateAsync(x => x
                 .SetProperty(e => e.ReleaseNotes, notes)
-                .SetProperty(e => e.IsObsolete, isObsolete)
             );
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteReleaseAsync(Guid id)
+    {
+        await dbContext.Releases.Where(x => x.ReleaseId == id)
+            .ExecuteDeleteAsync();
         await dbContext.SaveChangesAsync();
     }
 
@@ -72,13 +61,12 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         return new Release
         {
             Id = entity.ReleaseId,
-            ApplicationId = entity.ApplicationId,
-            CreatedAt = entity.CreatedAt,
+            BranchId = entity.BranchId,
             Platform = entity.Platform,
             ReleaseNotes = entity.ReleaseNotes,
             Version = Version.Parse(entity.Version),
-            IsObsolete = entity.IsObsolete,
-            IsPrerelease = entity.IsPrerelease,
+            CreatedAt = entity.CreatedAt,
+            DeletedAt = entity.DeletedAt,
         };
     }
 
@@ -87,13 +75,12 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         return new ReleaseEntity
         {
             ReleaseId = release.Id,
-            ApplicationId = release.ApplicationId,
-            CreatedAt = release.CreatedAt,
+            BranchId = release.BranchId,
             Platform = release.Platform,
             ReleaseNotes = release.ReleaseNotes,
             Version = release.Version.ToString(),
-            IsObsolete = release.IsObsolete,
-            IsPrerelease = release.IsPrerelease,
+            CreatedAt = release.CreatedAt,
+            DeletedAt = release.DeletedAt,
         };
     }
 }

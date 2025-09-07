@@ -20,11 +20,7 @@ public class BranchConfiguration : IEntityTypeConfiguration<BranchEntity>
 
         builder.HasMany(x => x.Releases)
             .WithOne(x => x.Branch)
-            .HasForeignKey(x => x.BranchId);
-
-        builder.HasOne(x => x.Application)
-            .WithMany(x => x.Branches)
-            .HasForeignKey(x => x.ApplicationId)
+            .HasForeignKey(x => x.BranchId)
             .IsRequired();
     }
 }
