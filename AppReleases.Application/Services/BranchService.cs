@@ -15,12 +15,13 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
         return branchRepository.GetBranchByIdAsync(branchId);
     }
 
-    public Task<Branch> GetBranchByNameAsync(Guid applicationId, string name)
+    public Task<Branch?> GetBranchByNameAsync(Guid applicationId, string name)
     {
         return branchRepository.GetBranchByNameAsync(applicationId, name);
     }
 
-    public async Task<Branch> CreateBranchAsync(Guid applicationId, string name, TimeSpan? duration, bool useDefaultDuration)
+    public async Task<Branch> CreateBranchAsync(Guid applicationId, string name, TimeSpan? duration,
+        bool useDefaultDuration)
     {
         var branch = new Branch
         {
@@ -43,5 +44,11 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
     public Task DeleteBranchAsync(Guid branchId)
     {
         return branchRepository.DeleteBranchAsync(branchId);
+    }
+
+    public async Task<Branch> GetOrCreateBranchAsync(Guid applicationId, string name)
+    {
+        return await GetBranchByNameAsync(applicationId, name) ??
+               await CreateBranchAsync(applicationId, name, null, true);
     }
 }

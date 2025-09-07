@@ -24,14 +24,14 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
         return BranchFromEntity(entity);
     }
 
-    public async Task<Branch> GetBranchByNameAsync(Guid applicationId, string name)
+    public async Task<Branch?> GetBranchByNameAsync(Guid applicationId, string name)
     {
         var entity = await dbContext.Branches
             .Where(x => x.ApplicationId == applicationId)
             .Where(x => x.Name == name)
             .Where(x => x.DeletedAt == null)
-            .SingleAsync();
-        return BranchFromEntity(entity);
+            .SingleOrDefaultAsync();
+        return entity is null ? null : BranchFromEntity(entity);
     }
 
     public async Task CreateBranchAsync(Branch branch)

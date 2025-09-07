@@ -30,4 +30,18 @@ public class ReleaseService(IReleaseRepository releaseRepository, IAssetReposito
             FilesToUpload = toUpload.ToArray(),
         };
     }
+
+    public async Task<Release> CreateReleaseAsync(Guid branchId, string platform, Version version)
+    {
+        var release = new Release
+        {
+            Id = Guid.NewGuid(),
+            BranchId = branchId,
+            Platform = platform,
+            Version = version,
+            CreatedAt = DateTime.UtcNow
+        };
+        await releaseRepository.CreateReleaseAsync(release);
+        return release;
+    }
 }
