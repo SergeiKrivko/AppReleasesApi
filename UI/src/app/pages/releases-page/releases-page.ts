@@ -4,12 +4,17 @@ import {ActivatedRoute} from '@angular/router';
 import {NEVER, switchMap, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Header} from '../../components/header/header';
+import {ReleaseService} from '../../services/release.service';
+import {AsyncPipe} from '@angular/common';
+import {ReleaseCard} from '../../components/release-card/release-card';
 
 @Component({
   standalone: true,
   selector: 'app-releases-page',
   imports: [
-    Header
+    Header,
+    AsyncPipe,
+    ReleaseCard
   ],
   templateUrl: './releases-page.html',
   styleUrl: './releases-page.scss',
@@ -17,6 +22,7 @@ import {Header} from '../../components/header/header';
 })
 export class ReleasesPage implements OnInit {
   private readonly applicationService = inject(ApplicationService);
+  private readonly releaseService = inject(ReleaseService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -36,4 +42,6 @@ export class ReleasesPage implements OnInit {
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
   }
+
+  protected readonly releases$ = this.releaseService.releases$;
 }

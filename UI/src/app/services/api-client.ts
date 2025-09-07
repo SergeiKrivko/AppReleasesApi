@@ -361,6 +361,66 @@ export class ApiClient {
     /**
      * @return OK
      */
+    releasesAll(applicationId: string): Observable<Release[]> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/releases";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReleasesAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReleasesAll(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Release[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Release[]>;
+        }));
+    }
+
+    protected processReleasesAll(response: HttpResponseBase): Observable<Release[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Release.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+    }
+
+    /**
+     * @return OK
+     */
     branchesAll(applicationId: string): Observable<Branch[]> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches";
         if (applicationId === undefined || applicationId === null)
@@ -698,6 +758,235 @@ export class ApiClient {
     }
 
     /**
+     * @param body (optional)
+     * @return OK
+     */
+    diff(body: AssetInfo[] | undefined): Observable<ReleaseDifference> {
+        let url_ = this.baseUrl + "/api/v1/releases/diff";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDiff(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDiff(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReleaseDifference>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReleaseDifference>;
+        }));
+    }
+
+    protected processDiff(response: HttpResponseBase): Observable<ReleaseDifference> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReleaseDifference.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReleaseDifference>(null as any);
+    }
+
+    /**
+     * @param body (optional)
+     * @return OK
+     */
+    releases(body: CreateReleaseSchema | undefined): Observable<ReleaseDifference> {
+        let url_ = this.baseUrl + "/api/v1/releases";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReleases(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReleases(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReleaseDifference>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReleaseDifference>;
+        }));
+    }
+
+    protected processReleases(response: HttpResponseBase): Observable<ReleaseDifference> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReleaseDifference.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReleaseDifference>(null as any);
+    }
+
+    /**
+     * @param assets (optional)
+     * @param zip (optional)
+     * @return OK
+     */
+    assetsPUT(releaseId: string, assets: AssetInfo[] | undefined, zip: FileParameter | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/assets";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (assets === null || assets === undefined)
+            throw new Error("The parameter 'assets' cannot be null.");
+        else
+            assets.forEach(item_ => content_.append("assets", item_.toString()));
+        if (zip === null || zip === undefined)
+            throw new Error("The parameter 'zip' cannot be null.");
+        else
+            content_.append("zip", zip.data, zip.fileName ? zip.fileName : "zip");
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAssetsPUT(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAssetsPUT(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processAssetsPUT(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    assetsGET(releaseId: string): Observable<DownloadUrlResponseSchema> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/assets";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAssetsGET(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAssetsGET(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DownloadUrlResponseSchema>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DownloadUrlResponseSchema>;
+        }));
+    }
+
+    protected processAssetsGET(response: HttpResponseBase): Observable<DownloadUrlResponseSchema> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DownloadUrlResponseSchema.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<DownloadUrlResponseSchema>(null as any);
+    }
+
+    /**
      * @return OK
      */
     tokensAll(): Observable<Token[]> {
@@ -926,6 +1215,46 @@ export interface IApplication {
     defaultDuration?: string | undefined;
 }
 
+export class AssetInfo implements IAssetInfo {
+    fileName!: string | undefined;
+    fileHash!: string | undefined;
+
+    constructor(data?: IAssetInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileName = _data["fileName"];
+            this.fileHash = _data["fileHash"];
+        }
+    }
+
+    static fromJS(data: any): AssetInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssetInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileName"] = this.fileName;
+        data["fileHash"] = this.fileHash;
+        return data;
+    }
+}
+
+export interface IAssetInfo {
+    fileName: string | undefined;
+    fileHash: string | undefined;
+}
+
 export class Branch implements IBranch {
     id?: string;
     applicationId?: string;
@@ -1078,6 +1407,54 @@ export interface ICreateBranchSchema {
     useDefaultDuration?: boolean;
 }
 
+export class CreateReleaseSchema implements ICreateReleaseSchema {
+    applicationKey!: string | undefined;
+    branch?: string | undefined;
+    platform?: string | undefined;
+    version!: string | undefined;
+
+    constructor(data?: ICreateReleaseSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationKey = _data["applicationKey"];
+            this.branch = _data["branch"];
+            this.platform = _data["platform"];
+            this.version = _data["version"];
+        }
+    }
+
+    static fromJS(data: any): CreateReleaseSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateReleaseSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationKey"] = this.applicationKey;
+        data["branch"] = this.branch;
+        data["platform"] = this.platform;
+        data["version"] = this.version;
+        return data;
+    }
+}
+
+export interface ICreateReleaseSchema {
+    applicationKey: string | undefined;
+    branch?: string | undefined;
+    platform?: string | undefined;
+    version: string | undefined;
+}
+
 export class CreateTokenSchema implements ICreateTokenSchema {
     name!: string | undefined;
     mask!: string | undefined;
@@ -1120,6 +1497,146 @@ export interface ICreateTokenSchema {
     name: string | undefined;
     mask: string | undefined;
     expiresAt?: moment.Moment | undefined;
+}
+
+export class DownloadUrlResponseSchema implements IDownloadUrlResponseSchema {
+    url!: string | undefined;
+
+    constructor(data?: IDownloadUrlResponseSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+        }
+    }
+
+    static fromJS(data: any): DownloadUrlResponseSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new DownloadUrlResponseSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        return data;
+    }
+}
+
+export interface IDownloadUrlResponseSchema {
+    url: string | undefined;
+}
+
+export class Release implements IRelease {
+    id!: string;
+    branchId!: string;
+    version!: string | undefined;
+    platform?: string | undefined;
+    releaseNotes?: string | undefined;
+    createdAt!: moment.Moment;
+    deletedAt?: moment.Moment | undefined;
+
+    constructor(data?: IRelease) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.branchId = _data["branchId"];
+            this.version = _data["version"];
+            this.platform = _data["platform"];
+            this.releaseNotes = _data["releaseNotes"];
+            this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
+            this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Release {
+        data = typeof data === 'object' ? data : {};
+        let result = new Release();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["branchId"] = this.branchId;
+        data["version"] = this.version;
+        data["platform"] = this.platform;
+        data["releaseNotes"] = this.releaseNotes;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IRelease {
+    id: string;
+    branchId: string;
+    version: string | undefined;
+    platform?: string | undefined;
+    releaseNotes?: string | undefined;
+    createdAt: moment.Moment;
+    deletedAt?: moment.Moment | undefined;
+}
+
+export class ReleaseDifference implements IReleaseDifference {
+    filesToUpload!: string[] | undefined;
+
+    constructor(data?: IReleaseDifference) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["filesToUpload"])) {
+                this.filesToUpload = [] as any;
+                for (let item of _data["filesToUpload"])
+                    this.filesToUpload!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ReleaseDifference {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReleaseDifference();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.filesToUpload)) {
+            data["filesToUpload"] = [];
+            for (let item of this.filesToUpload)
+                data["filesToUpload"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IReleaseDifference {
+    filesToUpload: string[] | undefined;
 }
 
 export class Token implements IToken {
@@ -1264,6 +1781,11 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
 export interface IUpdateBranchSchema {
     duration?: string | undefined;
     useDefaultDuration?: boolean;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export class ApiException extends Error {
