@@ -49,4 +49,14 @@ public class ReleasesController(
         await releaseService.UploadAssetsAsync(releaseId, assets ?? [], zip.OpenReadStream());
         return Ok();
     }
+
+    [HttpGet("{releaseId:guid}/assets")]
+    public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssets(Guid releaseId)
+    {
+        var url = await releaseService.PackAssetsAsync(releaseId);
+        return Ok(new DownloadUrlResponseSchema
+        {
+            Url = url
+        });
+    }
 }

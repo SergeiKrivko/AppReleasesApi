@@ -20,6 +20,11 @@ public class ReleaseService(
         return releaseRepository.GetLatestReleaseAsync(branchId, platform);
     }
 
+    public Task<IEnumerable<Release>> GetAllReleasesOfApplicationAsync(Guid applicationId)
+    {
+        return releaseRepository.GetAllReleasesOfApplicationAsync(applicationId);
+    }
+
     public async Task<ReleaseDifference> GetReleaseDifferenceAsync(AssetInfo[] assets)
     {
         var toUpload = new List<string>();
@@ -84,5 +89,33 @@ public class ReleaseService(
         };
         await releaseRepository.CreateReleaseAsync(release);
         return release;
+    }
+
+    private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);
+
+    public async Task<string> PackAssetsAsync(Guid releaseId)
+    {
+        var assets = await assetRepository.GetAllAssetsAsync(releaseId);
+        var tempFileId = Guid.NewGuid();
+
+        using (var zipStream = new MemoryStream())
+        {
+            using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create))
+            {
+                foreach (var asset in assets)
+                {
+                    await using var zipEntry = zip.CreateEntry(asset.FileName).Open();
+                    await using var stream =
+                        await fileRepository.DownloadFileAsync(FileRepositoryBucket.Assets, asset.FileId);
+                    await stream.CopyToAsync(zipEntry);
+                }
+            }
+
+            await fileRepository.UploadFileAsync(FileRepositoryBucket.Temp, tempFileId, "zip",
+                new MemoryStream(zipStream.ToArray()));
+        }
+
+        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Temp, tempFileId, "zip",
+            AssetsZipLifetime);
     }
 }
