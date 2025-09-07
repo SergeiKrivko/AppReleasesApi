@@ -9,9 +9,6 @@ public class S3Repository : IFileRepository
 {
     private readonly AmazonS3Client _s3Client;
 
-    private static string MainBucket { get; } = Environment.GetEnvironmentVariable("S3_ASSETS_BUCKET") ?? "assets";
-    private static string ZipBucket { get; } = Environment.GetEnvironmentVariable("S3_TEMP_BUCKET") ?? "temp";
-
     public S3Repository()
     {
         _s3Client = new AmazonS3Client(
@@ -25,93 +22,126 @@ public class S3Repository : IFileRepository
             });
     }
 
-    public Task<Stream> DownloadFileAsync(Guid fileId)
+    public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId)
     {
-        return DownloadFileAsync(fileId.ToString());
+        return DownloadFileAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task<Stream> DownloadFileAsync(Guid fileId, string extension)
+    public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return DownloadFileAsync($"{fileId}.{extension}");
+        return DownloadFileAsync(GetBucket(bucket), $"{fileId}.{extension}");
     }
 
-    public Task DeleteFileAsync(Guid fileId)
+    public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId)
     {
-        return DeleteFileAsync(fileId.ToString());
+        return DeleteFileAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task DeleteFileAsync(Guid fileId, string extension)
+    public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return DeleteFileAsync($"{fileId}.{extension}");
+        return DeleteFileAsync(GetBucket(bucket), $"{fileId}.{extension}");
     }
 
-    public Task<bool> FileExistsAsync(Guid fileId)
+    public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId)
     {
-        return FileExistsAsync(fileId.ToString());
+        return FileExistsAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task<bool> FileExistsAsync(Guid fileId, string extension)
+    public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return FileExistsAsync($"{fileId}.{extension}");
+        return FileExistsAsync(GetBucket(bucket), $"{fileId}.{extension}");
     }
 
-    public Task UploadFileAsync(Guid fileId, Stream fileStream)
+    public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, Stream fileStream)
     {
-        return UploadFileAsync(fileId.ToString(), fileStream);
+        return UploadFileAsync(GetBucket(bucket), fileId.ToString(), fileStream);
     }
 
-    public Task UploadFileAsync(Guid fileId, string extension, Stream fileStream)
+    public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension, Stream fileStream)
     {
-        return UploadFileAsync($"{fileId}.{extension}", fileStream);
+        return UploadFileAsync(GetBucket(bucket), $"{fileId}.{extension}", fileStream);
     }
 
-    public Task<string> GetDownloadUrlAsync(Guid fileId, TimeSpan timeout)
+    public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, TimeSpan timeout)
     {
-        return GetDownloadUrlAsync(fileId.ToString(), timeout);
+        return GetDownloadUrlAsync(GetBucket(bucket), fileId.ToString(), timeout);
     }
 
-    public Task<string> GetDownloadUrlAsync(Guid fileId, string extension, TimeSpan timeout)
+    public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string extension,
+        TimeSpan timeout)
     {
-        return GetDownloadUrlAsync($"{fileId}.{extension}", timeout);
+        return GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}.{extension}", timeout);
     }
 
-    private async Task<Stream> DownloadFileAsync(string fileName)
+    private async Task<Stream> DownloadFileAsync(string bucket, string fileName)
     {
-        return (await _s3Client.GetObjectAsync(MainBucket, fileName))
+        return (await _s3Client.GetObjectAsync(bucket, fileName))
             .ResponseStream;
     }
 
-    private Task DeleteFileAsync(string fileName)
+    private async Task DeleteFileAsync(string bucket, string fileName)
     {
-        throw new NotImplementedException();
+        var deleteRequest = new DeleteObjectRequest
+        {
+            BucketName = bucket,
+            Key = fileName,
+        };
+        await _s3Client.DeleteObjectAsync(deleteRequest);
     }
 
-    private Task<bool> FileExistsAsync(string fileName)
+    private async Task<bool> FileExistsAsync(string bucket, string fileName)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var request = new GetObjectMetadataRequest
+            {
+                BucketName = bucket,
+                Key = fileName
+            };
+
+            await _s3Client.GetObjectMetadataAsync(request);
+            return true;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return false;
+        }
     }
 
-    private Task UploadFileAsync(string fileName, Stream fileStream)
+    private async Task UploadFileAsync(string bucket, string fileName, Stream fileStream)
     {
         var putRequest = new PutObjectRequest
         {
-            BucketName = MainBucket,
+            BucketName = bucket,
             Key = fileName,
             InputStream = fileStream,
             ContentType = "application/octet-stream"
         };
 
-        return _s3Client.PutObjectAsync(putRequest);
+        await _s3Client.PutObjectAsync(putRequest);
     }
 
-    private async Task<string> GetDownloadUrlAsync(string fileName, TimeSpan timeout)
+    private async Task<string> GetDownloadUrlAsync(string bucket, string fileName, TimeSpan timeout)
     {
         var request = new GetPreSignedUrlRequest
         {
-            BucketName = ZipBucket,
+            BucketName = bucket,
             Key = fileName,
             Expires = DateTime.UtcNow.Add(timeout)
         };
         return await _s3Client.GetPreSignedURLAsync(request);
+    }
+
+    private static string AssetsBucket { get; } = Environment.GetEnvironmentVariable("S3_ASSETS_BUCKET") ?? "assets";
+    private static string TempBucket { get; } = Environment.GetEnvironmentVariable("S3_TEMP_BUCKET") ?? "temp";
+
+    private static string GetBucket(FileRepositoryBucket bucket)
+    {
+        return bucket switch
+        {
+            FileRepositoryBucket.Assets => AssetsBucket,
+            FileRepositoryBucket.Temp => TempBucket,
+            _ => throw new ArgumentOutOfRangeException(nameof(bucket), bucket, null)
+        };
     }
 }
