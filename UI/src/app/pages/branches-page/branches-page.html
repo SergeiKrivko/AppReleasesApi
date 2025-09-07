@@ -1,5 +1,8 @@
 <div class="container">
   <app-header></app-header>
+  <div class="tools-container">
+    <button tuiButton iconStart="@tui.plus" size="m" (click)="newBranch()">Создать</button>
+  </div>
   <div class="branches-container">
     @for (branch of branches$ | async; track branch.id) {
       <app-branch-card [branch]="branch"></app-branch-card>

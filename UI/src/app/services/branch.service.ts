@@ -3,8 +3,8 @@ import {BranchEntity} from '../entities/branch-entity';
 import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiClient, Branch} from './api-client';
-import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
+import {ApiClient, Branch, CreateBranchSchema} from './api-client';
+import {EMPTY, first, map, Observable, switchMap, tap} from 'rxjs';
 import {duration} from 'moment';
 import {ApplicationService} from './application.service';
 
@@ -59,6 +59,39 @@ export class BranchService {
     return this.branches$.pipe(
       map(apps => apps.find(app => app.id == id)),
     );
+  }
+
+  deleteBranch(id: string): Observable<undefined> {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(app => {
+        if (app) {
+          const branches = getState(this.branches$$).branches;
+          patchState(this.branches$$, {branches: branches.filter(b => b.id != id)})
+          return this.apiClient.branchesDELETE(app.id, id);
+        }
+        return EMPTY;
+      }),
+      switchMap(() => EMPTY)
+    )
+  }
+
+  createNewBranch(name: string): Observable<BranchEntity | undefined> {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(app => {
+        if (app)
+          return this.apiClient.branchesPOST(app.id, CreateBranchSchema.fromJS({name}));
+        return EMPTY;
+      }),
+      map(branchToEntity),
+      tap(app => {
+        const branches = getState(this.branches$$).branches;
+        patchState(this.branches$$, {
+          branches: branches.concat(app),
+        })
+      })
+    )
   }
 }
 

@@ -7,6 +7,8 @@ import {Header} from '../../components/header/header';
 import {BranchService} from '../../services/branch.service';
 import {AsyncPipe} from '@angular/common';
 import {BranchCard} from '../../components/branch-card/branch-card';
+import {TuiButton, tuiDialog} from '@taiga-ui/core';
+import {NewBranchDialog} from '../../components/new-branch-dialog/new-branch-dialog';
 
 @Component({
   standalone: true,
@@ -14,7 +16,8 @@ import {BranchCard} from '../../components/branch-card/branch-card';
   imports: [
     Header,
     AsyncPipe,
-    BranchCard
+    BranchCard,
+    TuiButton
   ],
   templateUrl: './branches-page.html',
   styleUrl: './branches-page.scss',
@@ -44,4 +47,13 @@ export class BranchesPage implements OnInit {
   }
 
   protected readonly branches$ = this.branchService.branches$;
+
+  private readonly newBranchDialog = tuiDialog(NewBranchDialog, {
+    dismissible: false,
+    label: 'Новая ветка',
+  });
+
+  protected newBranch(): void {
+    this.newBranchDialog(undefined).subscribe();
+  }
 }

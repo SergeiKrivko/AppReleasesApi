@@ -8,6 +8,13 @@
   padding: 0 5rem;
   gap: 2rem;
 
+  .tools-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .branches-container {
     display: flex;
     flex-direction: column;

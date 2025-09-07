@@ -12,6 +12,7 @@ import {
 import {BranchEntity} from '../../entities/branch-entity';
 	import {type PolymorpheusContent} from '@taiga-ui/polymorpheus';
 import {TuiRadio} from '@taiga-ui/kit';
+import {BranchService} from '../../services/branch.service';
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ import {TuiRadio} from '@taiga-ui/kit';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BranchCard {
+  private readonly branchService = inject(BranchService);
   private readonly dialogs = inject(TuiDialogService);
 
   branch = input.required<BranchEntity>();
@@ -38,5 +40,7 @@ export class BranchCard {
     this.dialogs.open(content).subscribe();
   }
 
-  protected open = false;
+  protected deleteBranch() {
+    this.branchService.deleteBranch(this.branch().id).subscribe();
+  }
 }
