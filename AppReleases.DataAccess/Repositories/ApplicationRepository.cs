@@ -9,22 +9,24 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
 {
     public async Task<IEnumerable<Application>> GetAllApplicationsAsync()
     {
-        var entities = await dbContext.Applications.ToArrayAsync();
+        var entities = await dbContext.Applications
+            .Where(x => x.DeletedAt == null)
+            .ToArrayAsync();
         return entities.Select(ApplicationFromEntity);
     }
 
     public async Task<Application> GetApplicationByIdAsync(Guid applicationId)
     {
-        var entity = await dbContext.Applications.FindAsync(applicationId);
-        if (entity == null)
-            throw new InvalidOperationException("Application not found");
+        var entity = await dbContext.Applications
+            .Where(x => x.DeletedAt == null && x.ApplicationId == applicationId)
+            .SingleAsync();
         return ApplicationFromEntity(entity);
     }
 
     public async Task<Application> GetApplicationByKeyAsync(string key)
     {
         var entity = await dbContext.Applications
-            .Where(x => x.Key == key)
+            .Where(x => x.DeletedAt == null && x.Key == key)
             .SingleAsync();
         return ApplicationFromEntity(entity);
     }

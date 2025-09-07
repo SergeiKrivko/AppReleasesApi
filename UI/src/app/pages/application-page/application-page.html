@@ -36,6 +36,9 @@
   <div class="buttons-container">
     @if (!isEditing) {
       <button tuiButton size="m" iconStart="@tui.pencil" (click)="startEditing()">Редактировать</button>
+      <button tuiButton size="m" iconStart="@tui.trash" appearance="primary-destructive" (click)="deleteApplication()">
+        Удалить приложение
+      </button>
     } @else {
       <button tuiButton size="m" iconStart="@tui.save" appearance="primary-destructive" (click)="cancelChanges()">
         Отменить

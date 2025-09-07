@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {Header} from '../../components/header/header';
 import {ApplicationService} from '../../services/application.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {first, map, NEVER, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
-import {TuiCheckbox, TuiInputNumber, TuiRadioList, TuiTextarea} from '@taiga-ui/kit';
+import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiRadioList, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
 import {AsyncPipe} from '@angular/common';
 import {duration} from 'moment';
+import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
 
 @Component({
   standalone: true,
@@ -36,6 +37,8 @@ export class ApplicationPage implements OnInit {
   private readonly applicationService = inject(ApplicationService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialogs = inject(TuiResponsiveDialogService);
+  private readonly router = inject(Router);
 
   private applicationId: string | undefined;
 
@@ -116,5 +119,30 @@ export class ApplicationPage implements OnInit {
         first(),
       ).subscribe();
     }
+  }
+
+  protected deleteApplication(): void {
+    const data: TuiConfirmData = {
+            content: 'Вы уверены, что хотите удалить приложение?',
+            yes: 'Да',
+            no: 'Нет',
+        };
+
+        this.dialogs
+            .open<boolean>(TUI_CONFIRM, {
+                label: 'Удаление приложения',
+                size: 's',
+                data,
+            })
+            .pipe(
+              switchMap(result => {
+                if (result && this.applicationId) {
+                  void this.router.navigate([".."]);
+                  return this.applicationService.deleteApplication(this.applicationId);
+                }
+                return NEVER;
+              }),
+            )
+            .subscribe();
   }
 }

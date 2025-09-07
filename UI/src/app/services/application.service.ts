@@ -100,6 +100,24 @@ export class ApplicationService {
       switchMap(() => NEVER),
     )
   }
+
+  deleteApplication(id: string): Observable<never> {
+    return this.apiClient.appsDELETE(id).pipe(
+      tap(() => {
+        const state = getState(this.applications$$);
+        if (state.selectedApplication?.id == id)
+          patchState(this.applications$$, {
+            applications: state.applications.filter(a => a.id != id),
+            selectedApplication: null,
+          });
+        else
+          patchState(this.applications$$, {
+            applications: state.applications.filter(a => a.id != id),
+          });
+      }),
+      switchMap(() => NEVER),
+    );
+  }
 }
 
 const applicationToEntity = (application: Application): ApplicationEntity => ({
