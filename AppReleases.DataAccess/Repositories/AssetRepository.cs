@@ -38,8 +38,8 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
     {
         var entity = await dbContext.Assets
             .Where(x => x.FileName == fileName && x.FileHash == fileHash && x.DeletedAt == null)
-            .SingleAsync();
-        return AssetFromEntity(entity);
+            .SingleOrDefaultAsync();
+        return entity is null ? null : AssetFromEntity(entity);
     }
 
     private static Asset AssetFromEntity(AssetEntity entity)

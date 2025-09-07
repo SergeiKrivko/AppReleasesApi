@@ -15,7 +15,7 @@ public class ReleaseService(IReleaseRepository releaseRepository, IAssetReposito
         return releaseRepository.GetLatestReleaseAsync(branchId, platform);
     }
 
-    public async Task<ReleaseDifference> GetReleaseDifferenceAsync(Guid releaseId, AssetInfo[] assets)
+    public async Task<ReleaseDifference> GetReleaseDifferenceAsync(AssetInfo[] assets)
     {
         var toUpload = new List<string>();
         foreach (var asset in assets)
