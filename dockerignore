@@ -1,0 +1,13 @@
+﻿**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+Dockerfile
+.dockerignore
+.git
+.gitignore
+README.md
+*.log
+*.tmp
+*.tar.gz
+*.zip
