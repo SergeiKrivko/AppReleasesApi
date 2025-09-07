@@ -1,9 +1,13 @@
-﻿using AppReleases.Core.Abstractions;
+﻿using System.IO.Compression;
+using AppReleases.Core.Abstractions;
 using AppReleases.Core.Models;
 
 namespace AppReleases.Application.Services;
 
-public class ReleaseService(IReleaseRepository releaseRepository, IAssetRepository assetRepository) : IReleaseService
+public class ReleaseService(
+    IReleaseRepository releaseRepository,
+    IAssetRepository assetRepository,
+    IFileRepository fileRepository) : IReleaseService
 {
     public Task<Release> GetReleaseByIdAsync(Guid releaseId)
     {
@@ -29,6 +33,39 @@ public class ReleaseService(IReleaseRepository releaseRepository, IAssetReposito
         {
             FilesToUpload = toUpload.ToArray(),
         };
+    }
+
+    public async Task UploadAssetsAsync(Guid releaseId, AssetInfo[] assets, Stream zipStream)
+    {
+        using var zip = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        foreach (var asset in assets)
+        {
+            var existing = await assetRepository.FindAssetAsync(asset.FileName, asset.FileHash);
+            if (existing == null)
+            {
+                var zipEntry = zip.GetEntry(asset.FileName);
+                if (zipEntry == null)
+                    throw new FileNotFoundException($"File '{asset.FileName}' not found");
+                existing = await UploadAssetAsync(asset, zipEntry.Open());
+            }
+
+            await assetRepository.AddAssetToReleaseAsync(existing.Id, releaseId);
+        }
+    }
+
+    private async Task<Asset> UploadAssetAsync(AssetInfo assetInfo, Stream stream)
+    {
+        var asset = new Asset
+        {
+            Id = Guid.NewGuid(),
+            FileName = assetInfo.FileName,
+            FileHash = assetInfo.FileHash,
+            CreatedAt = DateTime.UtcNow,
+            FileId = Guid.NewGuid(),
+        };
+        await assetRepository.CreateAssetAsync(asset);
+        await fileRepository.UploadFileAsync(FileRepositoryBucket.Assets, asset.FileId, stream);
+        return asset;
     }
 
     public async Task<Release> CreateReleaseAsync(Guid branchId, string platform, Version version)

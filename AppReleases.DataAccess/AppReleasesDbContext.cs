@@ -9,6 +9,7 @@ public class AppReleasesDbContext : DbContext
     public DbSet<ApplicationEntity> Applications { get; init; }
     public DbSet<ReleaseEntity> Releases { get; init; }
     public DbSet<AssetEntity> Assets { get; init; }
+    public DbSet<ReleaseAssetEntity> ReleaseAssets { get; init; }
     public DbSet<BranchEntity> Branches { get; init; }
 
     public AppReleasesDbContext(DbContextOptions<AppReleasesDbContext> options) : base(options)

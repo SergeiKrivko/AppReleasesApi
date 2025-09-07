@@ -42,6 +42,16 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
         return entity is null ? null : AssetFromEntity(entity);
     }
 
+    public async Task AddAssetToReleaseAsync(Guid assetId, Guid releaseId)
+    {
+        await dbContext.ReleaseAssets.AddAsync(new ReleaseAssetEntity
+        {
+            ReleaseId = releaseId,
+            AssetId = assetId,
+            Id = Guid.NewGuid(),
+        });
+    }
+
     private static Asset AssetFromEntity(AssetEntity entity)
     {
         return new Asset

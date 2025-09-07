@@ -37,4 +37,17 @@ public class ReleasesController(
         var result = await releaseService.CreateReleaseAsync(branch.Id, schema.Platform, schema.Version);
         return Ok(result);
     }
+
+    [HttpPut("{releaseId:guid}/assets")]
+    public async Task<ActionResult<ReleaseDifference>> UploadReleaseAssets(Guid releaseId, UploadAssetsSchema schema)
+    {
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
+
+        await releaseService.UploadAssetsAsync(releaseId, schema.Assets, schema.Zip.OpenReadStream());
+        return Ok();
+    }
 }
