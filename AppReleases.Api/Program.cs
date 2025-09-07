@@ -103,6 +103,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 app.MapControllers();
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "wwwroot";
+    spa.Options.DefaultPage = "/index.html";
+});
 
 app.Run();

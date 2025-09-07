@@ -9,8 +9,8 @@ import {provideAnimations} from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // { provide: API_BASE_URL, useValue: "." },
-    { provide: API_BASE_URL, useValue: "http://localhost:5000" },
+    { provide: API_BASE_URL, useValue: "." },
+    // { provide: API_BASE_URL, useValue: "http://localhost:5000" },
     provideAnimations(),
     provideZoneChangeDetection({eventCoalescing: true}),
     provideZoneChangeDetection({ eventCoalescing: true }),

@@ -4,7 +4,6 @@ import {TuiAppearance, TuiButton} from '@taiga-ui/core';
 import {TuiCard} from '@taiga-ui/layout';
 import {ReleaseService} from '../../services/release.service';
 import {tap} from 'rxjs';
-import {Router} from '@angular/router';
 
 @Component({
   standalone: true,
