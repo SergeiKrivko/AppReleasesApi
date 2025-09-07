@@ -9,7 +9,6 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
 {
     public bool VerifyAdmin(ClaimsPrincipal principal)
     {
-        return true;
         if (principal.Identity?.IsAuthenticated != true)
             return false;
         var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");
@@ -21,7 +20,6 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
 
     public async Task<bool> VerifyApplication(ClaimsPrincipal principal, string applicationName)
     {
-        return true;
         if (principal.Identity?.IsAuthenticated != true)
             return false;
         var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");

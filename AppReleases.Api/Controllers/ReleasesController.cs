@@ -3,6 +3,7 @@ using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;

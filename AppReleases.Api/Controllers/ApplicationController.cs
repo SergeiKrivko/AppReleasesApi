@@ -2,6 +2,7 @@
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileSystemGlobbing;
 
@@ -15,6 +16,7 @@ public class ApplicationController(
     IApplicationService applicationService) : Controller
 {
     [HttpGet]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<IEnumerable<Models.Application>>> GetAllApplications()
     {
         var applications = await applicationService.GetAllApplicationsAsync();
@@ -38,6 +40,7 @@ public class ApplicationController(
     }
 
     [HttpGet("{applicationId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<Models.Application>> GetApplicationById(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -47,6 +50,7 @@ public class ApplicationController(
     }
 
     [HttpGet("search")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<Models.Application>> SearchApplication(
         [FromQuery] string applicationKey)
     {
@@ -57,6 +61,7 @@ public class ApplicationController(
     }
 
     [HttpPost]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<Models.Application>> CreateApplication(
         [FromBody] CreateApplicationSchema schema)
     {
@@ -69,6 +74,7 @@ public class ApplicationController(
     }
 
     [HttpPut("{applicationId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult> UpdateApplication(Guid applicationId, [FromBody] UpdateApplicationSchema schema)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -80,6 +86,7 @@ public class ApplicationController(
     }
 
     [HttpDelete("{applicationId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult> DeleteApplication(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);

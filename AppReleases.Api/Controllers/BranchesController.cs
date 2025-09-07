@@ -2,6 +2,7 @@
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;
@@ -14,6 +15,7 @@ public class BranchesController(
     IApplicationService applicationService) : Controller
 {
     [HttpGet]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<IEnumerable<Branch>>> GetApplicationBranches(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -24,6 +26,7 @@ public class BranchesController(
     }
 
     [HttpGet("{branchId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<Branch>> GetApplicationBranchById(Guid applicationId, Guid branchId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
@@ -34,6 +37,7 @@ public class BranchesController(
     }
 
     [HttpPost]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult<Branch>> CreateApplicationBranch(Guid applicationId,
         [FromBody] CreateBranchSchema schema)
     {
@@ -47,6 +51,7 @@ public class BranchesController(
     }
 
     [HttpPut("{branchId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult> UpdateApplicationBranch(Guid applicationId, Guid branchId,
         [FromBody] UpdateBranchSchema schema)
     {
@@ -63,6 +68,7 @@ public class BranchesController(
     }
 
     [HttpDelete("{branchId:guid}")]
+    [Authorize(AuthenticationSchemes = "Basic")]
     public async Task<ActionResult> DeleteApplicationBranch(Guid applicationId, Guid branchId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
