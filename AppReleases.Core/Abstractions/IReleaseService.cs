@@ -6,4 +6,5 @@ public interface IReleaseService
 {
     public Task<Release> GetReleaseByIdAsync(Guid releaseId);
     public Task<Release?> GetLatestReleaseAsync(Guid branchId, string platform);
+    public Task<ReleaseDifference> GetReleaseDifferenceAsync(Guid releaseId, AssetInfo[] assets);
 }

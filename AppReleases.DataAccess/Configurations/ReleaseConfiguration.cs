@@ -19,8 +19,17 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<ReleaseEntity>
         builder.Property(x => x.DeletedAt).HasDefaultValue(null);
 
         builder.HasMany(x => x.Assets)
-            .WithOne(x => x.Release)
-            .HasForeignKey(x => x.ReleaseId)
-            .IsRequired();
+            .WithMany(x => x.Releases)
+            .UsingEntity<ReleaseAssetEntity>(
+                x => x
+                    .HasOne(e => e.Asset)
+                    .WithMany(e => e.ReleaseAssets)
+                    .HasForeignKey(e => e.AssetId),
+                x => x
+                    .HasOne(e => e.Release)
+                    .WithMany(e => e.ReleaseAssets)
+                    .HasForeignKey(e => e.ReleaseId),
+                x => x.HasKey(e => e.Id)
+            );
     }
 }

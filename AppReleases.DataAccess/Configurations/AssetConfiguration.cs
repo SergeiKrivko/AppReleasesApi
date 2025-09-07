@@ -11,7 +11,6 @@ public class AssetConfiguration : IEntityTypeConfiguration<AssetEntity>
         builder.HasKey(x => x.AssetId);
 
         builder.Property(x => x.AssetId).IsRequired();
-        builder.Property(x => x.ReleaseId).IsRequired();
         builder.Property(x => x.FileName).IsRequired();
         builder.Property(x => x.FileHash).IsRequired();
         builder.Property(x => x.FileId).IsRequired();

@@ -9,16 +9,19 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
 {
     public async Task<IEnumerable<Asset>> GetAllAssetsAsync(Guid releaseId)
     {
-        var entities = await dbContext.Assets
+        var entities = await dbContext.Releases
             .Where(x => x.ReleaseId == releaseId)
-            .ToArrayAsync();
+            .Include(x => x.Assets)
+            .Where(x => x.ReleaseId == releaseId)
+            .Select(x => x.Assets)
+            .SingleAsync();
         return entities.Select(AssetFromEntity);
     }
 
     public async Task<Asset> GetAssetByIdAsync(Guid assetId)
     {
         var entity = await dbContext.Assets
-            .Where(x => x.ReleaseId == assetId)
+            .Where(x => x.AssetId == assetId)
             .SingleAsync();
         return AssetFromEntity(entity);
     }
@@ -31,12 +34,19 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
         return asset;
     }
 
+    public async Task<Asset?> FindAssetAsync(string fileName, string fileHash)
+    {
+        var entity = await dbContext.Assets
+            .Where(x => x.FileName == fileName && x.FileHash == fileHash && x.DeletedAt == null)
+            .SingleAsync();
+        return AssetFromEntity(entity);
+    }
+
     private static Asset AssetFromEntity(AssetEntity entity)
     {
         return new Asset
         {
             Id = entity.AssetId,
-            ReleaseId = entity.ReleaseId,
             FileName = entity.FileName,
             FileHash = entity.FileHash,
             FileId = entity.FileId,
@@ -49,7 +59,6 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
         return new AssetEntity
         {
             AssetId = asset.Id,
-            ReleaseId = asset.ReleaseId,
             FileName = asset.FileName,
             FileHash = asset.FileHash,
             FileId = asset.FileId,

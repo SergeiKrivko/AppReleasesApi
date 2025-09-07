@@ -7,10 +7,19 @@ namespace AppReleases.DataAccess.Repositories;
 
 public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseRepository
 {
-    public async Task<IEnumerable<Release>> GetAllReleasesAsync(Guid branchId)
+    public async Task<IEnumerable<Release>> GetAllReleasesOfBranchAsync(Guid branchId)
     {
         var entities = await dbContext.Releases
             .Where(x => x.BranchId == branchId)
+            .ToArrayAsync();
+        return entities.Select(ReleaseFromEntity);
+    }
+
+    public async Task<IEnumerable<Release>> GetAllReleasesOfApplicationAsync(Guid applicationId)
+    {
+        var entities = await dbContext.Releases
+            .Include(x => x.Branch)
+            .Where(x => x.Branch.ApplicationId == applicationId)
             .ToArrayAsync();
         return entities.Select(ReleaseFromEntity);
     }

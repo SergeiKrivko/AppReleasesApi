@@ -70,6 +70,9 @@ namespace AppReleases.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("FileHash")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -83,12 +86,7 @@ namespace AppReleases.DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid>("ReleaseId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("AssetId");
-
-                    b.HasIndex("ReleaseId");
 
                     b.ToTable("Assets");
                 });
@@ -126,6 +124,27 @@ namespace AppReleases.DataAccess.Migrations
                     b.HasIndex("ApplicationId");
 
                     b.ToTable("Branches");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseAssetEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AssetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReleaseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("ReleaseId");
+
+                    b.ToTable("ReleaseAssetEntity");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseEntity", b =>
@@ -194,17 +213,6 @@ namespace AppReleases.DataAccess.Migrations
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("AppReleases.DataAccess.Entities.AssetEntity", b =>
-                {
-                    b.HasOne("AppReleases.DataAccess.Entities.ReleaseEntity", "Release")
-                        .WithMany("Assets")
-                        .HasForeignKey("ReleaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Release");
-                });
-
             modelBuilder.Entity("AppReleases.DataAccess.Entities.BranchEntity", b =>
                 {
                     b.HasOne("AppReleases.DataAccess.Entities.ApplicationEntity", "Application")
@@ -214,6 +222,25 @@ namespace AppReleases.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseAssetEntity", b =>
+                {
+                    b.HasOne("AppReleases.DataAccess.Entities.AssetEntity", "Asset")
+                        .WithMany("ReleaseAssets")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppReleases.DataAccess.Entities.ReleaseEntity", "Release")
+                        .WithMany("ReleaseAssets")
+                        .HasForeignKey("ReleaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("Release");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseEntity", b =>
@@ -232,6 +259,11 @@ namespace AppReleases.DataAccess.Migrations
                     b.Navigation("Branches");
                 });
 
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.AssetEntity", b =>
+                {
+                    b.Navigation("ReleaseAssets");
+                });
+
             modelBuilder.Entity("AppReleases.DataAccess.Entities.BranchEntity", b =>
                 {
                     b.Navigation("Releases");
@@ -239,7 +271,7 @@ namespace AppReleases.DataAccess.Migrations
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseEntity", b =>
                 {
-                    b.Navigation("Assets");
+                    b.Navigation("ReleaseAssets");
                 });
 #pragma warning restore 612, 618
         }
