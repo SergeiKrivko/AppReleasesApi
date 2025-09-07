@@ -28,7 +28,7 @@ RUN dotnet restore AppReleases.Api
 COPY . .
 
 # Copy Angular build output to wwwroot
-COPY --from=angular-build /src/dist/ ./AppReleases.Api/wwwroot/
+COPY --from=angular-build /src/dist/UI/browser ./AppReleases.Api/wwwroot/
 
 # Build .NET application
 RUN dotnet publish AppReleases.Api/ -c Release -o /app/publish
