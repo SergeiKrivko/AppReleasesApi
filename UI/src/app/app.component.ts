@@ -1,11 +1,12 @@
-import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Router, RouterOutlet} from '@angular/router';
 import {TuiRoot} from '@taiga-ui/core';
 import {ApplicationService} from './services/application.service';
-import {merge, Observable} from 'rxjs';
+import {merge, NEVER, Observable, switchMap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {BranchService} from './services/branch.service';
 import {ReleaseService} from './services/release.service';
+import {AuthService} from './services/auth.service';
 
 @Component({
   standalone: true,
@@ -18,9 +19,9 @@ export class App implements OnInit {
   private readonly applicationService = inject(ApplicationService);
   private readonly branchService = inject(BranchService);
   private readonly releaseService = inject(ReleaseService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
-
-  protected readonly title = signal('Avalux Releases');
+  private readonly router = inject(Router);
 
   ngOnInit() {
     this.mainObservables().pipe(
@@ -30,9 +31,16 @@ export class App implements OnInit {
 
   private mainObservables(): Observable<undefined> {
     return merge(
-      this.applicationService.loadApplications(),
       this.branchService.loadBranchesOnApplicationChange$$,
       this.releaseService.loadReleasesOnApplicationChange$$,
+      this.authService.isAuthorized$.pipe(
+        switchMap(isAuthorized => {
+          if (isAuthorized)
+            return this.applicationService.loadApplications();
+          void this.router.navigateByUrl('auth');
+          return NEVER;
+        }),
+      )
     );
   }
 }

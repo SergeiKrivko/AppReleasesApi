@@ -1,10 +1,16 @@
-import {Injectable} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
+import {AuthService} from './auth.service';
 
 @Injectable()
 export class ApiClientBase {
+  private readonly authService = inject(AuthService);
 
   transformOptions(options: any): Promise<any> {
-    options.headers = options.headers.set("Authorization", "Basic YWRtaW46YWRtaW4=");
+    const authorization = this.authService.getAuthorizationHeader();
+    if (authorization) {
+      options.headers = options.headers.set("Authorization", authorization);
+    }
+    console.log(options.headers);
     return Promise.resolve(options);
   }
 }
