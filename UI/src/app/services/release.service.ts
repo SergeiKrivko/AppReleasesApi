@@ -59,6 +59,12 @@ export class ReleaseService {
       map(apps => apps.find(app => app.id == id)),
     );
   }
+
+  getDownloadReleaseAssetsUrl(releaseId: string): Observable<string | undefined> {
+    return this.apiClient.assetsGET(releaseId).pipe(
+      map(resp => resp.url)
+    );
+  }
 }
 
 const releaseToEntity = (release: Release): ReleaseEntity => ({
