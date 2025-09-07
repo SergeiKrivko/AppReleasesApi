@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using AppReleases.Core.Json;
+using AppReleases.Models.Json;
 
 namespace AppReleases.Api.Schemas;
 

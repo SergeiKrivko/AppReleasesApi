@@ -13,7 +13,7 @@ public class ReleaseConfiguration : IEntityTypeConfiguration<ReleaseEntity>
         builder.Property(x => x.ReleaseId).IsRequired();
         builder.Property(x => x.BranchId).IsRequired();
         builder.Property(x => x.Version).IsRequired();
-        builder.Property(x => x.Platform).IsRequired();
+        builder.Property(x => x.Platform).HasDefaultValue(null);
         builder.Property(x => x.ReleaseNotes);
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.DeletedAt).HasDefaultValue(null);

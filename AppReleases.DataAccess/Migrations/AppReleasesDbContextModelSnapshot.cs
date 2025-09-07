@@ -144,7 +144,7 @@ namespace AppReleases.DataAccess.Migrations
 
                     b.HasIndex("ReleaseId");
 
-                    b.ToTable("ReleaseAssetEntity");
+                    b.ToTable("ReleaseAssets");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseEntity", b =>
@@ -163,7 +163,6 @@ namespace AppReleases.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Platform")
-                        .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 

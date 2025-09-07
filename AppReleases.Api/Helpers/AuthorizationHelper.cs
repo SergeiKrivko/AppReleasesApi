@@ -16,7 +16,7 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
         return tokenIdClaim is null && principal.Identity?.Name == basicAuthService.Login;
     }
 
-    public Task<bool> VerifyApplication(ClaimsPrincipal principal, Core.Models.Application application) =>
+    public Task<bool> VerifyApplication(ClaimsPrincipal principal, Models.Application application) =>
         VerifyApplication(principal, application.Name);
 
     public async Task<bool> VerifyApplication(ClaimsPrincipal principal, string applicationName)

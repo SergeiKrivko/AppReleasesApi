@@ -1,4 +1,4 @@
-﻿namespace AppReleases.Core.Models;
+﻿namespace AppReleases.Models;
 
 public class ReleaseDifference
 {

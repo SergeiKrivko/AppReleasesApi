@@ -1,4 +1,4 @@
-﻿using AppReleases.Core.Models;
+﻿using AppReleases.Models;
 
 namespace AppReleases.DataAccess.Entities;
 

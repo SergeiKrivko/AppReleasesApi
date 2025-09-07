@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
+using System.Text.Json;
 using AppReleases.Core.Abstractions;
-using AppReleases.Core.Models;
+using AppReleases.Models;
 
 namespace AppReleases.Application.Services;
 
@@ -46,7 +47,10 @@ public class ReleaseService(
                 var zipEntry = zip.GetEntry(asset.FileName);
                 if (zipEntry == null)
                     throw new FileNotFoundException($"File '{asset.FileName}' not found");
-                existing = await UploadAssetAsync(asset, zipEntry.Open());
+                var memoryStream = new MemoryStream();
+                await zipEntry.Open().CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                existing = await UploadAssetAsync(asset, memoryStream);
             }
 
             await assetRepository.AddAssetToReleaseAsync(existing.Id, releaseId);
@@ -68,7 +72,7 @@ public class ReleaseService(
         return asset;
     }
 
-    public async Task<Release> CreateReleaseAsync(Guid branchId, string platform, Version version)
+    public async Task<Release> CreateReleaseAsync(Guid branchId, string? platform, Version version)
     {
         var release = new Release
         {

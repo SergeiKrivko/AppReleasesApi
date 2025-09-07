@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AppReleases.Core.Json;
+namespace AppReleases.Models.Json;
 
 public class TimeSpanConverter : JsonConverter<TimeSpan>
 {

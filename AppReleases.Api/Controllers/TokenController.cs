@@ -1,7 +1,7 @@
 ﻿using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
-using AppReleases.Core.Models;
+using AppReleases.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

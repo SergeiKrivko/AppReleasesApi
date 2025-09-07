@@ -1,4 +1,5 @@
-﻿using Amazon.Runtime;
+﻿using System.Text.Json;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using AppReleases.Core.Abstractions;

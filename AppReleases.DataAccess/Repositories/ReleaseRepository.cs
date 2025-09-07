@@ -1,5 +1,5 @@
 ﻿using AppReleases.Core.Abstractions;
-using AppReleases.Core.Models;
+using AppReleases.Models;
 using AppReleases.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 

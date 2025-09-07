@@ -1,5 +1,5 @@
 ﻿using AppReleases.Core.Abstractions;
-using AppReleases.Core.Models;
+using AppReleases.Models;
 using AppReleases.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +50,7 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
             AssetId = assetId,
             Id = Guid.NewGuid(),
         });
+        await dbContext.SaveChangesAsync();
     }
 
     private static Asset AssetFromEntity(AssetEntity entity)

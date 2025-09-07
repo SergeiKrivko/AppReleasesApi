@@ -25,6 +25,7 @@
       <ProjectReference Include="..\AppReleases.Application\AppReleases.Application.csproj" />
       <ProjectReference Include="..\AppReleases.Core\AppReleases.Core.csproj" />
       <ProjectReference Include="..\AppReleases.DataAccess\AppReleases.DataAccess.csproj" />
+      <ProjectReference Include="..\AppReleases.S3\AppReleases.S3.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace AppReleases.Api.Schemas;
+﻿namespace AppReleases.Cli.Schemas;
 
 public class CreateReleaseSchema
 {

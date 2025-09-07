@@ -1,7 +1,7 @@
 ﻿using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
-using AppReleases.Core.Models;
+using AppReleases.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileSystemGlobbing;
 
@@ -15,7 +15,7 @@ public class ApplicationController(
     IApplicationService applicationService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppReleases.Core.Models.Application>>> GetAllApplications()
+    public async Task<ActionResult<IEnumerable<Models.Application>>> GetAllApplications()
     {
         var applications = await applicationService.GetAllApplicationsAsync();
         if (authorizationHelper.VerifyAdmin(User))
@@ -38,7 +38,7 @@ public class ApplicationController(
     }
 
     [HttpGet("{applicationId:guid}")]
-    public async Task<ActionResult<AppReleases.Core.Models.Application>> GetApplicationById(Guid applicationId)
+    public async Task<ActionResult<Models.Application>> GetApplicationById(Guid applicationId)
     {
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
         if (!await authorizationHelper.VerifyApplication(User, application))
@@ -47,7 +47,7 @@ public class ApplicationController(
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<AppReleases.Core.Models.Application>> SearchApplication(
+    public async Task<ActionResult<Models.Application>> SearchApplication(
         [FromQuery] string applicationKey)
     {
         if (!await authorizationHelper.VerifyApplication(User, applicationKey))
@@ -57,7 +57,7 @@ public class ApplicationController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<Core.Models.Application>> CreateApplication(
+    public async Task<ActionResult<Models.Application>> CreateApplication(
         [FromBody] CreateApplicationSchema schema)
     {
         if (!await authorizationHelper.VerifyApplication(User, schema.Key))
