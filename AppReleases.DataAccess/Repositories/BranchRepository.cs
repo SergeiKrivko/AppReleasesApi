@@ -72,6 +72,7 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
             Duration = entity.Duration,
+            UseDefaultDuration = entity.UseDefaultDuration,
         };
     }
 
@@ -85,6 +86,7 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             CreatedAt = branch.CreatedAt,
             DeletedAt = branch.DeletedAt,
             Duration = branch.Duration,
+            UseDefaultDuration = branch.UseDefaultDuration,
         };
     }
 }

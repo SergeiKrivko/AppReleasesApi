@@ -70,7 +70,6 @@ export class ApplicationService {
     mainBranch: string | undefined,
     defaultDuration: Duration | null | undefined
   ): Observable<undefined> {
-    console.log("updating application")
     return this.applicationById(id).pipe(
       first(),
       switchMap(old => this.apiClient.appsPUT(

@@ -70,6 +70,7 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Description = entity.Description,
             Key = entity.Key,
             MainBranch = entity.MainBranch,
+            DefaultDuration = entity.DefaultDuration,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
         };
@@ -84,6 +85,7 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Description = application.Description,
             Key = application.Key,
             MainBranch = application.MainBranch,
+            DefaultDuration = application.DefaultDuration,
             CreatedAt = application.CreatedAt,
             DeletedAt = application.DeletedAt,
         };
