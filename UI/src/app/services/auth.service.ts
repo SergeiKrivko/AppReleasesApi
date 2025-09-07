@@ -38,4 +38,10 @@ export class AuthService {
     }
     return false;
   }
+
+  logOut(): void {
+    patchState(this.credentials$$, {login: null, password: null});
+    localStorage.removeItem('avalux-releases-login');
+    localStorage.removeItem('avalux-releases-password');
+  }
 }

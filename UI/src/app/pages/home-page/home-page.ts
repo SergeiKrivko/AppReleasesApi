@@ -5,6 +5,7 @@ import {AsyncPipe} from '@angular/common';
 import {ApplicationCard} from '../../components/application-card/application-card';
 import {TuiButton, tuiDialog} from '@taiga-ui/core';
 import {NewApplicationDialog} from '../../components/new-application-dialog/new-application-dialog';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   standalone: true,
@@ -21,6 +22,7 @@ import {NewApplicationDialog} from '../../components/new-application-dialog/new-
 })
 export class HomePage {
   private readonly applicationService = inject(ApplicationService);
+  private readonly authService = inject(AuthService);
 
   protected readonly applications$ = this.applicationService.applications$;
 
@@ -31,5 +33,9 @@ export class HomePage {
 
   protected newApp(): void {
     this.newAppDialog(undefined).subscribe();
+  }
+
+  protected logOut(): void {
+    this.authService.logOut();
   }
 }
