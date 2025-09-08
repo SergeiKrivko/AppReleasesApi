@@ -27,9 +27,9 @@ export class Header {
   protected readonly selectedApplication$ = this.applicationService.selectedApplication$;
 
   protected readonly options: IsActiveMatchOptions = {
-        matrixParams: 'exact',
-        queryParams: 'exact',
-        paths: 'exact',
+        matrixParams: 'ignored',
+        queryParams: 'ignored',
+        paths: 'subset',
         fragment: 'exact',
     };
 }

@@ -1,11 +1,6 @@
 .container {
-  height: 100vh;
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-  }
   display: flex;
   flex-direction: column;
-  padding: 0 5rem;
   gap: 2rem;
 
   .tools-container {
