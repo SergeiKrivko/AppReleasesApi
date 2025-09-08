@@ -9,12 +9,18 @@
       <input tuiTextfield formControlName="mask"/>
     </tui-textfield>
 
+    <label tuiLabel>Действителен до:</label>
+    <tui-textfield>
+      <input tuiInputDate formControlName="expiresAt"/>
+      <tui-calendar *tuiTextfieldDropdown/>
+    </tui-textfield>
+
     <div class="bottom-container">
       <button tuiButton appearance="primary" type="submit">Создать</button>
     </div>
   </form>
 } @else if (status == Status.InProgress) {
-    <tui-loader size="xl"></tui-loader>
+  <tui-loader size="xl"></tui-loader>
 } @else {
   <div class="success-container">
     <p>

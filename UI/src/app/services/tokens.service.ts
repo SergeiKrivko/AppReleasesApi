@@ -5,7 +5,7 @@ import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {ApiClient, CreateTokenSchema, Token} from './api-client';
-import moment from 'moment';
+import {Moment} from 'moment';
 
 interface TokensStore {
   tokens: TokenEntity[];
@@ -35,11 +35,11 @@ export class TokensService {
     )
   }
 
-  createToken(name: string, mask: string): Observable<string | undefined> {
+  createToken(name: string, mask: string, expiresAt: Moment): Observable<string | undefined> {
     return this.apiClient.tokensPOST(CreateTokenSchema.fromJS({
       name,
       mask,
-      expiresAt: moment().add(1, 'year'),
+      expiresAt,
     })).pipe(
       map(resp => resp.token),
     );
