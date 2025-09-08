@@ -13,7 +13,33 @@
   <tui-accordion-item class="assets-accordion">
     Ассеты
     <ng-template tuiAccordionItemContent>
-      Здесь будет список ассетов
+      <div class="accordion-container">
+        <button tuiButton iconStart="@tui.download" size="m" (click)="downloadReleaseAssets()">Загрузить</button>
+        <div>
+          @for (item of releaseAssets$ | async; track item.name) {
+            <tui-tree
+              [childrenHandler]="handler"
+              [content]="content"
+              [tuiTreeController]="true"
+              [value]="item"
+            />
+          }
+        </div>
+      </div>
+
+      <ng-template
+        #content
+        let-item
+      >
+        <div class="file-container">
+          @if (item.children.length > 0) {
+            <tui-icon icon="@tui.folder"></tui-icon>
+          } @else {
+            <tui-icon icon="@tui.file"></tui-icon>
+          }
+          {{ item.name }}
+        </div>
+      </ng-template>
     </ng-template>
   </tui-accordion-item>
 </div>

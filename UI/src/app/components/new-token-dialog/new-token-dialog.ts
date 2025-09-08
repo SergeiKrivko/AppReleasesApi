@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject} from '@angular/core';
 import {TuiButton, TuiLoader, TuiTextfield} from '@taiga-ui/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {TuiButtonLoading, TuiCopyComponent, TuiInputDate} from '@taiga-ui/kit';
+import {TuiCopyComponent, TuiInputDate} from '@taiga-ui/kit';
 import {TokensService} from '../../services/tokens.service';
 import {first, tap} from 'rxjs';
 import {TuiDay} from '@taiga-ui/cdk';
@@ -19,7 +19,6 @@ enum Status {
   imports: [
     TuiTextfield,
     ReactiveFormsModule,
-    TuiButtonLoading,
     TuiButton,
     TuiLoader,
     TuiCopyComponent,

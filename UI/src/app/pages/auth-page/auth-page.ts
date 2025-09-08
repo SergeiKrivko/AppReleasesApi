@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {Logo} from '../../components/logo/logo';
 import {TuiAppearance, TuiButton, TuiLabel, TuiTextfield} from '@taiga-ui/core';
 import {TuiCard} from '@taiga-ui/layout';
-import {TuiPassword} from '@taiga-ui/kit';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
@@ -11,12 +9,10 @@ import {Router} from '@angular/router';
   standalone: true,
   selector: 'app-auth-page',
   imports: [
-    Logo,
     TuiAppearance,
     TuiCard,
     TuiLabel,
     TuiTextfield,
-    TuiPassword,
     TuiButton,
     ReactiveFormsModule
   ],

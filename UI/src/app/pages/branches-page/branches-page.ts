@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {Header} from '../../components/header/header';
 import {BranchService} from '../../services/branch.service';
 import {AsyncPipe} from '@angular/common';
 import {BranchCard} from '../../components/branch-card/branch-card';
@@ -10,7 +9,6 @@ import {NewBranchDialog} from '../../components/new-branch-dialog/new-branch-dia
   standalone: true,
   selector: 'app-branches-page',
   imports: [
-    Header,
     AsyncPipe,
     BranchCard,
     TuiButton

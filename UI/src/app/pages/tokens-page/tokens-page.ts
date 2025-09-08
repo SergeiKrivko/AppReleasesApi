@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {TokensService} from '../../services/tokens.service';
 import {Logo} from '../../components/logo/logo';
-import {ApplicationCard} from '../../components/application-card/application-card';
 import {AsyncPipe} from '@angular/common';
 import {TuiButton, tuiDialog, TuiDialogService} from '@taiga-ui/core';
 import {TuiCardLarge} from '@taiga-ui/layout';
@@ -16,7 +15,6 @@ import {DateIsFuturePipe} from '../../pipes/date-is-future-pipe';
   selector: 'app-tokens-page',
   imports: [
     Logo,
-    ApplicationCard,
     AsyncPipe,
     TuiButton,
     TuiCardLarge,

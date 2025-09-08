@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {Header} from '../../components/header/header';
 import {ApplicationService} from '../../services/application.service';
 import {Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {first, map, NEVER, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
-import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiRadioList, TuiTextarea} from '@taiga-ui/kit';
+import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
 import {AsyncPipe} from '@angular/common';
 import {duration} from 'moment';
@@ -16,7 +15,6 @@ import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
   standalone: true,
   selector: 'app-application-page',
   imports: [
-    Header,
     FormsModule,
     ReactiveFormsModule,
     TuiTextfieldComponent,
@@ -24,7 +22,6 @@ import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
     TuiTextarea,
     TuiLabel,
     TuiButton,
-    TuiRadioList,
     TuiCheckbox,
     TuiInputNumber,
     AsyncPipe

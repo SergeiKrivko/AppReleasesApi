@@ -65,6 +65,12 @@ export class ReleaseService {
       map(resp => resp.url)
     );
   }
+
+  listReleaseAssets(releaseId: string): Observable<string[]> {
+    return this.apiClient.assetsAll(releaseId).pipe(
+      map(resp => resp.map(a => a.fileName ?? "???"))
+    );
+  }
 }
 
 const releaseToEntity = (release: Release): ReleaseEntity => ({

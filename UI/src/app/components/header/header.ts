@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Logo} from '../logo/logo';
-import {TuiButton} from '@taiga-ui/core';
 import {IsActiveMatchOptions, RouterLink, RouterLinkActive} from '@angular/router';
 import {TuiSegmented} from '@taiga-ui/kit';
 import {ApplicationService} from '../../services/application.service';
@@ -11,7 +10,6 @@ import {AsyncPipe} from '@angular/common';
   selector: 'app-header',
   imports: [
     Logo,
-    TuiButton,
     RouterLink,
     AsyncPipe,
     TuiSegmented,
