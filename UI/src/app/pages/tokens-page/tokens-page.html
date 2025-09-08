@@ -12,7 +12,13 @@
           <h4>{{ token.name }}</h4>
           <span>{{ token.mask }}</span>
           <span>{{ token.expiresAt }}</span>
-          <button tuiIconButton size="m" appearance="flat-destructive" iconStart="@tui.trash"></button>
+          <button
+            tuiIconButton
+            size="m"
+            appearance="flat-destructive"
+            iconStart="@tui.trash"
+            (click)="deleteToken(token.id)"
+          ></button>
         </div>
       </div>
     }

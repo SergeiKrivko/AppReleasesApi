@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {TokenEntity} from '../entities/token-entity';
 import {LoadingStatus} from '../entities/loading-status';
-import {patchState, signalState} from '@ngrx/signals';
+import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {ApiClient, CreateTokenSchema, Token} from './api-client';
@@ -42,6 +42,17 @@ export class TokensService {
       expiresAt: moment().add(1, 'year'),
     })).pipe(
       map(resp => resp.token),
+    );
+  }
+
+  revokeToken(id: string) {
+    return this.apiClient.tokensDELETE(id).pipe(
+      tap(() => {
+        const tokens = getState(this.tokens$$).tokens;
+        patchState(this.tokens$$, {
+          tokens: tokens.filter(a => a.id != id)
+        });
+      }),
     );
   }
 }
