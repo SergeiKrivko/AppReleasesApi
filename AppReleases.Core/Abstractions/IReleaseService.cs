@@ -11,4 +11,6 @@ public interface IReleaseService
     public Task<Release> CreateReleaseAsync(Guid branchId, string? platform, Version version);
     public Task UploadAssetsAsync(Guid releaseId, AssetInfo[] assets, Stream zip);
     public Task<string> PackAssetsAsync(Guid releaseId);
+    public Task<AssetsPack> PackAssetsAsync(Guid releaseId, AssetInfo[] existingAssets);
+    public Task<IEnumerable<AssetInfo>> ListAssetsAsync(Guid releaseId);
 }

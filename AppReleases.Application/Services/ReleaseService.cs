@@ -96,6 +96,11 @@ public class ReleaseService(
     public async Task<string> PackAssetsAsync(Guid releaseId)
     {
         var assets = await assetRepository.GetAllAssetsAsync(releaseId);
+        return await PackAssetsZipAsync(assets);
+    }
+
+    private async Task<string> PackAssetsZipAsync(IEnumerable<Asset> assets)
+    {
         var tempFileId = Guid.NewGuid();
 
         using (var zipStream = new MemoryStream())
@@ -117,5 +122,28 @@ public class ReleaseService(
 
         return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Temp, tempFileId, "zip",
             AssetsZipLifetime);
+    }
+
+    public async Task<IEnumerable<AssetInfo>> ListAssetsAsync(Guid releaseId)
+    {
+        var assets = await assetRepository.GetAllAssetsAsync(releaseId);
+        return assets.Select(a => new AssetInfo { FileName = a.FileName, FileHash = a.FileHash });
+    }
+
+    public async Task<AssetsPack> PackAssetsAsync(Guid releaseId, AssetInfo[] existingAssets)
+    {
+        var assets = await assetRepository.GetAllAssetsAsync(releaseId);
+        var deletedAssets = existingAssets
+            .Where(a => assets.FirstOrDefault(e => e.FileName == a.FileName && e.FileHash == a.FileHash) == null);
+        var modifiedAssets = assets
+            .Where(a => existingAssets.FirstOrDefault(e => e.FileName == a.FileName && e.FileHash == a.FileHash) == null)
+            .ToList();
+        var zipUrl = await PackAssetsZipAsync(modifiedAssets);
+        return new AssetsPack
+        {
+            Url = zipUrl,
+            DeletedAssets = deletedAssets.Select(a => a.FileName).ToArray(),
+            ModifiedAssets = modifiedAssets.Select(a => a.FileName).ToArray(),
+        };
     }
 }

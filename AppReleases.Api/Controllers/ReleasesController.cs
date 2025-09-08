@@ -3,7 +3,6 @@ using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;
@@ -52,6 +51,13 @@ public class ReleasesController(
     }
 
     [HttpGet("{releaseId:guid}/assets")]
+    public async Task<ActionResult<AssetInfo[]>> ListReleaseAssets(Guid releaseId)
+    {
+        var assets = await releaseService.ListAssetsAsync(releaseId);
+        return Ok(assets);
+    }
+
+    [HttpGet("{releaseId:guid}/assets/download")]
     public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssets(Guid releaseId)
     {
         var url = await releaseService.PackAssetsAsync(releaseId);
@@ -59,5 +65,13 @@ public class ReleasesController(
         {
             Url = url
         });
+    }
+
+    [HttpPost("{releaseId:guid}/assets/download")]
+    public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssetsDifference(Guid releaseId,
+        [FromBody] AssetInfo[] assets)
+    {
+        var result = await releaseService.PackAssetsAsync(releaseId, assets);
+        return Ok(result);
     }
 }
