@@ -1,7 +1,12 @@
 <div class="container">
   <div class="header-container">
     <app-logo></app-logo>
-    <button tuiButton iconStart="@tui.user" (click)="logOut()" size="m" appearance="outline-destructive">Выйти</button>
+    <div class="header-buttons-container">
+      <button tuiButton routerLink="/tokens" size="m" appearance="outline">Токены</button>
+      <button tuiButton iconStart="@tui.user" (click)="logOut()" size="m" appearance="outline-destructive">
+        Выйти
+      </button>
+    </div>
   </div>
   <div class="tools-container">
     <button tuiButton iconStart="@tui.plus" size="m" (click)="newApp()">Создать</button>

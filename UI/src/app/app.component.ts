@@ -7,6 +7,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {BranchService} from './services/branch.service';
 import {ReleaseService} from './services/release.service';
 import {AuthService} from './services/auth.service';
+import {TokensService} from './services/tokens.service';
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import {AuthService} from './services/auth.service';
 })
 export class App implements OnInit {
   private readonly applicationService = inject(ApplicationService);
+  private readonly tokensService = inject(TokensService);
   private readonly branchService = inject(BranchService);
   private readonly releaseService = inject(ReleaseService);
   private readonly authService = inject(AuthService);
@@ -36,7 +38,10 @@ export class App implements OnInit {
       this.authService.isAuthorized$.pipe(
         switchMap(isAuthorized => {
           if (isAuthorized)
-            return this.applicationService.loadApplications();
+            return merge(
+              this.applicationService.loadApplications(),
+              this.tokensService.loadTokens(),
+            );
           void this.router.navigateByUrl('auth');
           return NEVER;
         }),

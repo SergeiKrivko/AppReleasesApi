@@ -6,6 +6,7 @@ import {ApplicationCard} from '../../components/application-card/application-car
 import {TuiButton, tuiDialog} from '@taiga-ui/core';
 import {NewApplicationDialog} from '../../components/new-application-dialog/new-application-dialog';
 import {AuthService} from '../../services/auth.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   standalone: true,
@@ -14,7 +15,8 @@ import {AuthService} from '../../services/auth.service';
     Logo,
     AsyncPipe,
     ApplicationCard,
-    TuiButton
+    TuiButton,
+    RouterLink
   ],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',

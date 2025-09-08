@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="header-container">
+    <app-logo></app-logo>
+  </div>
+  <div class="tools-container">
+    <button tuiButton iconStart="@tui.plus" size="m" (click)="newToken()">Создать</button>
+  </div>
+  <div class="cards-container">
+    @for (token of tokens$ | async; track token.id) {
+      <div tuiCardLarge class="token-container">
+        <h4>{{ token.name }}</h4>
+        <span>{{ token.mask }}</span>
+        <span>{{ token.expiresAt }}</span>
+        <button tuiButton size="m" appearance="flat-destructive" iconStart="@tui.trash"></button>
+      </div>
+    }
+  </div>
+</div>

@@ -61,7 +61,7 @@ export class ReleaseService {
   }
 
   getDownloadReleaseAssetsUrl(releaseId: string): Observable<string | undefined> {
-    return this.apiClient.assetsGET(releaseId).pipe(
+    return this.apiClient.downloadGET(releaseId).pipe(
       map(resp => resp.url)
     );
   }

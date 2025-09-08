@@ -11,7 +11,7 @@
   "codeGenerators": {
     "openApiToTypeScriptClient": {
       "className": "ApiClient",
-      "moduleName": "ApiClient",
+      "moduleName": null,
       "namespace": "",
       "typeScriptVersion": 5.9,
       "template": "Angular",
