@@ -3,8 +3,9 @@ import {TokensService} from '../../services/tokens.service';
 import {Logo} from '../../components/logo/logo';
 import {ApplicationCard} from '../../components/application-card/application-card';
 import {AsyncPipe} from '@angular/common';
-import {TuiButton} from '@taiga-ui/core';
+import {TuiButton, tuiDialog} from '@taiga-ui/core';
 import {TuiCardLarge} from '@taiga-ui/layout';
+import {NewTokenDialog} from '../../components/new-token-dialog/new-token-dialog';
 
 @Component({
   standalone: true,
@@ -25,7 +26,12 @@ export class TokensPage {
 
   protected readonly tokens$ = this.tokensService.tokens$;
 
-  protected newToken() {
+  private readonly newTokenDialog = tuiDialog(NewTokenDialog, {
+    dismissible: false,
+    label: 'Новый токен',
+  });
 
+  protected newToken(): void {
+    this.newTokenDialog(undefined).subscribe();
   }
 }

@@ -22,13 +22,16 @@ public class TokenController(AuthorizationHelper authorizationHelper, ITokenServ
 
     [HttpPost]
     [Authorize(AuthenticationSchemes = "Basic")]
-    public async Task<ActionResult<string>> CreateHandler(CreateTokenSchema token)
+    public async Task<ActionResult<TokenResponse>> CreateHandler(CreateTokenSchema token)
     {
         if (!authorizationHelper.VerifyAdmin(User))
             return Unauthorized();
-        var res = await tokenService.CreateTokenAsync(token.Name, token.Name,
+        var res = await tokenService.CreateTokenAsync(token.Name, token.Mask,
             token.ExpiresAt ?? DateTime.Now.AddMonths(1));
-        return Ok(res);
+        return Ok(new TokenResponse
+        {
+            Token = res,
+        });
     }
 
     [HttpDelete("{tokenId:guid}")]

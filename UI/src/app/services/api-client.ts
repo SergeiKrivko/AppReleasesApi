@@ -1213,7 +1213,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return OK
      */
-    tokensPOST(body: CreateTokenSchema | undefined): Observable<string> {
+    tokensPOST(body: CreateTokenSchema | undefined): Observable<TokenResponse> {
         let url_ = this.baseUrl + "/api/v1/tokens";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1238,14 +1238,14 @@ export class ApiClient extends ApiClientBase {
                 try {
                     return this.processTokensPOST(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
+                    return _observableThrow(e) as any as Observable<TokenResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string>;
+                return _observableThrow(response_) as any as Observable<TokenResponse>;
         }));
     }
 
-    protected processTokensPOST(response: HttpResponseBase): Observable<string> {
+    protected processTokensPOST(response: HttpResponseBase): Observable<TokenResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1256,8 +1256,7 @@ export class ApiClient extends ApiClientBase {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-
+            result200 = TokenResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1863,6 +1862,42 @@ export interface IToken {
     expiresAt: moment.Moment;
     revokedAt?: moment.Moment | undefined;
     mask: string | undefined;
+}
+
+export class TokenResponse implements ITokenResponse {
+    token!: string | undefined;
+
+    constructor(data?: ITokenResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.token = _data["token"];
+        }
+    }
+
+    static fromJS(data: any): TokenResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new TokenResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["token"] = this.token;
+        return data;
+    }
+}
+
+export interface ITokenResponse {
+    token: string | undefined;
 }
 
 export class UpdateApplicationSchema implements IUpdateApplicationSchema {

@@ -7,11 +7,13 @@
   </div>
   <div class="cards-container">
     @for (token of tokens$ | async; track token.id) {
-      <div tuiCardLarge class="token-container">
-        <h4>{{ token.name }}</h4>
-        <span>{{ token.mask }}</span>
-        <span>{{ token.expiresAt }}</span>
-        <button tuiButton size="m" appearance="flat-destructive" iconStart="@tui.trash"></button>
+      <div tuiCardLarge>
+        <div class="token-container">
+          <h4>{{ token.name }}</h4>
+          <span>{{ token.mask }}</span>
+          <span>{{ token.expiresAt }}</span>
+          <button tuiIconButton size="m" appearance="flat-destructive" iconStart="@tui.trash"></button>
+        </div>
       </div>
     }
   </div>

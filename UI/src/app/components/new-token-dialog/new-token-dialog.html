@@ -1,0 +1,26 @@
+@if (status == Status.NotStarted) {
+  <form class="container" [formGroup]="control" (ngSubmit)="submit()">
+    <label tuiLabel>Название:</label>
+    <tui-textfield>
+      <input tuiTextfield formControlName="name"/>
+    </tui-textfield>
+    <label tuiLabel>Маска:</label>
+    <tui-textfield>
+      <input tuiTextfield formControlName="mask"/>
+    </tui-textfield>
+
+    <div class="bottom-container">
+      <button tuiButton appearance="primary" type="submit">Создать</button>
+    </div>
+  </form>
+} @else if (status == Status.InProgress) {
+    <tui-loader size="xl"></tui-loader>
+} @else {
+  <div class="success-container">
+    <p>
+      Токен успешно создан.
+      Сохраните его в надежном месте, просмотреть его будет невозможно после закрытия этого окна
+    </p>
+    <tui-copy>{{ token }}</tui-copy>
+  </div>
+}

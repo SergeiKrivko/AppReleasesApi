@@ -3,8 +3,9 @@ import {TokenEntity} from '../entities/token-entity';
 import {LoadingStatus} from '../entities/loading-status';
 import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {EMPTY, Observable, switchMap, tap} from 'rxjs';
-import {ApiClient, Token} from './api-client';
+import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
+import {ApiClient, CreateTokenSchema, Token} from './api-client';
+import moment from 'moment';
 
 interface TokensStore {
   tokens: TokenEntity[];
@@ -32,6 +33,16 @@ export class TokensService {
       }),
       switchMap(() => EMPTY),
     )
+  }
+
+  createToken(name: string, mask: string): Observable<string | undefined> {
+    return this.apiClient.tokensPOST(CreateTokenSchema.fromJS({
+      name,
+      mask,
+      expiresAt: moment().add(1, 'year'),
+    })).pipe(
+      map(resp => resp.token),
+    );
   }
 }
 

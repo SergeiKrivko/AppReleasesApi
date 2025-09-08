@@ -23,7 +23,7 @@
     gap: 1rem;
   }
 
-  .card-container {
+  .cards-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -31,8 +31,9 @@
 
     .token-container {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 0.2fr;
+      grid-template-columns: 2fr 1fr 1fr 0.2fr auto;
       grid-column-gap: 1rem;
+      align-items: center;
     }
   }
 }

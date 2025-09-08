@@ -10,7 +10,6 @@ export class ApiClientBase {
     if (authorization) {
       options.headers = options.headers.set("Authorization", authorization);
     }
-    console.log(options.headers);
     return Promise.resolve(options);
   }
 }
