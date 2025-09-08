@@ -39,7 +39,7 @@ public class ReleasesController(
     }
 
     [HttpPut("{releaseId:guid}")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer,Basic")]
     public async Task<ActionResult<Release>> UpdateRelease(Guid releaseId, UpdateReleaseSchema schema)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
@@ -48,8 +48,9 @@ public class ReleasesController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
 
-        var result = await releaseService.UpdateReleaseAsync(branch.Id, schema.Description);
-        return Ok(result);
+        await releaseService.UpdateReleaseAsync(releaseId, schema.Description);
+        release.ReleaseNotes = schema.Description;
+        return Ok(release);
     }
 
     [HttpPut("{releaseId:guid}/assets")]

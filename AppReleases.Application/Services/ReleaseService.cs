@@ -91,10 +91,9 @@ public class ReleaseService(
         return release;
     }
 
-    public async Task<Release> UpdateReleaseAsync(Guid releaseId, string? description)
+    public Task UpdateReleaseAsync(Guid releaseId, string? description)
     {
-        await releaseRepository.UpdateReleaseAsync(releaseId, description);
-        return await releaseRepository.GetReleaseByIdAsync(releaseId);
+        return releaseRepository.UpdateReleaseAsync(releaseId, description);
     }
 
     private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);

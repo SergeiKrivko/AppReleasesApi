@@ -7,8 +7,31 @@
     <label tuiLabel class="value">{{ (release?.branchId | branchById | async)?.name }}</label>
     <label tuiLabel class="label">Опубликован</label>
     <label tuiLabel class="value">{{ release?.createdAt | dateFromNow }}</label>
-    <label tuiLabel class="label">Описание</label>
-    <label tuiLabel class="value">{{ release?.releaseNotes ?? 'Описание отсутствует' }}</label>
+    <div class="label">
+      <div class="complex-label-container">
+        <label tuiLabel>Описание</label>
+        <button tuiIconButton iconStart="@tui.pencil" appearance="flat" size="s" (click)="editDescription()"></button>
+      </div>
+    </div>
+    @if (editingDescription) {
+      <div class="value">
+        <div class="edit-description-container">
+          <tui-textfield>
+            <textarea tuiTextarea [formControl]="control"></textarea>
+          </tui-textfield>
+          <div class="buttons-container">
+            <button tuiButton size="m" iconStart="@tui.save" appearance="primary-destructive" (click)="cancelChanges()">
+              Отменить
+            </button>
+            <button tuiButton size="m" iconStart="@tui.save" (click)="saveChanges()" [loading]="savingChanges">
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <label tuiLabel class="value">{{ release?.releaseNotes ?? 'Описание отсутствует' }}</label>
+    }
   </div>
   <tui-accordion-item class="assets-accordion">
     Ассеты

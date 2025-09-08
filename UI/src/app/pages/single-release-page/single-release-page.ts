@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {TuiButton, TuiIcon, TuiLabel} from '@taiga-ui/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {TuiButton, TuiIcon, TuiLabel, TuiTextfieldComponent} from '@taiga-ui/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ReleaseService} from '../../services/release.service';
 import {first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
@@ -8,7 +8,8 @@ import {AsyncPipe} from '@angular/common';
 import {EMPTY_ARRAY, TuiHandler, TuiLet} from '@taiga-ui/cdk';
 import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
 import {BranchByIdPipe} from '../../pipes/branch-by-id-pipe';
-import {TuiAccordion, TuiTree} from '@taiga-ui/kit';
+import {TuiAccordion, TuiButtonLoading, TuiTextarea, TuiTree} from '@taiga-ui/kit';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 interface TreeNode {
   name: string;
@@ -28,7 +29,11 @@ interface TreeNode {
     BranchByIdPipe,
     TuiAccordion,
     TuiTree,
-    TuiIcon
+    TuiIcon,
+    ReactiveFormsModule,
+    TuiTextarea,
+    TuiTextfieldComponent,
+    TuiButtonLoading
   ],
   templateUrl: './single-release-page.html',
   styleUrl: './single-release-page.scss',
@@ -38,6 +43,7 @@ export class SingleReleasePage implements OnInit {
   private readonly releaseService = inject(ReleaseService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.route.params.pipe(
@@ -56,7 +62,9 @@ export class SingleReleasePage implements OnInit {
     ).subscribe();
   }
 
-  protected selectedRelease$ = this.releaseService.selectedRelease$;
+  protected selectedRelease$ = this.releaseService.selectedRelease$.pipe(
+    tap(release => this.control.setValue(release?.releaseNotes ?? ""))
+  );
 
   protected releaseAssets$: Observable<TreeNode[]> = this.selectedRelease$.pipe(
     switchMap(release => {
@@ -68,7 +76,7 @@ export class SingleReleasePage implements OnInit {
   );
 
   protected readonly handler: TuiHandler<TreeNode, readonly TreeNode[]> = (item) =>
-        item.children || EMPTY_ARRAY;
+    item.children || EMPTY_ARRAY;
 
   protected downloadReleaseAssets() {
     this.selectedRelease$.pipe(
@@ -83,6 +91,39 @@ export class SingleReleasePage implements OnInit {
           window.location.href = url;
       })
     ).subscribe();
+  }
+
+  protected editingDescription: boolean = false;
+  protected savingChanges: boolean = false;
+  protected control = new FormControl<string>("");
+
+  protected editDescription() {
+    this.editingDescription = true;
+  }
+
+  protected saveChanges() {
+    const newDescription = this.control.value;
+    this.savingChanges = true;
+    this.selectedRelease$.pipe(
+      first(),
+      switchMap(release => {
+        if (release)
+          return this.releaseService.updateRelease(release.id, newDescription ?? null).pipe(
+            tap(() => {
+              this.savingChanges = false;
+              this.editingDescription = false;
+              this.changeDetectorRef.detectChanges();
+            }),
+          );
+        this.savingChanges = false;
+        this.editingDescription = false;
+        return NEVER;
+      })
+    ).subscribe();
+  }
+
+  protected cancelChanges() {
+    this.editingDescription = false;
   }
 }
 

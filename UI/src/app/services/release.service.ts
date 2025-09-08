@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiClient, Release} from './api-client';
+import {ApiClient, Release, UpdateReleaseSchema} from './api-client';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {ApplicationService} from './application.service';
 import {ReleaseEntity} from '../entities/release-entity';
@@ -69,6 +69,20 @@ export class ReleaseService {
   listReleaseAssets(releaseId: string): Observable<string[]> {
     return this.apiClient.assetsAll(releaseId).pipe(
       map(resp => resp.map(a => a.fileName ?? "???"))
+    );
+  }
+
+  updateRelease(releaseId: string, description: string | null): Observable<ReleaseEntity> {
+    return this.apiClient.releasesPUT(releaseId, UpdateReleaseSchema.fromJS({description: description})).pipe(
+      map(releaseToEntity),
+      tap(release => {
+        const state = getState(this.releases$$);
+        const releases = state.releases.filter(r => r.id !== releaseId).concat([release]);
+        if (release.id == state.selectedRelease?.id)
+          patchState(this.releases$$, {releases, selectedRelease: release});
+        else
+          patchState(this.releases$$, {releases});
+      })
     );
   }
 }

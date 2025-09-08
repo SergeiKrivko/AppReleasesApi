@@ -850,7 +850,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return OK
      */
-    releases(body: CreateReleaseSchema | undefined): Observable<ReleaseDifference> {
+    releasesPOST(body: CreateReleaseSchema | undefined): Observable<ReleaseDifference> {
         let url_ = this.baseUrl + "/api/v1/releases";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -869,11 +869,11 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("post", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processReleases(response_);
+            return this.processReleasesPOST(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReleases(response_ as any);
+                    return this.processReleasesPOST(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<ReleaseDifference>;
                 }
@@ -882,7 +882,7 @@ export class ApiClient extends ApiClientBase {
         }));
     }
 
-    protected processReleases(response: HttpResponseBase): Observable<ReleaseDifference> {
+    protected processReleasesPOST(response: HttpResponseBase): Observable<ReleaseDifference> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -894,6 +894,67 @@ export class ApiClient extends ApiClientBase {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = ReleaseDifference.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param body (optional)
+     * @return OK
+     */
+    releasesPUT(releaseId: string, body: UpdateReleaseSchema | undefined): Observable<Release> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("put", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processReleasesPUT(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReleasesPUT(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Release>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Release>;
+        }));
+    }
+
+    protected processReleasesPUT(response: HttpResponseBase): Observable<Release> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Release.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1986,6 +2047,42 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
 export interface IUpdateBranchSchema {
     duration?: string | undefined;
     useDefaultDuration?: boolean;
+}
+
+export class UpdateReleaseSchema implements IUpdateReleaseSchema {
+    description?: string | undefined;
+
+    constructor(data?: IUpdateReleaseSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): UpdateReleaseSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateReleaseSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IUpdateReleaseSchema {
+    description?: string | undefined;
 }
 
 export interface FileParameter {

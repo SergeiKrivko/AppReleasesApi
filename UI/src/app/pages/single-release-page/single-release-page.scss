@@ -15,11 +15,30 @@
     .label {
       grid-column-start: 1;
       grid-column-end: 2;
+
+      .complex-label-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
     }
 
     .value {
       grid-column-start: 2;
       grid-column-end: 3;
+
+      .edit-description-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .buttons-container {
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
+        }
+      }
     }
   }
 
