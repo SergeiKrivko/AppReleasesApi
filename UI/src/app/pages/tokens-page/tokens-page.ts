@@ -8,6 +8,8 @@ import {TuiCardLarge} from '@taiga-ui/layout';
 import {NewTokenDialog} from '../../components/new-token-dialog/new-token-dialog';
 import {TUI_CONFIRM, TuiConfirmData} from '@taiga-ui/kit';
 import {NEVER, switchMap} from 'rxjs';
+import {FormatDatePipe} from '../../pipes/format-date-pipe';
+import {DateIsFuturePipe} from '../../pipes/date-is-future-pipe';
 
 @Component({
   standalone: true,
@@ -17,7 +19,9 @@ import {NEVER, switchMap} from 'rxjs';
     ApplicationCard,
     AsyncPipe,
     TuiButton,
-    TuiCardLarge
+    TuiCardLarge,
+    FormatDatePipe,
+    DateIsFuturePipe
   ],
   templateUrl: './tokens-page.html',
   styleUrl: './tokens-page.scss',

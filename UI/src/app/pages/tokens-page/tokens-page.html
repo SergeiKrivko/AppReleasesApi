@@ -1,3 +1,4 @@
+<script src="../../../../../../ScheduleAI/ui/src/app/components/pair/pair.component.ts"></script>
 <div class="container">
   <div class="header-container">
     <app-logo></app-logo>
@@ -11,7 +12,11 @@
         <div class="token-container">
           <h4>{{ token.name }}</h4>
           <span>{{ token.mask }}</span>
-          <span>{{ token.expiresAt }}</span>
+          @if (token.expiresAt | dateIsFuture) {
+            <span>До {{ token.expiresAt | formatDate }}</span>
+          } @else {
+            <span>Истек</span>
+          }
           <button
             tuiIconButton
             size="m"

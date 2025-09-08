@@ -3,10 +3,9 @@
   tuiCardLarge
 >
   <div class="container">
-    <h3 class="branch-name">{{ release().version }}</h3>
-    <span>{{ release().createdAt }}</span>
+    <h3>{{ release().version }}</h3>
+    <span>{{ release().createdAt | dateFromNow }}</span>
     <span>{{ release().platform }}</span>
-    <span>{{ release().version }}</span>
 
     <div class="buttons-container">
       <button

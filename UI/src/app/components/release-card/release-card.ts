@@ -4,6 +4,7 @@ import {TuiAppearance, TuiButton} from '@taiga-ui/core';
 import {TuiCard} from '@taiga-ui/layout';
 import {ReleaseService} from '../../services/release.service';
 import {tap} from 'rxjs';
+import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
 
 @Component({
   standalone: true,
@@ -11,7 +12,8 @@ import {tap} from 'rxjs';
   imports: [
     TuiButton,
     TuiCard,
-    TuiAppearance
+    TuiAppearance,
+    DateFromNowPipe
   ],
   templateUrl: './release-card.html',
   styleUrl: './release-card.scss',
