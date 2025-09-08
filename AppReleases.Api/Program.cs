@@ -44,11 +44,19 @@ builder.Services.AddScoped<AuthorizationHelper>();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
     {
         Description = "Authorization with login and password",
         Name = "Basic Auth",
         Scheme = "Basic",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Authorization with API token",
+        Name = "Token Auth",
+        Scheme = "Bearer",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http
     });
@@ -61,7 +69,7 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "basic"
+                    Id = "Basic"
                 }
             },
             []
@@ -102,6 +110,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 app.MapControllers();

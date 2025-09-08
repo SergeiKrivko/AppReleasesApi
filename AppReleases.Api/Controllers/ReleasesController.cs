@@ -3,6 +3,7 @@ using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;
@@ -16,6 +17,7 @@ public class ReleasesController(
     IBranchService branchService) : Controller
 {
     [HttpPost("diff")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ActionResult<ReleaseDifference>> GetReleaseDifference([FromBody] AssetInfo[] assets)
     {
         var result = await releaseService.GetReleaseDifferenceAsync(assets);
@@ -23,6 +25,7 @@ public class ReleasesController(
     }
 
     [HttpPost]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ActionResult<ReleaseDifference>> CreateRelease(CreateReleaseSchema schema)
     {
         if (!await authorizationHelper.VerifyApplication(User, schema.ApplicationKey))
@@ -36,6 +39,7 @@ public class ReleasesController(
     }
 
     [HttpPut("{releaseId:guid}/assets")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ActionResult> UploadReleaseAssets(Guid releaseId,
         [FromForm] AssetInfo[] assets, IFormFile zip)
     {

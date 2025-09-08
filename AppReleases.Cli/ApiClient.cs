@@ -1,12 +1,17 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using AppReleases.Cli.Schemas;
 using AppReleases.Models;
 
 namespace AppReleases.Cli;
 
-public class ApiClient(string baseUrl)
+public class ApiClient(string baseUrl, string apiKey)
 {
-    private readonly HttpClient _httpClient = new() { BaseAddress = new Uri(baseUrl) };
+    private readonly HttpClient _httpClient = new()
+    {
+        BaseAddress = new Uri(baseUrl),
+        DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", apiKey) }
+    };
 
     public async Task<Release> CreateReleaseAsync(string key, string? branch, string? platform, Version version)
     {

@@ -12,7 +12,7 @@ public class TokenService(ITokenRepository tokenRepository) : ITokenService
     public const string Issuer = "AppReleasesAPI";
     public const string Audience = "AppDeveloperAccessToken";
 
-    private static string Key => Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "";
+    private static string Key => Environment.GetEnvironmentVariable("JWT_SECRET") ?? "";
 
     public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));

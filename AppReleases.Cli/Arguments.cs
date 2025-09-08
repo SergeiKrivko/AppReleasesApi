@@ -25,4 +25,7 @@ public class Arguments
 
     [Option('a', "application", Required = true, HelpText = "Идентификатор приложения")]
     public string Application { get; set; } = null!;
+
+    [Option('t', "token", Required = true, HelpText = "Токен авторизации")]
+    public string Token { get; set; } = null!;
 }

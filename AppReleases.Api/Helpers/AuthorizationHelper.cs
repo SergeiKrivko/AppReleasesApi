@@ -11,7 +11,7 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
     {
         if (principal.Identity?.IsAuthenticated != true)
             return false;
-        var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");
+        var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "TokenId");
         return tokenIdClaim is null && principal.Identity?.Name == basicAuthService.Login;
     }
 
@@ -22,7 +22,7 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
     {
         if (principal.Identity?.IsAuthenticated != true)
             return false;
-        var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "tokenId");
+        var tokenIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "TokenId");
         if (tokenIdClaim is null && principal.Identity?.Name == basicAuthService.Login)
             return true;
         if (tokenIdClaim is null)

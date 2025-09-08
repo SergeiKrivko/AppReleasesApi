@@ -6,7 +6,7 @@ using CommandLine;
 
 var arguments = new Parser().ParseArguments<Arguments>(args).Value;
 
-var client = new ApiClient(arguments.Url);
+var client = new ApiClient(arguments.Url, arguments.Token);
 
 var release = await client.CreateReleaseAsync(
     arguments.Application,
