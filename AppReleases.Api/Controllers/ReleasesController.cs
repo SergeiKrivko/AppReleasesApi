@@ -38,6 +38,20 @@ public class ReleasesController(
         return Ok(result);
     }
 
+    [HttpPut("{releaseId:guid}")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    public async Task<ActionResult<Release>> UpdateRelease(Guid releaseId, UpdateReleaseSchema schema)
+    {
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
+
+        var result = await releaseService.UpdateReleaseAsync(branch.Id, schema.Description);
+        return Ok(result);
+    }
+
     [HttpPut("{releaseId:guid}/assets")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ActionResult> UploadReleaseAssets(Guid releaseId,

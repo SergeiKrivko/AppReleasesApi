@@ -49,7 +49,7 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         return release;
     }
 
-    public async Task UpdateReleaseAsync(Guid id, string notes)
+    public async Task UpdateReleaseAsync(Guid id, string? notes)
     {
         await dbContext.Releases.Where(x => x.ReleaseId == id)
             .ExecuteUpdateAsync(x => x

@@ -9,6 +9,6 @@ public interface IReleaseRepository
     public Task<Release> GetReleaseByIdAsync(Guid id);
     public Task<Release?> GetLatestReleaseAsync(Guid branchId, string platform);
     public Task<Release> CreateReleaseAsync(Release release);
-    public Task UpdateReleaseAsync(Guid id, string notes);
+    public Task UpdateReleaseAsync(Guid id, string? notes);
     public Task DeleteReleaseAsync(Guid id);
 }

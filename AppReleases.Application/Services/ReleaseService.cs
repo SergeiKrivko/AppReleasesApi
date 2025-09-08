@@ -91,6 +91,12 @@ public class ReleaseService(
         return release;
     }
 
+    public async Task<Release> UpdateReleaseAsync(Guid releaseId, string? description)
+    {
+        await releaseRepository.UpdateReleaseAsync(releaseId, description);
+        return await releaseRepository.GetReleaseByIdAsync(releaseId);
+    }
+
     private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);
 
     public async Task<string> PackAssetsAsync(Guid releaseId)
