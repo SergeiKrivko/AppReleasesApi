@@ -1,1 +1,19 @@
-<p>single-release-page works!</p>
+<div class="container" *tuiLet="selectedRelease$ | async as release">
+  <button tuiButton size="l" iconStart="@tui.chevron-left" routerLink="../" appearance="flat">Назад</button>
+  <div class="grid-container">
+    <label tuiLabel class="label">Версия</label>
+    <label tuiLabel class="value">{{ release?.version }}</label>
+    <label tuiLabel class="label">Ветка</label>
+    <label tuiLabel class="value">{{ (release?.branchId | branchById | async)?.name }}</label>
+    <label tuiLabel class="label">Опубликован</label>
+    <label tuiLabel class="value">{{ release?.createdAt | dateFromNow }}</label>
+    <label tuiLabel class="label">Описание</label>
+    <label tuiLabel class="value">{{ release?.releaseNotes ?? 'Описание отсутствует' }}</label>
+  </div>
+  <tui-accordion-item class="assets-accordion">
+    Ассеты
+    <ng-template tuiAccordionItemContent>
+      Здесь будет список ассетов
+    </ng-template>
+  </tui-accordion-item>
+</div>

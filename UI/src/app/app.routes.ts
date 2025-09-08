@@ -15,11 +15,8 @@ export const routes: Routes = [
   {
     path: 'app/:id', component: ApplicationPage, children: [
       {path: 'config', component: ApplicationConfigPage},
-      {
-        path: 'releases',
-        component: ReleasesPage,
-        children: [{path: 'releases/:releaseId', component: SingleReleasePage}]
-      },
+      {path: 'releases', component: ReleasesPage,},
+      {path: 'releases/:releaseId', component: SingleReleasePage},
       {path: 'branches', component: BranchesPage},
     ]
   },

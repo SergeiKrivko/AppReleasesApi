@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {ReleaseEntity} from '../../entities/release-entity';
-import {TuiAppearance, TuiButton} from '@taiga-ui/core';
-import {TuiCard} from '@taiga-ui/layout';
+import {TuiAppearance, TuiButton, TuiSurface} from '@taiga-ui/core';
+import {TuiCard, TuiHeader} from '@taiga-ui/layout';
 import {ReleaseService} from '../../services/release.service';
 import {tap} from 'rxjs';
 import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
+import {RouterLink} from '@angular/router';
 
 @Component({
   standalone: true,
@@ -13,7 +14,10 @@ import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
     TuiButton,
     TuiCard,
     TuiAppearance,
-    DateFromNowPipe
+    DateFromNowPipe,
+    TuiSurface,
+    RouterLink,
+    TuiHeader
   ],
   templateUrl: './release-card.html',
   styleUrl: './release-card.scss',

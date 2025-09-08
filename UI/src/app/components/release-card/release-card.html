@@ -1,6 +1,9 @@
-<div
-  tuiAppearance="floating"
+<button
   tuiCardLarge
+  tuiHeader
+  tuiSurface="floating"
+  class="button"
+  [routerLink]="'./' + release().id"
 >
   <div class="container">
     <h3>{{ release().version }}</h3>
@@ -18,4 +21,4 @@
     ></button>
     </div>
   </div>
-</div>
+</button>

@@ -8,7 +8,9 @@ import 'moment/locale/ru';
 })
 export class DateFromNowPipe implements PipeTransform {
 
-  transform(value: Moment, ...args: unknown[]): unknown {
+  transform(value: Moment | null | undefined, ...args: unknown[]): unknown {
+    if (!value)
+      return value;
     return value.locale('ru').fromNow();
   }
 
