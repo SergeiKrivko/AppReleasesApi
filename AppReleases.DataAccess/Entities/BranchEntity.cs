@@ -9,8 +9,9 @@ public class BranchEntity
     [MaxLength(32)] public required string Name { get; init; }
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
-    public TimeSpan? Duration { get; init; }
-    public bool UseDefaultDuration { get; init; }
+    public TimeSpan? ReleaseLifetime { get; init; }
+    public TimeSpan? LatestReleaseLifetime { get; init; }
+    public bool UseDefaultReleaseLifetime { get; init; }
 
     public virtual ICollection<ReleaseEntity> Releases { get; init; } = [];
     public virtual ApplicationEntity Application { get; init; } = null!;

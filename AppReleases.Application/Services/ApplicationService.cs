@@ -20,7 +20,8 @@ public class ApplicationService(IApplicationRepository applicationRepository, IB
         return applicationRepository.GetApplicationByKeyAsync(key);
     }
 
-    private static TimeSpan DefaultDuration { get; } = TimeSpan.FromDays(30);
+    private static TimeSpan DefaultReleaseLifetime => TimeSpan.Zero;
+    private static TimeSpan DefaultLatestReleaseLifetime => TimeSpan.FromDays(30);
 
     public async Task<Models.Application> CreateApplicationAsync(string key, string name, string description,
         string? mainBranch = null)
@@ -33,18 +34,20 @@ public class ApplicationService(IApplicationRepository applicationRepository, IB
             Name = name,
             Description = description,
             MainBranch = mainBranch,
-            DefaultDuration = DefaultDuration,
+            DefaultReleaseLifetime = DefaultReleaseLifetime,
+            DefaultLatestReleaseLifetime = DefaultLatestReleaseLifetime,
             CreatedAt = DateTime.UtcNow,
         };
         await applicationRepository.CreateApplicationAsync(application);
-        await branchService.CreateBranchAsync(application.Id, mainBranch, null, false);
+        await branchService.CreateBranchAsync(application.Id, mainBranch, null, null, false);
         return application;
     }
 
     public Task UpdateApplicationAsync(Guid applicationId, string name, string description, string mainBranch,
-        TimeSpan? defaultDuration)
+        TimeSpan? defaultReleaseLifetime, TimeSpan? defaultLatestReleaseLifetime)
     {
-        return applicationRepository.UpdateApplicationAsync(applicationId, name, description, mainBranch, defaultDuration);
+        return applicationRepository.UpdateApplicationAsync(applicationId, name, description, mainBranch,
+            defaultReleaseLifetime, defaultLatestReleaseLifetime);
     }
 
     public Task DeleteApplicationAsync(Guid applicationId)

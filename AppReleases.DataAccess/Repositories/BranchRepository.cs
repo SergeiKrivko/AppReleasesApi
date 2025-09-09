@@ -51,13 +51,15 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateBranchAsync(Guid branchId, TimeSpan? duration, bool useDefaultDuration = true)
+    public async Task UpdateBranchAsync(Guid branchId, TimeSpan? releaseLifetime, TimeSpan? latestReleaseLifetime,
+        bool useDefaultReleaseLifetime = true)
     {
         await dbContext.Branches
             .Where(x => x.BranchId == branchId)
             .ExecuteUpdateAsync(x => x
-                .SetProperty(e => e.Duration, duration)
-                .SetProperty(e => e.UseDefaultDuration, useDefaultDuration)
+                .SetProperty(e => e.ReleaseLifetime, releaseLifetime)
+                .SetProperty(e => e.LatestReleaseLifetime, latestReleaseLifetime)
+                .SetProperty(e => e.UseDefaultReleaseLifetime, useDefaultReleaseLifetime)
             );
         await dbContext.SaveChangesAsync();
     }
@@ -71,8 +73,9 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             Name = entity.Name,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
-            Duration = entity.Duration,
-            UseDefaultDuration = entity.UseDefaultDuration,
+            ReleaseLifetime = entity.ReleaseLifetime,
+            LatestReleaseLifetime = entity.LatestReleaseLifetime,
+            UseDefaultReleaseLifetime = entity.UseDefaultReleaseLifetime,
         };
     }
 
@@ -85,8 +88,9 @@ public class BranchRepository(AppReleasesDbContext dbContext) : IBranchRepositor
             Name = branch.Name,
             CreatedAt = branch.CreatedAt,
             DeletedAt = branch.DeletedAt,
-            Duration = branch.Duration,
-            UseDefaultDuration = branch.UseDefaultDuration,
+            ReleaseLifetime = branch.ReleaseLifetime,
+            LatestReleaseLifetime = branch.LatestReleaseLifetime,
+            UseDefaultReleaseLifetime = branch.UseDefaultReleaseLifetime,
         };
     }
 }

@@ -40,7 +40,7 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
     }
 
     public async Task UpdateApplicationAsync(Guid applicationId, string name, string description, string mainBranch,
-        TimeSpan? defaultDuration = null)
+        TimeSpan? defaultReleaseLifetime, TimeSpan? defaultLatestReleaseLifetime = null)
     {
         await dbContext.Applications
             .Where(x => x.ApplicationId == applicationId)
@@ -48,7 +48,8 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
                 .SetProperty(e => e.Name, name)
                 .SetProperty(e => e.Description, description)
                 .SetProperty(e => e.MainBranch, mainBranch)
-                .SetProperty(e => e.DefaultDuration, defaultDuration)
+                .SetProperty(e => e.DefaultReleaseLifetime, defaultReleaseLifetime)
+                .SetProperty(e => e.DefaultLatestReleaseLifetime, defaultLatestReleaseLifetime)
             );
         await dbContext.SaveChangesAsync();
     }
@@ -72,7 +73,8 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Description = entity.Description,
             Key = entity.Key,
             MainBranch = entity.MainBranch,
-            DefaultDuration = entity.DefaultDuration,
+            DefaultReleaseLifetime = entity.DefaultReleaseLifetime,
+            DefaultLatestReleaseLifetime = entity.DefaultLatestReleaseLifetime,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
         };
@@ -87,7 +89,8 @@ public class ApplicationRepository(AppReleasesDbContext dbContext) : IApplicatio
             Description = application.Description,
             Key = application.Key,
             MainBranch = application.MainBranch,
-            DefaultDuration = application.DefaultDuration,
+            DefaultReleaseLifetime = application.DefaultReleaseLifetime,
+            DefaultLatestReleaseLifetime = application.DefaultLatestReleaseLifetime,
             CreatedAt = application.CreatedAt,
             DeletedAt = application.DeletedAt,
         };

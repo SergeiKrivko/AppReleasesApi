@@ -9,5 +9,7 @@ public class UpdateApplicationSchema
     public required string Description { get; set; }
     public required string MainBranch { get; set; }
     [JsonConverter(typeof(TimeSpanConverter))]
-    public TimeSpan? DefaultDuration { get; set; }
+    public TimeSpan? DefaultReleaseLifetime { get; set; }
+    [JsonConverter(typeof(TimeSpanConverter))]
+    public TimeSpan? DefaultLatestReleaseLifetime { get; set; }
 }

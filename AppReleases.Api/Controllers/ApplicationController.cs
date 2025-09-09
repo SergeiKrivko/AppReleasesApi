@@ -81,7 +81,7 @@ public class ApplicationController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
         await applicationService.UpdateApplicationAsync(applicationId, schema.Name, schema.Description,
-            schema.MainBranch, schema.DefaultDuration);
+            schema.MainBranch, schema.DefaultReleaseLifetime, schema.DefaultLatestReleaseLifetime);
         return Ok();
     }
 

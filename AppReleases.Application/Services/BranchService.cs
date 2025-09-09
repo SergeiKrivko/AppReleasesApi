@@ -20,8 +20,8 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
         return branchRepository.GetBranchByNameAsync(applicationId, name);
     }
 
-    public async Task<Branch> CreateBranchAsync(Guid applicationId, string name, TimeSpan? duration,
-        bool useDefaultDuration)
+    public async Task<Branch> CreateBranchAsync(Guid applicationId, string name, TimeSpan? releaseLifetime,
+        TimeSpan? latestReleaseLifetime, bool useDefaultReleaseLifetime)
     {
         var branch = new Branch
         {
@@ -29,16 +29,18 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
             ApplicationId = applicationId,
             Name = name,
             CreatedAt = DateTime.UtcNow,
-            Duration = duration,
-            UseDefaultDuration = useDefaultDuration
+            ReleaseLifetime = releaseLifetime,
+            LatestReleaseLifetime = latestReleaseLifetime,
+            UseDefaultReleaseLifetime = useDefaultReleaseLifetime
         };
         await branchRepository.CreateBranchAsync(branch);
         return branch;
     }
 
-    public Task UpdateBranchAsync(Guid branchId, TimeSpan? duration, bool useDefaultDuration)
+    public Task UpdateBranchAsync(Guid branchId, TimeSpan? releaseLifetime,
+        TimeSpan? latestReleaseLifetime, bool useDefaultReleaseLifetime)
     {
-        return branchRepository.UpdateBranchAsync(branchId, duration, useDefaultDuration);
+        return branchRepository.UpdateBranchAsync(branchId, releaseLifetime, latestReleaseLifetime, useDefaultReleaseLifetime);
     }
 
     public Task DeleteBranchAsync(Guid branchId)
@@ -49,6 +51,6 @@ public class BranchService(IBranchRepository branchRepository) : IBranchService
     public async Task<Branch> GetOrCreateBranchAsync(Guid applicationId, string name)
     {
         return await GetBranchByNameAsync(applicationId, name) ??
-               await CreateBranchAsync(applicationId, name, null, true);
+               await CreateBranchAsync(applicationId, name, null, null, true);
     }
 }

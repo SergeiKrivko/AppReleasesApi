@@ -6,6 +6,8 @@ namespace AppReleases.Api.Schemas;
 public class UpdateBranchSchema
 {
     [JsonConverter(typeof(TimeSpanConverter))]
-    public TimeSpan? Duration { get; set; }
-    public bool UseDefaultDuration { get; set; } = true;
+    public TimeSpan? ReleaseLifetime { get; set; }
+    [JsonConverter(typeof(TimeSpanConverter))]
+    public TimeSpan? LatestReleaseLifetime { get; set; }
+    public bool UseDefaultReleaseLifetime { get; set; } = true;
 }

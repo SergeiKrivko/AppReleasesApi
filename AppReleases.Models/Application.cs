@@ -13,5 +13,7 @@ public class Application
     public DateTime? DeletedAt { get; init; }
     public required string MainBranch { get; init; }
     [JsonConverter(typeof(TimeSpanConverter))]
-    public TimeSpan? DefaultDuration { get; init; }
+    public TimeSpan? DefaultReleaseLifetime { get; init; }
+    [JsonConverter(typeof(TimeSpanConverter))]
+    public TimeSpan? DefaultLatestReleaseLifetime { get; init; }
 }

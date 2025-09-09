@@ -45,8 +45,8 @@ public class BranchesController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
         var branch =
-            await branchService.CreateBranchAsync(applicationId, schema.Name, schema.Duration,
-                schema.UseDefaultDuration);
+            await branchService.CreateBranchAsync(applicationId, schema.Name, schema.ReleaseLifetime,
+                schema.LatestReleaseLifetime, schema.UseDefaultReleaseLifetime);
         return Ok(branch);
     }
 
@@ -63,7 +63,8 @@ public class BranchesController(
         if (branch.ApplicationId != applicationId)
             return NotFound("Branch exists, but in another application"); // Потом переделать в целях безопасности
 
-        await branchService.UpdateBranchAsync(branchId, schema.Duration, schema.UseDefaultDuration);
+        await branchService.UpdateBranchAsync(branchId, schema.ReleaseLifetime, schema.LatestReleaseLifetime,
+            schema.UseDefaultReleaseLifetime);
         return Ok();
     }
 

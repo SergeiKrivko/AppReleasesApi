@@ -12,7 +12,10 @@ public class Branch
     public DateTime? DeletedAt { get; init; }
 
     [JsonConverter(typeof(TimeSpanConverter))]
-    public TimeSpan? Duration { get; init; }
+    public TimeSpan? LatestReleaseLifetime { get; init; }
 
-    public bool UseDefaultDuration { get; init; } = true;
+    [JsonConverter(typeof(TimeSpanConverter))]
+    public TimeSpan? ReleaseLifetime { get; init; }
+
+    public bool UseDefaultReleaseLifetime { get; init; } = true;
 }
