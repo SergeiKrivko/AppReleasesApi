@@ -1,4 +1,23 @@
 <div class="container">
+  <form class="tools-container" [formGroup]="control">
+    <tui-textfield multi tuiChevron class="field" [stringify]="stringify">
+      <label tuiLabel>Ветка</label>
+      <input tuiInputChip tuiSelectLike formControlName="branches"/>
+      <tui-data-list *tuiTextfieldDropdown>
+        <tui-opt-group label="Главная" tuiMultiSelectGroup>
+          @for (branch of mainBranches$ | async; track branch) {
+            <button new tuiOption [value]="branch">{{ branch.name }}</button>
+          }
+        </tui-opt-group>
+        <tui-opt-group label="Остальные" tuiMultiSelectGroup>
+          @for (branch of otherBranches$ | async; track branch) {
+            <button new tuiOption [value]="branch">{{ branch.name }}</button>
+          }
+        </tui-opt-group>
+      </tui-data-list>
+    </tui-textfield>
+  </form>
+
   <div class="releases-container">
     @for (release of releases$ | async; track release.id) {
       <button
