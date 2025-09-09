@@ -55,6 +55,7 @@ public class ReleasesController(
 
     [HttpPut("{releaseId:guid}/assets")]
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [RequestSizeLimit(104857600)]
     public async Task<ActionResult> UploadReleaseAssets(Guid releaseId,
         [FromForm] AssetInfo[] assets, IFormFile zip)
     {
