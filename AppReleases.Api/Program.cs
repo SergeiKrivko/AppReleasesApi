@@ -1,3 +1,4 @@
+using AppReleases.Api.BackgroundServices;
 using AppReleases.Api.Helpers;
 using AppReleases.Application.Services;
 using AppReleases.Core.Abstractions;
@@ -33,7 +34,7 @@ builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IReleaseRepository, ReleaseRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
-builder.Services.AddScoped<IFileRepository, S3Repository>();
+builder.Services.AddSingleton<IFileRepository, S3Repository>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<IReleaseService, ReleaseService>();
@@ -41,6 +42,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<BasicAuthService>();
 builder.Services.AddScoped<AuthorizationHelper>();
+
+builder.Services.AddHostedService<TempFileCleanerService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

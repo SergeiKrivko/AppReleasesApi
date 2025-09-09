@@ -12,6 +12,7 @@ public interface IFileRepository
     public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension, Stream fileStream);
     public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, TimeSpan timeout);
     public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string extension, TimeSpan timeout);
+    public Task<int> ClearFilesCreatedBefore(FileRepositoryBucket bucket, DateTime beforeDate, CancellationToken cancellationToken);
 }
 
 public enum FileRepositoryBucket

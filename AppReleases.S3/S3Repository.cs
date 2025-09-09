@@ -133,6 +133,23 @@ public class S3Repository : IFileRepository
         return await _s3Client.GetPreSignedURLAsync(request);
     }
 
+    public async Task<int> ClearFilesCreatedBefore(FileRepositoryBucket bucket, DateTime beforeDate,
+        CancellationToken cancellationToken)
+    {
+        var count = 0;
+        var bucketName = GetBucket(bucket);
+        var files = await _s3Client.ListObjectsAsync(bucketName, cancellationToken);
+        foreach (var file in files?.S3Objects ?? [])
+        {
+            if (file != null && file.LastModified < beforeDate)
+            {
+                await DeleteFileAsync(bucketName, file.Key);
+                count++;
+            }
+        }
+        return count;
+    }
+
     private static string AssetsBucket { get; } = Environment.GetEnvironmentVariable("S3_ASSETS_BUCKET") ?? "assets";
     private static string TempBucket { get; } = Environment.GetEnvironmentVariable("S3_TEMP_BUCKET") ?? "temp";
 
