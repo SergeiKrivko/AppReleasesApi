@@ -2,7 +2,7 @@ name: CLI
 on:
   push:
     paths:
-      - Avalux.Releases.Cli/*.csproj
+      - Avalux.Releases.Cli/Avalux.Releases.Cli.csproj
 
 jobs:
   build:

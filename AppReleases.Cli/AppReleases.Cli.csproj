@@ -19,10 +19,9 @@
     <ItemGroup>
         <ProjectReference Include="..\AppReleases.Models\AppReleases.Models.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="LICENSE.txt" Pack="true" PackagePath=""/>
         <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
-
 </Project>
