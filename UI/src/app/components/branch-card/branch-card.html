@@ -6,8 +6,8 @@
     <h3 class="branch-name">{{ branch().name }}</h3>
 
     <span class="duration-label">
-      @if (branch().duration) {
-        {{ branch().duration }}
+      @if (branch().releaseLifetime) {
+        {{ branch().releaseLifetime }}
       } @else {
         По умолчанию
       }

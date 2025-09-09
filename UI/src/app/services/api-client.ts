@@ -1389,7 +1389,8 @@ export class Application implements IApplication {
     createdAt!: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     mainBranch!: string | undefined;
-    defaultDuration?: string | undefined;
+    defaultReleaseLifetime?: string | undefined;
+    defaultLatestReleaseLifetime?: string | undefined;
 
     constructor(data?: IApplication) {
         if (data) {
@@ -1409,7 +1410,8 @@ export class Application implements IApplication {
             this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
             this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
             this.mainBranch = _data["mainBranch"];
-            this.defaultDuration = _data["defaultDuration"];
+            this.defaultReleaseLifetime = _data["defaultReleaseLifetime"];
+            this.defaultLatestReleaseLifetime = _data["defaultLatestReleaseLifetime"];
         }
     }
 
@@ -1429,7 +1431,8 @@ export class Application implements IApplication {
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
         data["mainBranch"] = this.mainBranch;
-        data["defaultDuration"] = this.defaultDuration;
+        data["defaultReleaseLifetime"] = this.defaultReleaseLifetime;
+        data["defaultLatestReleaseLifetime"] = this.defaultLatestReleaseLifetime;
         return data;
     }
 }
@@ -1442,7 +1445,8 @@ export interface IApplication {
     createdAt: moment.Moment;
     deletedAt?: moment.Moment | undefined;
     mainBranch: string | undefined;
-    defaultDuration?: string | undefined;
+    defaultReleaseLifetime?: string | undefined;
+    defaultLatestReleaseLifetime?: string | undefined;
 }
 
 export class AssetInfo implements IAssetInfo {
@@ -1491,8 +1495,9 @@ export class Branch implements IBranch {
     name!: string | undefined;
     createdAt?: moment.Moment;
     deletedAt?: moment.Moment | undefined;
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    latestReleaseLifetime?: string | undefined;
+    releaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 
     constructor(data?: IBranch) {
         if (data) {
@@ -1510,8 +1515,9 @@ export class Branch implements IBranch {
             this.name = _data["name"];
             this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
             this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
-            this.duration = _data["duration"];
-            this.useDefaultDuration = _data["useDefaultDuration"];
+            this.latestReleaseLifetime = _data["latestReleaseLifetime"];
+            this.releaseLifetime = _data["releaseLifetime"];
+            this.useDefaultReleaseLifetime = _data["useDefaultReleaseLifetime"];
         }
     }
 
@@ -1529,8 +1535,9 @@ export class Branch implements IBranch {
         data["name"] = this.name;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
-        data["duration"] = this.duration;
-        data["useDefaultDuration"] = this.useDefaultDuration;
+        data["latestReleaseLifetime"] = this.latestReleaseLifetime;
+        data["releaseLifetime"] = this.releaseLifetime;
+        data["useDefaultReleaseLifetime"] = this.useDefaultReleaseLifetime;
         return data;
     }
 }
@@ -1541,8 +1548,9 @@ export interface IBranch {
     name: string | undefined;
     createdAt?: moment.Moment;
     deletedAt?: moment.Moment | undefined;
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    latestReleaseLifetime?: string | undefined;
+    releaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 }
 
 export class CreateApplicationSchema implements ICreateApplicationSchema {
@@ -1595,8 +1603,9 @@ export interface ICreateApplicationSchema {
 
 export class CreateBranchSchema implements ICreateBranchSchema {
     name!: string | undefined;
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    releaseLifetime?: string | undefined;
+    latestReleaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 
     constructor(data?: ICreateBranchSchema) {
         if (data) {
@@ -1610,8 +1619,9 @@ export class CreateBranchSchema implements ICreateBranchSchema {
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
-            this.duration = _data["duration"];
-            this.useDefaultDuration = _data["useDefaultDuration"];
+            this.releaseLifetime = _data["releaseLifetime"];
+            this.latestReleaseLifetime = _data["latestReleaseLifetime"];
+            this.useDefaultReleaseLifetime = _data["useDefaultReleaseLifetime"];
         }
     }
 
@@ -1625,16 +1635,18 @@ export class CreateBranchSchema implements ICreateBranchSchema {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
-        data["duration"] = this.duration;
-        data["useDefaultDuration"] = this.useDefaultDuration;
+        data["releaseLifetime"] = this.releaseLifetime;
+        data["latestReleaseLifetime"] = this.latestReleaseLifetime;
+        data["useDefaultReleaseLifetime"] = this.useDefaultReleaseLifetime;
         return data;
     }
 }
 
 export interface ICreateBranchSchema {
     name: string | undefined;
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    releaseLifetime?: string | undefined;
+    latestReleaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 }
 
 export class CreateReleaseSchema implements ICreateReleaseSchema {
@@ -1965,7 +1977,8 @@ export class UpdateApplicationSchema implements IUpdateApplicationSchema {
     name!: string | undefined;
     description!: string | undefined;
     mainBranch!: string | undefined;
-    defaultDuration?: string | undefined;
+    defaultReleaseLifetime?: string | undefined;
+    defaultLatestReleaseLifetime?: string | undefined;
 
     constructor(data?: IUpdateApplicationSchema) {
         if (data) {
@@ -1981,7 +1994,8 @@ export class UpdateApplicationSchema implements IUpdateApplicationSchema {
             this.name = _data["name"];
             this.description = _data["description"];
             this.mainBranch = _data["mainBranch"];
-            this.defaultDuration = _data["defaultDuration"];
+            this.defaultReleaseLifetime = _data["defaultReleaseLifetime"];
+            this.defaultLatestReleaseLifetime = _data["defaultLatestReleaseLifetime"];
         }
     }
 
@@ -1997,7 +2011,8 @@ export class UpdateApplicationSchema implements IUpdateApplicationSchema {
         data["name"] = this.name;
         data["description"] = this.description;
         data["mainBranch"] = this.mainBranch;
-        data["defaultDuration"] = this.defaultDuration;
+        data["defaultReleaseLifetime"] = this.defaultReleaseLifetime;
+        data["defaultLatestReleaseLifetime"] = this.defaultLatestReleaseLifetime;
         return data;
     }
 }
@@ -2006,12 +2021,14 @@ export interface IUpdateApplicationSchema {
     name: string | undefined;
     description: string | undefined;
     mainBranch: string | undefined;
-    defaultDuration?: string | undefined;
+    defaultReleaseLifetime?: string | undefined;
+    defaultLatestReleaseLifetime?: string | undefined;
 }
 
 export class UpdateBranchSchema implements IUpdateBranchSchema {
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    releaseLifetime?: string | undefined;
+    latestReleaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 
     constructor(data?: IUpdateBranchSchema) {
         if (data) {
@@ -2024,8 +2041,9 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
 
     init(_data?: any) {
         if (_data) {
-            this.duration = _data["duration"];
-            this.useDefaultDuration = _data["useDefaultDuration"];
+            this.releaseLifetime = _data["releaseLifetime"];
+            this.latestReleaseLifetime = _data["latestReleaseLifetime"];
+            this.useDefaultReleaseLifetime = _data["useDefaultReleaseLifetime"];
         }
     }
 
@@ -2038,15 +2056,17 @@ export class UpdateBranchSchema implements IUpdateBranchSchema {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["duration"] = this.duration;
-        data["useDefaultDuration"] = this.useDefaultDuration;
+        data["releaseLifetime"] = this.releaseLifetime;
+        data["latestReleaseLifetime"] = this.latestReleaseLifetime;
+        data["useDefaultReleaseLifetime"] = this.useDefaultReleaseLifetime;
         return data;
     }
 }
 
 export interface IUpdateBranchSchema {
-    duration?: string | undefined;
-    useDefaultDuration?: boolean;
+    releaseLifetime?: string | undefined;
+    latestReleaseLifetime?: string | undefined;
+    useDefaultReleaseLifetime?: boolean;
 }
 
 export class UpdateReleaseSchema implements IUpdateReleaseSchema {

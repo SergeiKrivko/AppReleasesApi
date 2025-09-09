@@ -6,7 +6,8 @@ export interface ApplicationEntity {
   name: string;
   description: string | undefined;
   mainBranch: string;
-  defaultDuration: Duration | null;
+  defaultReleaseLifetime: Duration | null;
+  defaultLatestReleaseLifetime: Duration | null;
   createdAt: Moment;
   deletedAt: Moment | null;
 }

@@ -68,7 +68,8 @@ export class ApplicationService {
     name: string | undefined,
     description: string | undefined,
     mainBranch: string | undefined,
-    defaultDuration: Duration | null | undefined
+    defaultLatestReleaseLifetime: Duration | null,
+    defaultReleaseLifetime: Duration | null
   ): Observable<undefined> {
     return this.applicationById(id).pipe(
       first(),
@@ -77,7 +78,8 @@ export class ApplicationService {
           name: name ?? old?.name,
           description: description ?? old?.description,
           mainBranch: mainBranch ?? old?.mainBranch,
-          defaultDuration: (defaultDuration ?? old?.defaultDuration)?.asMilliseconds(),
+          defaultLatestReleaseLifetime: defaultLatestReleaseLifetime?.asMilliseconds(),
+          defaultReleaseLifetime: defaultReleaseLifetime?.asMilliseconds(),
         }))),
       switchMap(() => this.reloadApplicationById(id))
     );
@@ -126,7 +128,8 @@ const applicationToEntity = (application: Application): ApplicationEntity => ({
   name: application.name ?? "",
   description: application.description,
   mainBranch: application.mainBranch ?? "main",
-  defaultDuration: application.defaultDuration ? duration(application.defaultDuration) : null,
+  defaultReleaseLifetime: application.defaultReleaseLifetime ? duration(application.defaultReleaseLifetime) : null,
+  defaultLatestReleaseLifetime: application.defaultLatestReleaseLifetime ? duration(application.defaultLatestReleaseLifetime) : null,
   createdAt: application.createdAt,
   deletedAt: application.deletedAt ?? null,
 });

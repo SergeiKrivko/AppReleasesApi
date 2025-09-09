@@ -98,7 +98,9 @@ export class BranchService {
 const branchToEntity = (branch: Branch): BranchEntity => ({
   id: branch.id ?? "",
   name: branch.name ?? "",
-  duration: branch.duration ? duration(branch.duration) : null,
+  releaseLifetime: branch.releaseLifetime ? duration(branch.releaseLifetime) : null,
+  latestReleaseLifetime: branch.latestReleaseLifetime ? duration(branch.latestReleaseLifetime) : null,
+  useDefaultReleaseLifetime: branch.useDefaultReleaseLifetime ?? true,
   createdAt: branch.createdAt ?? null,
   deletedAt: branch.deletedAt ?? null,
 });

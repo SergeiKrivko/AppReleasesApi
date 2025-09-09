@@ -1,0 +1,13 @@
+<div>
+  <form class="container" [formGroup]="control">
+    <ng-content></ng-content>
+    <input tuiSwitch type="checkbox" formControlName="switch"/>
+    @if (control.value.switch) {
+      <span>Через</span>
+      <tui-textfield class="duration-days-field">
+        <input tuiInputNumber formControlName="days"/>
+      </tui-textfield>
+      <span>дней</span>
+    }
+  </form>
+</div>

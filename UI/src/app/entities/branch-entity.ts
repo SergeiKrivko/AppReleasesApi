@@ -5,5 +5,7 @@ export interface BranchEntity {
   name: string;
   createdAt: Moment | null;
   deletedAt: Moment | null;
-  duration: Duration | null;
+  releaseLifetime: Duration | null;
+  latestReleaseLifetime: Duration | null;
+  useDefaultReleaseLifetime: boolean;
 }

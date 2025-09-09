@@ -2,14 +2,15 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@a
 import {ApplicationService} from '../../services/application.service';
 import {Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {first, map, NEVER, switchMap, tap} from 'rxjs';
+import {first, NEVER, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
 import {AsyncPipe} from '@angular/common';
-import {duration} from 'moment';
+import {Duration} from 'moment';
 import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
+import {InputLifetime} from '../../components/input-lifetime/input-lifetime';
 
 @Component({
   standalone: true,
@@ -24,7 +25,8 @@ import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
     TuiButton,
     TuiCheckbox,
     TuiInputNumber,
-    AsyncPipe
+    AsyncPipe,
+    InputLifetime
   ],
   templateUrl: './application-config-page.html',
   styleUrl: './application-config-page.scss',
@@ -37,6 +39,15 @@ export class ApplicationConfigPage implements OnInit {
   private readonly router = inject(Router);
 
   private applicationId: string | undefined;
+
+  protected control = new FormGroup({
+    key: new FormControl<string>(""),
+    name: new FormControl<string>(""),
+    description: new FormControl<string>(""),
+    mainBranch: new FormControl<string>(""),
+    latestReleaseLifetime: new FormControl<Duration | null>(null),
+    releaseLifetime: new FormControl<Duration | null>(null),
+  })
 
   ngOnInit() {
     this.applicationService.selectedApplication$.pipe(
@@ -55,24 +66,11 @@ export class ApplicationConfigPage implements OnInit {
       name: application.name,
       description: application.description ?? "",
       mainBranch: application.mainBranch,
-      unlimitedDuration: application.defaultDuration === null,
-      durationDays: application.defaultDuration?.asDays() ?? 0,
+      latestReleaseLifetime: application.defaultLatestReleaseLifetime,
+      releaseLifetime: application.defaultReleaseLifetime,
     });
     this.control.disable();
   }
-
-  protected control = new FormGroup({
-    key: new FormControl<string>(""),
-    name: new FormControl<string>(""),
-    description: new FormControl<string>(""),
-    mainBranch: new FormControl<string>(""),
-    unlimitedDuration: new FormControl<boolean>(false),
-    durationDays: new FormControl<number>(0),
-  })
-
-  protected durationIsLimited$ = this.control.valueChanges.pipe(
-    map(value => !(value.unlimitedDuration ?? false))
-  );
 
   protected isEditing: boolean = false;
 
@@ -90,7 +88,8 @@ export class ApplicationConfigPage implements OnInit {
         this.control.value.name ?? undefined,
         this.control.value.description ?? undefined,
         this.control.value.mainBranch ?? undefined,
-        this.control.value.unlimitedDuration ? null : duration(this.control.value.durationDays, 'day')
+        this.control.value.latestReleaseLifetime ?? null,
+        this.control.value.releaseLifetime ?? null,
       ).subscribe();
   }
 
