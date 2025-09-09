@@ -2,7 +2,7 @@ import {Component, DestroyRef, forwardRef, inject, OnInit} from '@angular/core';
 import {TuiInputNumberDirective, TuiSwitch} from '@taiga-ui/kit';
 import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {duration, Duration} from 'moment';
-import {TuiTextfieldComponent} from '@taiga-ui/core';
+import {TuiLabel, TuiTextfieldComponent} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {tap} from 'rxjs';
 
@@ -13,7 +13,8 @@ import {tap} from 'rxjs';
     TuiSwitch,
     ReactiveFormsModule,
     TuiInputNumberDirective,
-    TuiTextfieldComponent
+    TuiTextfieldComponent,
+    TuiLabel
   ],
   providers: [
     {

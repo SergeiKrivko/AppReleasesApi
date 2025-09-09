@@ -5,13 +5,6 @@
   <div class="container">
     <h3 class="branch-name">{{ branch().name }}</h3>
 
-    <span class="duration-label">
-      @if (branch().releaseLifetime) {
-        {{ branch().releaseLifetime }}
-      } @else {
-        По умолчанию
-      }
-    </span>
     <button
       size="s"
       tuiIconButton
@@ -34,36 +27,22 @@
 <ng-template
   #editDialog
 >
-  <h2>{{ branch().name }}</h2>
-  <h4>Время жизни релизов:</h4>
-  <p>
+  <form class="dialog-container" [formGroup]="control">
+    <h4>Время жизни релизов:</h4>
     <label tuiLabel>
-      <input
-        name="test"
-        tuiRadio
-        type="radio"
-      />
+      <input tuiCheckbox type="checkbox" formControlName="useDefault"/>
       По умолчанию
     </label>
-  </p>
-  <p>
-    <label tuiLabel>
-      <input
-        name="test"
-        tuiRadio
-        type="radio"
-      />
-      Не удалять
-    </label>
-  </p>
-  <p>
-    <label tuiLabel>
-      <input
-        name="test"
-        tuiRadio
-        type="radio"
-      />
-      Выбрать время
-    </label>
-  </p>
+    @if (!useDefault) {
+      <app-input-lifetime formControlName="latestReleaseLifetime">
+        <label tuiLabel>Удалять последний релиз</label>
+      </app-input-lifetime>
+      <app-input-lifetime formControlName="releaseLifetime">
+        <label tuiLabel>Удалять остальные релизы</label>
+      </app-input-lifetime>
+    }
+    <button tuiButton size="m" iconStart="@tui.save" [disabled]="!(canSave$ | async)" (click)="saveChanges()">
+      Сохранить
+    </button>
+  </form>
 </ng-template>

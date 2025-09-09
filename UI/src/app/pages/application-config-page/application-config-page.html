@@ -18,8 +18,12 @@
     </tui-textfield>
     <label tuiLabel class="label">Время жизни релиза по умолчанию:</label>
     <div class="release-lifetime-container">
-      <app-input-lifetime formControlName="latestReleaseLifetime">Удалять последний релиз</app-input-lifetime>
-      <app-input-lifetime formControlName="releaseLifetime">Удалять остальные релизы</app-input-lifetime>
+      <app-input-lifetime formControlName="latestReleaseLifetime">
+        <label tuiLabel>Удалять последний релиз</label>
+      </app-input-lifetime>
+      <app-input-lifetime formControlName="releaseLifetime">
+        <label tuiLabel>Удалять остальные релизы</label>
+      </app-input-lifetime>
     </div>
   </form>
   <div class="buttons-container">

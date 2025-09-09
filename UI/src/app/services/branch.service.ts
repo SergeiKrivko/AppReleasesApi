@@ -3,9 +3,9 @@ import {BranchEntity} from '../entities/branch-entity';
 import {LoadingStatus} from '../entities/loading-status';
 import {getState, patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {ApiClient, Branch, CreateBranchSchema} from './api-client';
-import {EMPTY, first, map, Observable, switchMap, tap} from 'rxjs';
-import {duration} from 'moment';
+import {ApiClient, Branch, CreateBranchSchema, UpdateBranchSchema} from './api-client';
+import {EMPTY, first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {Duration, duration} from 'moment';
 import {ApplicationService} from './application.service';
 
 interface BranchStore {
@@ -93,10 +93,31 @@ export class BranchService {
       })
     )
   }
+
+  updateBranch(
+    id: string,
+    useDefaultReleaseLifetime: boolean,
+    latestReleaseLifetime: Duration | null,
+    releaseLifetime: Duration | null
+  ): Observable<any> {
+    return this.branchById(id).pipe(
+      first(),
+      switchMap(branch => {
+        if (branch)
+          return this.apiClient.branchesPUT(branch.applicationId, branch.id, UpdateBranchSchema.fromJS({
+            useDefaultReleaseLifetime, latestReleaseLifetime, releaseLifetime
+          })).pipe(
+            switchMap(() => this.loadBranches(branch.applicationId))
+          );
+        return NEVER;
+      })
+    );
+  }
 }
 
 const branchToEntity = (branch: Branch): BranchEntity => ({
   id: branch.id ?? "",
+  applicationId: branch.applicationId ?? "",
   name: branch.name ?? "",
   releaseLifetime: branch.releaseLifetime ? duration(branch.releaseLifetime) : null,
   latestReleaseLifetime: branch.latestReleaseLifetime ? duration(branch.latestReleaseLifetime) : null,

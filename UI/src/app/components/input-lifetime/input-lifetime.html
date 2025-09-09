@@ -3,11 +3,11 @@
     <ng-content></ng-content>
     <input tuiSwitch type="checkbox" formControlName="switch"/>
     @if (control.value.switch) {
-      <span>Через</span>
+      <label tuiLabel>через</label>
       <tui-textfield class="duration-days-field">
         <input tuiInputNumber formControlName="days"/>
       </tui-textfield>
-      <span>дней</span>
+      <label tuiLabel>дней</label>
     }
   </form>
 </div>
