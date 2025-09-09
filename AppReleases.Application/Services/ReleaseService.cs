@@ -25,6 +25,11 @@ public class ReleaseService(
         return releaseRepository.GetAllReleasesOfApplicationAsync(applicationId);
     }
 
+    public Task<IEnumerable<Release>> GetAllReleasesOfBranchAsync(Guid branchId)
+    {
+        return releaseRepository.GetAllReleasesOfBranchAsync(branchId);
+    }
+
     public async Task<ReleaseDifference> GetReleaseDifferenceAsync(AssetInfo[] assets)
     {
         var toUpload = new List<string>();
@@ -94,6 +99,11 @@ public class ReleaseService(
     public Task UpdateReleaseAsync(Guid releaseId, string? description)
     {
         return releaseRepository.UpdateReleaseAsync(releaseId, description);
+    }
+
+    public Task DeleteReleaseAsync(Guid release)
+    {
+        return releaseRepository.DeleteReleaseAsync(release);
     }
 
     private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);

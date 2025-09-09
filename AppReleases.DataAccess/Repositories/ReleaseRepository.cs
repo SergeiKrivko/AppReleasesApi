@@ -61,7 +61,7 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
     public async Task DeleteReleaseAsync(Guid id)
     {
         await dbContext.Releases.Where(x => x.ReleaseId == id)
-            .ExecuteDeleteAsync();
+            .ExecuteUpdateAsync(x => x.SetProperty(e => e.DeletedAt, DateTime.UtcNow));
         await dbContext.SaveChangesAsync();
     }
 

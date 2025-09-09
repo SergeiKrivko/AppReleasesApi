@@ -9,4 +9,7 @@ public interface IAssetRepository
     public Task<Asset> CreateAssetAsync(Asset asset);
     public Task<Asset?> FindAssetAsync(string fileName, string fileHash);
     public Task AddAssetToReleaseAsync(Guid assetId, Guid releaseId);
+    public Task DeleteAssetAsync(Guid assetId);
+
+    public Task<IEnumerable<Asset>> GetUnusedAssetsAsync();
 }

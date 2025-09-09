@@ -39,11 +39,13 @@ builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<IReleaseService, ReleaseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ICleanerService, CleanerService>();
 
 builder.Services.AddScoped<BasicAuthService>();
 builder.Services.AddScoped<AuthorizationHelper>();
 
 builder.Services.AddHostedService<TempFileCleanerService>();
+builder.Services.AddHostedService<ReleaseCleanerService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

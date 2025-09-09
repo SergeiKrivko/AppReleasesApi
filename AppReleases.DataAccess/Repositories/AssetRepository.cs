@@ -42,6 +42,14 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
         return entity is null ? null : AssetFromEntity(entity);
     }
 
+    public async Task DeleteAssetAsync(Guid assetId)
+    {
+        await dbContext.Assets
+            .Where(x => x.AssetId == assetId)
+            .ExecuteUpdateAsync(x => x.SetProperty(e => e.DeletedAt, DateTime.UtcNow));
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task AddAssetToReleaseAsync(Guid assetId, Guid releaseId)
     {
         await dbContext.ReleaseAssets.AddAsync(new ReleaseAssetEntity
@@ -51,6 +59,15 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
             Id = Guid.NewGuid(),
         });
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Asset>> GetUnusedAssetsAsync()
+    {
+        var assets = await dbContext.Assets
+            .Include(e => e.Releases)
+            .Where(e => e.DeletedAt == null && e.Releases.All(r => r.DeletedAt != null))
+            .ToArrayAsync();
+        return assets.Select(AssetFromEntity);
     }
 
     private static Asset AssetFromEntity(AssetEntity entity)
