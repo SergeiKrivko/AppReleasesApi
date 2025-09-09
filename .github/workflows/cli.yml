@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: |
           mkdir nuget
-          dotnet pack Avalux.Releases.Cli -o nuget
+          dotnet pack AppReleases.Cli -o nuget
           
       - name: Publish on nuget.org
         run: |
