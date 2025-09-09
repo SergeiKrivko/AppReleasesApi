@@ -66,7 +66,7 @@ export class SingleReleasePage implements OnInit {
     tap(release => this.control.setValue(release?.releaseNotes ?? ""))
   );
 
-  protected releaseAssets$: Observable<TreeNode[]> = this.selectedRelease$.pipe(
+  protected releaseAssets$: Observable<TreeNode> = this.selectedRelease$.pipe(
     switchMap(release => {
       if (release)
         return this.releaseService.listReleaseAssets(release?.id);
@@ -76,7 +76,7 @@ export class SingleReleasePage implements OnInit {
   );
 
   protected readonly handler: TuiHandler<TreeNode, readonly TreeNode[]> = (item) =>
-    item.children || EMPTY_ARRAY;
+    item?.children || EMPTY_ARRAY;
 
   protected downloadReleaseAssets() {
     this.selectedRelease$.pipe(
@@ -128,7 +128,7 @@ export class SingleReleasePage implements OnInit {
 }
 
 const assetsListToTree = (assetsList: string[]) => {
-  const root: TreeNode = {name: '', children: []};
+  const root: TreeNode = {name: '/', children: []};
 
   assetsList.forEach(filePath => {
     const parts = filePath.replace('\\', '/').split('/').filter(part => part !== '');
@@ -146,5 +146,5 @@ const assetsListToTree = (assetsList: string[]) => {
     });
   });
 
-  return root.children;
+  return root;
 }
