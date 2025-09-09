@@ -4,13 +4,15 @@ import {ActivatedRoute, RouterOutlet} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NEVER, switchMap, tap} from 'rxjs';
 import {ApplicationService} from '../../services/application.service';
+import {TuiScrollbar} from '@taiga-ui/core';
 
 @Component({
   standalone: true,
   selector: 'app-application-page',
   imports: [
     Header,
-    RouterOutlet
+    RouterOutlet,
+    TuiScrollbar
   ],
   templateUrl: './application-page.html',
   styleUrl: './application-page.scss',

@@ -18,10 +18,10 @@
   .content-wrapper {
     overflow-y: auto;
     @media (min-width: 600px) {
-      padding: 0 5rem;
+      padding: 0 5rem 1rem 5rem;
     }
     @media (max-width: 599px) {
-      padding: 0 0.5rem;
+      padding: 0.5rem;
     }
   }
 }
