@@ -12,7 +12,12 @@
           <h3>{{ release.version }}</h3>
           <tui-chip>{{ (release.branchId | branchById | async)?.name }}</tui-chip>
           <span>{{ release.platform }}</span>
-          <span>{{ release.createdAt | dateFromNow }}</span>
+          <div class="time-container">
+            <span>{{ release.createdAt | dateFromNow }}</span>
+            @if (release.deletedAt) {
+              <tui-chip appearance="negative">Удален</tui-chip>
+            }
+          </div>
         </div>
       </button>
 
