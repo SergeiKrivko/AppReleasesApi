@@ -8,8 +8,8 @@
         <PackageId>Avalux.Releases.Tools</PackageId>
         <PackageVersion>1.0.0</PackageVersion>
         <ToolCommandName>dotnet-avalux-releases</ToolCommandName>
-        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
