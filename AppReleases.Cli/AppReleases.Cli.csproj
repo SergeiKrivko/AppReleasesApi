@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>Avalux.Releases.Tools</PackageId>
+        <PackAsTool>true</PackAsTool>
         <PackageVersion>1.0.0</PackageVersion>
         <ToolCommandName>dotnet-avalux-releases</ToolCommandName>
         <PackageReadmeFile>README.md</PackageReadmeFile>
