@@ -11,6 +11,7 @@ public class AppReleasesDbContext : DbContext
     public DbSet<AssetEntity> Assets { get; init; }
     public DbSet<ReleaseAssetEntity> ReleaseAssets { get; init; }
     public DbSet<BranchEntity> Branches { get; init; }
+    public DbSet<InstallerEntity> Installers { get; init; }
 
     public AppReleasesDbContext(DbContextOptions<AppReleasesDbContext> options) : base(options)
     {
