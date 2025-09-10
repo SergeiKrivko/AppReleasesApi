@@ -18,5 +18,6 @@ public interface IFileRepository
 public enum FileRepositoryBucket
 {
     Assets,
-    Temp
+    Temp,
+    Installers
 }

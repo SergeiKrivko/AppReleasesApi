@@ -14,7 +14,8 @@ public class ReleasesController(
     AuthorizationHelper authorizationHelper,
     IReleaseService releaseService,
     IApplicationService applicationService,
-    IBranchService branchService) : Controller
+    IBranchService branchService,
+    IInstallerService installerService) : Controller
 {
     [HttpPost("diff")]
     [Authorize(AuthenticationSchemes = "Bearer")]
@@ -97,5 +98,39 @@ public class ReleasesController(
     {
         var result = await releaseService.PackAssetsAsync(releaseId, assets);
         return Ok(result);
+    }
+
+    [HttpGet("{releaseId:guid}/installers")]
+    public async Task<ActionResult<Installer>> GetReleaseInstallers(Guid releaseId)
+    {
+        var installers = await installerService.GetAllInstallersAsync(releaseId);
+        return Ok(installers);
+    }
+
+    [HttpPost("{releaseId:guid}/installers")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    public async Task<ActionResult<Installer>> CreateReleaseInstaller(Guid releaseId, IFormFile file)
+    {
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
+
+        if (await installerService.FindInstallerAsync(releaseId, file.FileName) is not null)
+            return Conflict("Installer already exists");
+
+        var installer = await installerService.CreateInstallerAsync(releaseId, file.FileName, file.OpenReadStream());
+        return Ok(installer);
+    }
+
+    [HttpGet("{releaseId:guid}/installers/{installerId:guid}/download")]
+    public async Task<ActionResult<Installer>> GetDownloadInstallerUrl(Guid releaseId, Guid installerId)
+    {
+        var url = await installerService.GetDownloadUrlAsync(installerId);
+        return Ok(new DownloadUrlResponseSchema
+        {
+            Url = url
+        });
     }
 }
