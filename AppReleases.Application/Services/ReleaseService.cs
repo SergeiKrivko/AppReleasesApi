@@ -2,13 +2,15 @@
 using System.Text.Json;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AppReleases.Application.Services;
 
 public class ReleaseService(
     IReleaseRepository releaseRepository,
     IAssetRepository assetRepository,
-    IFileRepository fileRepository) : IReleaseService
+    IFileRepository fileRepository,
+    ILogger<ReleaseService> logger) : IReleaseService
 {
     public Task<Release> GetReleaseByIdAsync(Guid releaseId)
     {
@@ -54,8 +56,10 @@ public class ReleaseService(
     public async Task UploadAssetsAsync(Guid releaseId, AssetInfo[] assets, Stream zipStream)
     {
         using var zip = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        int count = 0;
         foreach (var asset in assets)
         {
+            logger.LogInformation("{done} / {all} --- Uploading asset {asset}", count, assets.Length, asset.FileName);
             var existing = await assetRepository.FindAssetAsync(asset.FileName, asset.FileHash);
             if (existing == null)
             {
@@ -69,6 +73,8 @@ public class ReleaseService(
             }
 
             await assetRepository.AddAssetToReleaseAsync(existing.Id, releaseId);
+            count++;
+            logger.LogInformation("{done} / {all} --- Asset {asset} uploaded", count, assets.Length, asset.FileName);
         }
     }
 
@@ -156,7 +162,8 @@ public class ReleaseService(
         var deletedAssets = existingAssets
             .Where(a => assets.FirstOrDefault(e => e.FileName == a.FileName && e.FileHash == a.FileHash) == null);
         var modifiedAssets = assets
-            .Where(a => existingAssets.FirstOrDefault(e => e.FileName == a.FileName && e.FileHash == a.FileHash) == null)
+            .Where(a => existingAssets.FirstOrDefault(e => e.FileName == a.FileName && e.FileHash == a.FileHash) ==
+                        null)
             .ToList();
         var zipUrl = await PackAssetsZipAsync(modifiedAssets);
         return new AssetsPack
