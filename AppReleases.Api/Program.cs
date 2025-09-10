@@ -4,7 +4,6 @@ using AppReleases.Application.Services;
 using AppReleases.Core.Abstractions;
 using AppReleases.DataAccess;
 using AppReleases.DataAccess.Repositories;
-using AppReleases.Models;
 using AppReleases.S3;
 using AspNetCore.Authentication.Basic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

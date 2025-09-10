@@ -1,27 +1,23 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using AppReleases.Core.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace AppReleases.S3;
 
-public class S3Repository : IFileRepository
+public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
 {
-    private readonly AmazonS3Client _s3Client;
-
-    public S3Repository()
-    {
-        _s3Client = new AmazonS3Client(
-            new BasicAWSCredentials(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"),
-                Environment.GetEnvironmentVariable("S3_SECRET_KEY")),
-            new AmazonS3Config
-            {
-                ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
-                AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
-                ForcePathStyle = true
-            });
-    }
+    private readonly AmazonS3Client _s3Client = new(
+        new BasicAWSCredentials(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"),
+            Environment.GetEnvironmentVariable("S3_SECRET_KEY")),
+        new AmazonS3Config
+        {
+            ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
+            AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
+            ForcePathStyle = true
+        });
 
     public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId)
     {
@@ -76,8 +72,13 @@ public class S3Repository : IFileRepository
 
     private async Task<Stream> DownloadFileAsync(string bucket, string fileName)
     {
-        return (await _s3Client.GetObjectAsync(bucket, fileName))
+        var stopwatch = Stopwatch.StartNew();
+        var stream = (await _s3Client.GetObjectAsync(bucket, fileName))
             .ResponseStream;
+        stopwatch.Stop();
+        logger.LogInformation("Object '{name}' downloaded from '{bucket}' in {time}.'", fileName, bucket,
+            stopwatch.Elapsed);
+        return stream;
     }
 
     private async Task DeleteFileAsync(string bucket, string fileName)
@@ -87,7 +88,12 @@ public class S3Repository : IFileRepository
             BucketName = bucket,
             Key = fileName,
         };
+
+        var stopwatch = Stopwatch.StartNew();
         await _s3Client.DeleteObjectAsync(deleteRequest);
+        stopwatch.Stop();
+        logger.LogInformation("Object '{name}' deleted from '{bucket}' in {time}.'", fileName, bucket,
+            stopwatch.Elapsed);
     }
 
     private async Task<bool> FileExistsAsync(string bucket, string fileName)
@@ -119,7 +125,11 @@ public class S3Repository : IFileRepository
             ContentType = "application/octet-stream"
         };
 
+        var stopwatch = Stopwatch.StartNew();
         await _s3Client.PutObjectAsync(putRequest);
+        stopwatch.Stop();
+        logger.LogInformation("Object '{name}' uploaded to '{bucket}' in {time}.'", fileName, bucket,
+            stopwatch.Elapsed);
     }
 
     private async Task<string> GetDownloadUrlAsync(string bucket, string fileName, TimeSpan timeout)
@@ -130,7 +140,11 @@ public class S3Repository : IFileRepository
             Key = fileName,
             Expires = DateTime.UtcNow.Add(timeout)
         };
-        return await _s3Client.GetPreSignedURLAsync(request);
+        var stopwatch = Stopwatch.StartNew();
+        var url = await _s3Client.GetPreSignedURLAsync(request);
+        stopwatch.Stop();
+        logger.LogInformation("Url for object '{name}' in '{bucket}' get in {time}", fileName, bucket, stopwatch.Elapsed);
+        return url;
     }
 
     public async Task<int> ClearFilesCreatedBefore(FileRepositoryBucket bucket, DateTime beforeDate,
@@ -147,11 +161,15 @@ public class S3Repository : IFileRepository
                 count++;
             }
         }
+
         return count;
     }
 
     private static string AssetsBucket { get; } = Environment.GetEnvironmentVariable("S3_ASSETS_BUCKET") ?? "assets";
     private static string TempBucket { get; } = Environment.GetEnvironmentVariable("S3_TEMP_BUCKET") ?? "temp";
+
+    private static string InstallersBucket { get; } =
+        Environment.GetEnvironmentVariable("S3_INSTALLERS_BUCKET") ?? "temp";
 
     private static string GetBucket(FileRepositoryBucket bucket)
     {
@@ -159,6 +177,7 @@ public class S3Repository : IFileRepository
         {
             FileRepositoryBucket.Assets => AssetsBucket,
             FileRepositoryBucket.Temp => TempBucket,
+            FileRepositoryBucket.Installers => InstallersBucket,
             _ => throw new ArgumentOutOfRangeException(nameof(bucket), bucket, null)
         };
     }
