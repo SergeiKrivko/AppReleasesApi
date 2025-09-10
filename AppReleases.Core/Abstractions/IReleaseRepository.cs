@@ -11,4 +11,5 @@ public interface IReleaseRepository
     public Task<Release> CreateReleaseAsync(Release release);
     public Task UpdateReleaseAsync(Guid id, string? notes);
     public Task DeleteReleaseAsync(Guid id);
+    public Task<Release?> FindReleaseAsync(Guid branchId, string? platform, Version version);
 }

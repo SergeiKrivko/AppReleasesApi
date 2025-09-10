@@ -34,6 +34,10 @@ public class ReleasesController(
         var application = await applicationService.GetApplicationByKeyAsync(schema.ApplicationKey);
         var branch =
             await branchService.GetOrCreateBranchAsync(application.Id, schema.Branch ?? application.MainBranch);
+
+        if (await releaseService.FindReleaseAsync(branch.Id, schema.Platform, schema.Version) is not null)
+            return Conflict("Release already exists");
+
         var result = await releaseService.CreateReleaseAsync(branch.Id, schema.Platform, schema.Version);
         return Ok(result);
     }

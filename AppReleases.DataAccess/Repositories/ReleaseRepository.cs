@@ -65,6 +65,14 @@ public class ReleaseRepository(AppReleasesDbContext dbContext) : IReleaseReposit
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<Release?> FindReleaseAsync(Guid branchId, string? platform, Version version)
+    {
+        var result = await dbContext.Releases
+            .Where(r => r.BranchId == branchId && r.Platform == platform && r.Version == version.ToString())
+            .SingleOrDefaultAsync();
+        return result is null ? null : ReleaseFromEntity(result);
+    }
+
     private static Release ReleaseFromEntity(ReleaseEntity entity)
     {
         return new Release

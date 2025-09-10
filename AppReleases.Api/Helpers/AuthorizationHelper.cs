@@ -16,7 +16,7 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
     }
 
     public Task<bool> VerifyApplication(ClaimsPrincipal principal, Models.Application application) =>
-        VerifyApplication(principal, application.Name);
+        VerifyApplication(principal, application.Key);
 
     public async Task<bool> VerifyApplication(ClaimsPrincipal principal, string applicationName)
     {

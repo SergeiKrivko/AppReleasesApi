@@ -30,6 +30,11 @@ public class ReleaseService(
         return releaseRepository.GetAllReleasesOfBranchAsync(branchId);
     }
 
+    public Task<Release?> FindReleaseAsync(Guid branchId, string? platform, Version version)
+    {
+        return releaseRepository.FindReleaseAsync(branchId, platform, version);
+    }
+
     public async Task<ReleaseDifference> GetReleaseDifferenceAsync(AssetInfo[] assets)
     {
         var toUpload = new List<string>();
