@@ -10,7 +10,8 @@ public class ApiClient(string baseUrl, string apiKey)
     private readonly HttpClient _httpClient = new()
     {
         BaseAddress = new Uri(baseUrl),
-        DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", apiKey) }
+        DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", apiKey) },
+        Timeout = TimeSpan.FromMinutes(10),
     };
 
     public async Task<Release> CreateReleaseAsync(string key, string? branch, string? platform, Version version)
