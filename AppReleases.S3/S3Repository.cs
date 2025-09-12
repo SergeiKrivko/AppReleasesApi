@@ -37,15 +37,15 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             ConnectTimeout = TimeSpan.FromSeconds(2),
         });
 
-    private Task<TResult> RetryRequest<TResult>(Func<AmazonS3Client, Task<TResult>> action)
+    private async Task<TResult> RetryRequest<TResult>(Func<AmazonS3Client, Task<TResult>> action)
     {
         try
         {
-            return action(_s3Client);
+            return await action(_s3Client);
         }
         catch (TimeoutException)
         {
-            return action(_retryS3Client);
+            return await action(_retryS3Client);
         }
     }
 
