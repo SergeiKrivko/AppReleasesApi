@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, injec
 import {TuiButton, TuiIcon, TuiLabel, TuiTextfieldComponent} from '@taiga-ui/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ReleaseService} from '../../services/release.service';
-import {first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {catchError, first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import {EMPTY_ARRAY, TuiHandler, TuiLet} from '@taiga-ui/cdk';
@@ -78,7 +78,10 @@ export class SingleReleasePage implements OnInit {
   protected readonly handler: TuiHandler<TreeNode, readonly TreeNode[]> = (item) =>
     item?.children || EMPTY_ARRAY;
 
+  protected isAssetsDownloading: boolean = false;
+
   protected downloadReleaseAssets() {
+    this.isAssetsDownloading = true;
     this.selectedRelease$.pipe(
       first(),
       switchMap(release => {
@@ -86,7 +89,14 @@ export class SingleReleasePage implements OnInit {
           return this.releaseService.getDownloadReleaseAssetsUrl(release.id);
         return NEVER;
       }),
+      catchError(() => {
+        this.isAssetsDownloading = false;
+        this.changeDetectorRef.detectChanges();
+        return NEVER;
+      }),
       tap(url => {
+        this.isAssetsDownloading = false;
+        this.changeDetectorRef.detectChanges();
         if (url)
           window.location.href = url;
       })
