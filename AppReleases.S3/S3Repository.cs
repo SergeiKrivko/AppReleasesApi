@@ -31,7 +31,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
             AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
             ForcePathStyle = true,
-            Timeout = TimeSpan.FromSeconds(30),
+            Timeout = TimeSpan.FromSeconds(15),
             RetryMode = RequestRetryMode.Standard,
             MaxErrorRetry = 3,
             ConnectTimeout = TimeSpan.FromSeconds(2),
@@ -156,7 +156,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         };
 
         var stopwatch = Stopwatch.StartNew();
-        await RetryRequest(client => client.PutObjectAsync(putRequest));
+        await _retryS3Client.PutObjectAsync(putRequest);
         stopwatch.Stop();
         logger.LogInformation("Object '{name}' uploaded to '{bucket}' in {time}.'", fileName, bucket,
             stopwatch.Elapsed);
