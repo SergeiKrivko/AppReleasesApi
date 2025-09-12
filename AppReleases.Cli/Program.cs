@@ -24,6 +24,7 @@ if (arguments.Directory is not null)
             FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
         }).ToArray();
 
+    Console.WriteLine("Uploading assets:");
     foreach (var asset in assets)
     {
         Console.WriteLine($"{asset.FileName} ----- {asset.FileHash}");
@@ -45,6 +46,13 @@ if (arguments.Directory is not null)
 
         await client.UploadReleaseAssets(release.Id, assets, new MemoryStream(zipStream.ToArray()));
     }
-
-    Console.WriteLine("DONE");
+    Console.WriteLine();
 }
+
+foreach (var installer in arguments.Installers)
+{
+    Console.WriteLine($"Uploading installer '{installer}'...");
+    await client.UploadReleaseInstaller(release.Id, installer);
+}
+
+Console.WriteLine("DONE");

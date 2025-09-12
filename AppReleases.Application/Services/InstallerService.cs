@@ -30,7 +30,7 @@ public class InstallerService(
             ReleaseId = releaseId,
             FileId = Guid.NewGuid(),
             FileName = fileName,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
         };
         await installerRepository.CreateInstallerAsync(installer);
         await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, installer.FileId,

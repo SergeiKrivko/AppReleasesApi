@@ -35,6 +35,7 @@ public class InstallerRepository(AppReleasesDbContext dbContext) : IInstallerRep
     {
         var entity = InstallerToEntity(installer);
         await dbContext.Installers.AddAsync(entity);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteInstallerAsync(Guid installerId)
