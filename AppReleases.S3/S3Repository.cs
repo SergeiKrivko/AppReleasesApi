@@ -17,11 +17,37 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
             AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
             ForcePathStyle = true,
-            Timeout = TimeSpan.FromSeconds(15),
+            Timeout = TimeSpan.FromSeconds(2),
+            RetryMode = RequestRetryMode.Standard,
+            MaxErrorRetry = 0,
+            ConnectTimeout = TimeSpan.FromSeconds(2),
+        });
+
+    private readonly AmazonS3Client _retryS3Client = new(
+        new BasicAWSCredentials(Environment.GetEnvironmentVariable("S3_ACCESS_KEY"),
+            Environment.GetEnvironmentVariable("S3_SECRET_KEY")),
+        new AmazonS3Config
+        {
+            ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
+            AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
+            ForcePathStyle = true,
+            Timeout = TimeSpan.FromSeconds(30),
             RetryMode = RequestRetryMode.Standard,
             MaxErrorRetry = 3,
             ConnectTimeout = TimeSpan.FromSeconds(2),
         });
+
+    private Task<TResult> RetryRequest<TResult>(Func<AmazonS3Client, Task<TResult>> action)
+    {
+        try
+        {
+            return action(_s3Client);
+        }
+        catch (TimeoutException)
+        {
+            return action(_retryS3Client);
+        }
+    }
 
     public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId)
     {
@@ -77,7 +103,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
     private async Task<Stream> DownloadFileAsync(string bucket, string fileName)
     {
         var stopwatch = Stopwatch.StartNew();
-        var stream = (await _s3Client.GetObjectAsync(bucket, fileName))
+        var stream = (await RetryRequest(client => client.GetObjectAsync(bucket, fileName)))
             .ResponseStream;
         stopwatch.Stop();
         logger.LogInformation("Object '{name}' downloaded from '{bucket}' in {time}.'", fileName, bucket,
@@ -94,7 +120,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         };
 
         var stopwatch = Stopwatch.StartNew();
-        await _s3Client.DeleteObjectAsync(deleteRequest);
+        await RetryRequest(client => client.DeleteObjectAsync(deleteRequest));
         stopwatch.Stop();
         logger.LogInformation("Object '{name}' deleted from '{bucket}' in {time}.'", fileName, bucket,
             stopwatch.Elapsed);
@@ -110,7 +136,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
                 Key = fileName,
             };
 
-            await _s3Client.GetObjectMetadataAsync(request);
+            await RetryRequest(client => client.GetObjectMetadataAsync(request));
             return true;
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -130,7 +156,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         };
 
         var stopwatch = Stopwatch.StartNew();
-        await _s3Client.PutObjectAsync(putRequest);
+        await RetryRequest(client => client.PutObjectAsync(putRequest));
         stopwatch.Stop();
         logger.LogInformation("Object '{name}' uploaded to '{bucket}' in {time}.'", fileName, bucket,
             stopwatch.Elapsed);
@@ -145,9 +171,10 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             Expires = DateTime.UtcNow.Add(timeout)
         };
         var stopwatch = Stopwatch.StartNew();
-        var url = await _s3Client.GetPreSignedURLAsync(request);
+        var url = await RetryRequest(client => client.GetPreSignedURLAsync(request));
         stopwatch.Stop();
-        logger.LogInformation("Url for object '{name}' in '{bucket}' get in {time}", fileName, bucket, stopwatch.Elapsed);
+        logger.LogInformation("Url for object '{name}' in '{bucket}' get in {time}", fileName, bucket,
+            stopwatch.Elapsed);
         return url;
     }
 
@@ -156,7 +183,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
     {
         var count = 0;
         var bucketName = GetBucket(bucket);
-        var files = await _s3Client.ListObjectsAsync(bucketName, cancellationToken);
+        var files = await RetryRequest(client => client.ListObjectsAsync(bucketName, cancellationToken));
         foreach (var file in files?.S3Objects ?? [])
         {
             if (file != null && file.LastModified < beforeDate)
