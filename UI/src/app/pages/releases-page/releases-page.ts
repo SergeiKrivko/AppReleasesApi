@@ -90,9 +90,9 @@ export class ReleasesPage {
   ).pipe(
     map(([releases, filters, ..._]) => {
       const branches = filters.branches;
-      console.log(branches);
       if (branches && branches.length > 0)
         releases = releases.filter(r => branches.map(b => b.id).includes(r.branchId));
+      releases.sort((a, b) => b.createdAt.diff(a.createdAt));
       return releases;
     })
   );
