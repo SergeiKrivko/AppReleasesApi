@@ -49,7 +49,7 @@ public class InstallerService(
     public async Task<string> GetDownloadUrlAsync(Guid installerId)
     {
         var installer = await installerRepository.GetInstallerByIdAsync(installerId);
-        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, installerId,
+        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, installer.FileId,
             Path.GetExtension(installer.FileName), TimeSpan.FromHours(1));
     }
 }

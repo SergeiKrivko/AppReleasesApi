@@ -56,7 +56,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
 
     public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return DownloadFileAsync(GetBucket(bucket), $"{fileId}.{extension}");
+        return DownloadFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
     }
 
     public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId)
@@ -66,7 +66,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
 
     public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return DeleteFileAsync(GetBucket(bucket), $"{fileId}.{extension}");
+        return DeleteFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
     }
 
     public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId)
@@ -76,7 +76,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
 
     public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
     {
-        return FileExistsAsync(GetBucket(bucket), $"{fileId}.{extension}");
+        return FileExistsAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
     }
 
     public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, Stream fileStream)
@@ -86,7 +86,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
 
     public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension, Stream fileStream)
     {
-        return UploadFileAsync(GetBucket(bucket), $"{fileId}.{extension}", fileStream);
+        return UploadFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension), fileStream);
     }
 
     public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, TimeSpan timeout)
@@ -97,7 +97,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
     public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string extension,
         TimeSpan timeout)
     {
-        return GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}.{extension}", timeout);
+        return GetDownloadUrlAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension), timeout);
     }
 
     private async Task<Stream> DownloadFileAsync(string bucket, string fileName)

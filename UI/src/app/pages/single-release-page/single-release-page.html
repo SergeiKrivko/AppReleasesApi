@@ -33,34 +33,54 @@
       <label tuiLabel class="value">{{ release?.releaseNotes ?? 'Описание отсутствует' }}</label>
     }
   </div>
-  <tui-accordion-item class="assets-accordion">
-    Ассеты
-    <ng-template tuiAccordionItemContent>
-      <div class="accordion-container">
-        <button tuiButton iconStart="@tui.download" size="m" (click)="downloadReleaseAssets()"
-                [loading]="isAssetsDownloading">Загрузить
-        </button>
-        <tui-tree
-          [childrenHandler]="handler"
-          [content]="content"
-          [tuiTreeController]="true"
-          [value]="releaseAssets$ | async"
-        />
-      </div>
-
-      <ng-template
-        #content
-        let-item
-      >
-        <div class="file-container">
-          @if (item?.children.length > 0) {
-            <tui-icon icon="@tui.folder"></tui-icon>
-          } @else {
-            <tui-icon icon="@tui.file"></tui-icon>
-          }
-          {{ item?.name }}
+  @if ((releaseAssets$ | async); as releaseAssets) {
+    <tui-accordion-item class="accordion">
+      Ассеты
+      <ng-template tuiAccordionItemContent>
+        <div class="accordion-container">
+          <button tuiButton iconStart="@tui.download" size="m" (click)="downloadReleaseAssets()"
+                  [loading]="isAssetsDownloading">Загрузить
+          </button>
+          <tui-tree
+            [childrenHandler]="handler"
+            [content]="content"
+            [tuiTreeController]="true"
+            [value]="releaseAssets"
+          />
         </div>
+
+        <ng-template
+          #content
+          let-item
+        >
+          <div class="file-container">
+            @if (item?.children.length > 0) {
+              <tui-icon icon="@tui.folder"></tui-icon>
+            } @else {
+              <tui-icon icon="@tui.file"></tui-icon>
+            }
+            {{ item?.name }}
+          </div>
+        </ng-template>
       </ng-template>
+    </tui-accordion-item>
+  }
+  <tui-accordion-item class="accordion">
+    Установщики
+    <ng-template tuiAccordionItemContent>
+      <div class="installers-container" *tuiLet="releaseInstallers$ | async as releaseInstallers">
+        @if (releaseInstallers?.length) {
+          @for (installer of releaseInstallers ?? []; track installer.id) {
+            <div tuiCardLarge class="installer-card-container">
+              <label tuiLabel>{{ installer.fileName }}</label>
+              <button tuiIconButton iconStart="@tui.download" size="s"
+                      (click)="downloadReleaseInstaller(installer.id)"></button>
+            </div>
+          }
+        } @else {
+          <p>Нет загруженных установщиков для этого релиза. В будущем можно будет загрузить их прямо отсюда</p>
+        }
+      </div>
     </ng-template>
   </tui-accordion-item>
 </div>

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Text.Json;
 using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
@@ -101,7 +102,7 @@ public class ReleasesController(
     }
 
     [HttpGet("{releaseId:guid}/installers")]
-    public async Task<ActionResult<Installer>> GetReleaseInstallers(Guid releaseId)
+    public async Task<ActionResult<IEnumerable<Installer>>> GetReleaseInstallers(Guid releaseId)
     {
         var installers = await installerService.GetAllInstallersAsync(releaseId);
         return Ok(installers);
@@ -125,7 +126,7 @@ public class ReleasesController(
     }
 
     [HttpGet("{releaseId:guid}/installers/{installerId:guid}/download")]
-    public async Task<ActionResult<Installer>> GetDownloadInstallerUrl(Guid releaseId, Guid installerId)
+    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid installerId)
     {
         var url = await installerService.GetDownloadUrlAsync(installerId);
         return Ok(new DownloadUrlResponseSchema

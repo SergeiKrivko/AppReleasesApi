@@ -10,6 +10,8 @@ import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
 import {BranchByIdPipe} from '../../pipes/branch-by-id-pipe';
 import {TuiAccordion, TuiButtonLoading, TuiTextarea, TuiTree} from '@taiga-ui/kit';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {InstallerService} from '../../services/installer.service';
+import {TuiCard} from '@taiga-ui/layout';
 
 interface TreeNode {
   name: string;
@@ -33,7 +35,8 @@ interface TreeNode {
     ReactiveFormsModule,
     TuiTextarea,
     TuiTextfieldComponent,
-    TuiButtonLoading
+    TuiButtonLoading,
+    TuiCard
   ],
   templateUrl: './single-release-page.html',
   styleUrl: './single-release-page.scss',
@@ -41,6 +44,7 @@ interface TreeNode {
 })
 export class SingleReleasePage implements OnInit {
   private readonly releaseService = inject(ReleaseService);
+  private readonly installerService = inject(InstallerService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
@@ -66,7 +70,7 @@ export class SingleReleasePage implements OnInit {
     tap(release => this.control.setValue(release?.releaseNotes ?? ""))
   );
 
-  protected releaseAssets$: Observable<TreeNode> = this.selectedRelease$.pipe(
+  protected releaseAssets$: Observable<TreeNode | null> = this.selectedRelease$.pipe(
     switchMap(release => {
       if (release)
         return this.releaseService.listReleaseAssets(release?.id);
@@ -97,6 +101,18 @@ export class SingleReleasePage implements OnInit {
       tap(url => {
         this.isAssetsDownloading = false;
         this.changeDetectorRef.detectChanges();
+        if (url)
+          window.location.href = url;
+      })
+    ).subscribe();
+  }
+
+  protected readonly releaseInstallers$ = this.installerService.installers$;
+
+  protected downloadReleaseInstaller(id: string) {
+    this.installerService.getDownloadInstallerUrl(id).pipe(
+      tap(url => {
+        console.log(url);
         if (url)
           window.location.href = url;
       })
@@ -137,7 +153,9 @@ export class SingleReleasePage implements OnInit {
   }
 }
 
-const assetsListToTree = (assetsList: string[]) => {
+const assetsListToTree = (assetsList: string[]) : TreeNode | null => {
+  if (assetsList.length == 0)
+    return null;
   const root: TreeNode = {name: '/', children: []};
 
   assetsList.forEach(filePath => {
