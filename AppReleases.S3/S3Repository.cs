@@ -17,9 +17,10 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             ServiceURL = Environment.GetEnvironmentVariable("S3_SERVICE_URL"),
             AuthenticationRegion = Environment.GetEnvironmentVariable("S3_AUTHORIZATION_REGION"),
             ForcePathStyle = true,
-            Timeout = TimeSpan.FromSeconds(30),
+            Timeout = TimeSpan.FromSeconds(15),
             RetryMode = RequestRetryMode.Standard,
-            MaxErrorRetry = 2,
+            MaxErrorRetry = 3,
+            ConnectTimeout = TimeSpan.FromSeconds(2),
         });
 
     public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId)
@@ -106,7 +107,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             var request = new GetObjectMetadataRequest
             {
                 BucketName = bucket,
-                Key = fileName
+                Key = fileName,
             };
 
             await _s3Client.GetObjectMetadataAsync(request);
