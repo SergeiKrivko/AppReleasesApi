@@ -110,6 +110,7 @@ public class ReleasesController(
 
     [HttpPost("{releaseId:guid}/installers")]
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [RequestSizeLimit(104857600)]
     public async Task<ActionResult<Installer>> CreateReleaseInstaller(Guid releaseId, IFormFile file)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
