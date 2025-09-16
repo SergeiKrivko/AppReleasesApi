@@ -26,6 +26,10 @@
             [items]="platforms$ | async"
         />
     </tui-textfield>
+    <div class="switch-container">
+      <label tuiLabel>Показывать удаленные</label>
+      <input tuiSwitch type="checkbox" formControlName="deleted">
+    </div>
   </form>
 
   <div class="releases-container">

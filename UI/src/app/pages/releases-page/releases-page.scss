@@ -12,6 +12,13 @@
     .field {
       width: 20rem;
     }
+
+    .switch-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
   }
 
   .releases-container {

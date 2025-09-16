@@ -13,7 +13,7 @@ import {
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {RouterLink} from '@angular/router';
 import {BranchByIdPipe} from '../../pipes/branch-by-id-pipe';
-import {TuiChevron, TuiChip, TuiDataListWrapper, TuiInputChip, TuiMultiSelect} from '@taiga-ui/kit';
+import {TuiChevron, TuiChip, TuiDataListWrapper, TuiInputChip, TuiMultiSelect, TuiSwitch} from '@taiga-ui/kit';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ApplicationService} from '../../services/application.service';
 import {BranchService} from '../../services/branch.service';
@@ -43,7 +43,8 @@ import {BranchEntity} from '../../entities/branch-entity';
     TuiTextfieldDropdownDirective,
     FormsModule,
     TuiDataList,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TuiSwitch
   ],
   templateUrl: './releases-page.html',
   styleUrl: './releases-page.scss',
@@ -90,6 +91,7 @@ export class ReleasesPage {
   protected readonly control = new FormGroup({
     branches: new FormControl<BranchEntity[]>([]),
     platforms: new FormControl<string[]>([]),
+    deleted: new FormControl<boolean>(false),
   });
 
   protected readonly releases$ = combineLatest(
@@ -98,6 +100,7 @@ export class ReleasesPage {
       startWith({
         branches: [],
         platforms: [],
+        deleted: false,
       })
     )
   ).pipe(
@@ -108,6 +111,8 @@ export class ReleasesPage {
         releases = releases.filter(r => branches.map(b => b.id).includes(r.branchId));
       if (platforms && platforms.length > 0)
         releases = releases.filter(r => !r.platform || platforms.includes(r.platform));
+      if (!filters.deleted)
+        releases = releases.filter(r => !r.deletedAt)
       releases.sort((a, b) => b.createdAt.diff(a.createdAt));
       return releases;
     })
