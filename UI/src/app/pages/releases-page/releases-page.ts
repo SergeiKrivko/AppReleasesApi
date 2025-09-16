@@ -76,8 +76,20 @@ export class ReleasesPage {
     })
   );
 
+  protected readonly platforms$ = this.releaseService.releases$.pipe(
+    map(releases => {
+      const platforms: string[] = [];
+      for (const release of releases) {
+        if (release.platform && !platforms.includes(release.platform))
+          platforms.push(release.platform)
+      }
+      return platforms;
+    })
+  );
+
   protected readonly control = new FormGroup({
     branches: new FormControl<BranchEntity[]>([]),
+    platforms: new FormControl<string[]>([]),
   });
 
   protected readonly releases$ = combineLatest(
@@ -85,13 +97,17 @@ export class ReleasesPage {
     this.control.valueChanges.pipe(
       startWith({
         branches: [],
+        platforms: [],
       })
     )
   ).pipe(
     map(([releases, filters, ..._]) => {
       const branches = filters.branches;
+      const platforms: string[] = filters.platforms ?? [];
       if (branches && branches.length > 0)
         releases = releases.filter(r => branches.map(b => b.id).includes(r.branchId));
+      if (platforms && platforms.length > 0)
+        releases = releases.filter(r => !r.platform || platforms.includes(r.platform));
       releases.sort((a, b) => b.createdAt.diff(a.createdAt));
       return releases;
     })

@@ -16,6 +16,16 @@
         </tui-opt-group>
       </tui-data-list>
     </tui-textfield>
+    <tui-textfield multi tuiChevron class="field">
+        <label tuiLabel>Платформы</label>
+        <input tuiInputChip tuiSelectLike formControlName="platforms" />
+        <tui-data-list-wrapper
+            *tuiTextfieldDropdown
+            new
+            tuiMultiSelectGroup
+            [items]="platforms$ | async"
+        />
+    </tui-textfield>
   </form>
 
   <div class="releases-container">
