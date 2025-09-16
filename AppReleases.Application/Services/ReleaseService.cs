@@ -10,6 +10,7 @@ public class ReleaseService(
     IReleaseRepository releaseRepository,
     IAssetRepository assetRepository,
     IFileRepository fileRepository,
+    IInstallerService installerService,
     ILogger<ReleaseService> logger) : IReleaseService
 {
     public Task<Release> GetReleaseByIdAsync(Guid releaseId)
@@ -115,9 +116,13 @@ public class ReleaseService(
         return releaseRepository.UpdateReleaseAsync(releaseId, description);
     }
 
-    public Task DeleteReleaseAsync(Guid release)
+    public async Task DeleteReleaseAsync(Guid releaseId)
     {
-        return releaseRepository.DeleteReleaseAsync(release);
+        foreach (var installer in await installerService.GetAllInstallersAsync(releaseId))
+        {
+            await installerService.DeleteInstallerAsync(installer.InstallerId);
+        }
+        await releaseRepository.DeleteReleaseAsync(releaseId);
     }
 
     private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);
