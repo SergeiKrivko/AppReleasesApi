@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {TuiButton, TuiIcon, TuiLabel, TuiTextfieldComponent} from '@taiga-ui/core';
+import {TuiButton, TuiIcon, TuiLabel, TuiNotification, TuiTextfieldComponent} from '@taiga-ui/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ReleaseService} from '../../services/release.service';
 import {catchError, first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
@@ -36,7 +36,8 @@ interface TreeNode {
     TuiTextarea,
     TuiTextfieldComponent,
     TuiButtonLoading,
-    TuiCard
+    TuiCard,
+    TuiNotification
   ],
   templateUrl: './single-release-page.html',
   styleUrl: './single-release-page.scss',
