@@ -46,6 +46,7 @@ builder.Services.AddScoped<ICleanerService, CleanerService>();
 
 builder.Services.AddScoped<BasicAuthService>();
 builder.Services.AddScoped<AuthorizationHelper>();
+builder.Services.AddScoped<IMetricsHelper, MetricsHelper>();
 
 builder.Services.AddHostedService<TempFileCleanerService>();
 builder.Services.AddHostedService<ReleaseCleanerService>();

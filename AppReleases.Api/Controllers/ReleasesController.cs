@@ -16,7 +16,8 @@ public class ReleasesController(
     IReleaseService releaseService,
     IApplicationService applicationService,
     IBranchService branchService,
-    IInstallerService installerService) : Controller
+    IInstallerService installerService,
+    IMetricsHelper metricsHelper) : Controller
 {
     [HttpPost("diff")]
     [Authorize(AuthenticationSchemes = "Bearer")]
@@ -86,7 +87,11 @@ public class ReleasesController(
     [HttpGet("{releaseId:guid}/assets/download")]
     public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssets(Guid releaseId)
     {
-        var url = await releaseService.PackAssetsAsync(releaseId);
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        var url = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId),
+            application.Key, branch.Name, releaseId);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url
@@ -94,10 +99,14 @@ public class ReleasesController(
     }
 
     [HttpPost("{releaseId:guid}/assets/download")]
-    public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssetsDifference(Guid releaseId,
+    public async Task<ActionResult<AssetsPack>> DownloadReleaseAssetsDifference(Guid releaseId,
         [FromBody] AssetInfo[] assets)
     {
-        var result = await releaseService.PackAssetsAsync(releaseId, assets);
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        var result = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId, assets),
+            application.Key, branch.Name, releaseId);
         return Ok(result);
     }
 
@@ -129,7 +138,11 @@ public class ReleasesController(
     [HttpGet("{releaseId:guid}/installers/{installerId:guid}/download")]
     public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid installerId)
     {
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
         var url = await installerService.GetDownloadUrlAsync(installerId);
+        metricsHelper.AddDownloadInstaller(application.Key, branch.Name, releaseId, installerId);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url
