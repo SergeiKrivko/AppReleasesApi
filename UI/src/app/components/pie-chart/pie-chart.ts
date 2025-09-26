@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, input, OnInit} from '@angular/core';
-import {PieMetricEntity} from '../../entities/pie-metric-entity';
+import {PieMetricEntity} from '../../entities/metric-entity';
 import {Observable, tap} from 'rxjs';
 import {tuiSum} from '@taiga-ui/cdk';
 import {TuiRingChart} from '@taiga-ui/addon-charts';

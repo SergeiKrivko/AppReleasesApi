@@ -1,0 +1,14 @@
+<div class="pie-container">
+  <label tuiLabel>{{ header() }}</label>
+  <tui-axes
+    class="chart"
+    [axisXLabels]="labelsX"
+    [axisYLabels]="labelsY"
+  >
+    <tui-bar-chart
+      [max]="maximum"
+      [tuiHintContent]="hint"
+      [value]="value"
+    />
+  </tui-axes>
+</div>
