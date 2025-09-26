@@ -1,17 +1,11 @@
 import {inject, Injectable} from '@angular/core';
 import {ApiClient, Metric} from './api-client';
-import {combineLatest, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {map, Observable} from 'rxjs';
 import {MetricEntity} from '../entities/metric-entity';
-import moment from 'moment';
-import {patchState, signalState} from '@ngrx/signals';
-import {toObservable} from '@angular/core/rxjs-interop';
 import {PieMetricEntity} from '../entities/pie-metric-entity';
-
-interface MetricsStore {
-  downloadReleaseMetrics: MetricEntity[];
-  downloadAssetsMetrics: MetricEntity[];
-  downloadInstallerMetrics: MetricEntity[];
-}
+import {ReleaseEntity} from '../entities/release-entity';
+import moment from 'moment';
+import {ApplicationEntity} from '../entities/application-entity';
 
 @Injectable({
   providedIn: 'root'
@@ -19,50 +13,29 @@ interface MetricsStore {
 export class MetricService {
   private readonly apiClient = inject(ApiClient);
 
-  private readonly metrics$$ = signalState<MetricsStore>({
-    downloadReleaseMetrics: [],
-    downloadAssetsMetrics: [],
-    downloadInstallerMetrics: [],
-  });
-
-  private readonly downloadReleaseMetrics$ = toObservable(this.metrics$$.downloadReleaseMetrics);
-
   private getMetrics(query: string): Observable<MetricEntity[]> {
     return this.apiClient.metrics(query, undefined).pipe(
       map(metrics => metrics.map(metricToEntity))
     )
   }
 
-  loadMetrics(): Observable<never> {
-    return combineLatest(
-      this.getMetrics("download_assets_duration_seconds").pipe(
-        tap(m => patchState(this.metrics$$, {downloadAssetsMetrics: m}))
-      ),
-      this.getMetrics("download_installer_total").pipe(
-        tap(m => patchState(this.metrics$$, {downloadInstallerMetrics: m}))
-      ),
-      this.getMetrics("download_release_total").pipe(
-        tap(m => patchState(this.metrics$$, {downloadReleaseMetrics: m}))
-      ),
-    ).pipe(
-      switchMap(() => NEVER),
-    );
-  }
-
-  getReleaseDownloadsCount(releaseId: string): Observable<number> {
-    return this.downloadReleaseMetrics$.pipe(
-      map(metrics => metrics.filter(m => m.fields["release"] == releaseId)[0]),
+  getReleaseDownloadsCount(release: ReleaseEntity): Observable<number> {
+    return this.getMetrics(`increase(download_release_total{release="${release.id}"}[${moment().diff(release.createdAt, 'days')}d])`).pipe(
+      map(metrics => metrics[0]),
       map(metric => metric ? Number(metric.value) ?? 0 : 0)
     )
   }
 
-  getApplicationDownloadForPlatformsCount(applicationKey: string): Observable<PieMetricEntity[]> {
-    return this.downloadReleaseMetrics$.pipe(
-      map(metrics => metrics.filter(m => m.fields["application"] == applicationKey)),
-      map(metrics => metrics.map(m => ({
-        key: m.fields["platform"],
-        value: Number(m.value) ?? 0,
-      })))
+  getApplicationDownloadForPlatformsCount(application: ApplicationEntity): Observable<PieMetricEntity[]> {
+    return this.getMetrics(`increase(download_release_total{application="${application.key}"}[${moment().diff(application.createdAt, 'days')}d])`).pipe(
+      map(metrics => {
+        const map = new Map<string, number>;
+        for (const metric of metrics)
+          map.set(metric.fields["platform"], (map.get(metric.fields["platform"]) ?? 0) + (Number(metric.value) ?? 0));
+        const result: PieMetricEntity[] = [];
+        map.forEach((value, key) => result.push({key, value}));
+        return result;
+      })
     )
   }
 }

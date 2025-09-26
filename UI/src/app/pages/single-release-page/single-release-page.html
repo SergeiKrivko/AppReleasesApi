@@ -38,7 +38,7 @@
       <label tuiLabel class="value">{{ release?.releaseNotes ?? 'Описание отсутствует' }}</label>
     }
     <label tuiLabel class="label">Количество загрузок</label>
-    <label tuiLabel class="value">{{ releaseDownloadCount$ | async }}</label>
+    <label tuiLabel class="value">{{ releaseDownloadCount$ | async | asInteger }}</label>
   </div>
   <tui-accordion>
     @if ((releaseAssets$ | async); as releaseAssets) {

@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, input, OnInit} from '@angular/core';
 import {PieMetricEntity} from '../../entities/pie-metric-entity';
-import {map, Observable, tap} from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import {tuiSum} from '@taiga-ui/cdk';
 import {TuiRingChart} from '@taiga-ui/addon-charts';
 import {AsyncPipe} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TuiLabel} from '@taiga-ui/core';
+import {AsIntegerPipe} from '../../pipes/as-integer-pipe';
 
 @Component({
   standalone: true,
@@ -13,7 +14,8 @@ import {TuiLabel} from '@taiga-ui/core';
   imports: [
     TuiRingChart,
     AsyncPipe,
-    TuiLabel
+    TuiLabel,
+    AsIntegerPipe
   ],
   templateUrl: './pie-chart.html',
   styleUrl: './pie-chart.scss',
@@ -23,15 +25,15 @@ export class PieChart implements OnInit {
   data = input.required<Observable<PieMetricEntity[]>>();
   header = input<string>();
   private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.data().pipe(
       tap(metrics => {
-        console.log(metrics);
         this.values = metrics.map(m => m.value);
         this.labels = metrics.map(m => m.key);
+        this.changeDetectorRef.detectChanges();
       }),
-      map(metrics => metrics.map(m => m.value)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
   }

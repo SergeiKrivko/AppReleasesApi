@@ -13,6 +13,7 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {InstallerService} from '../../services/installer.service';
 import {TuiCard} from '@taiga-ui/layout';
 import {MetricService} from '../../services/metric.service';
+import {AsIntegerPipe} from '../../pipes/as-integer-pipe';
 
 interface TreeNode {
   name: string;
@@ -38,7 +39,8 @@ interface TreeNode {
     TuiTextfieldComponent,
     TuiButtonLoading,
     TuiCard,
-    TuiNotification
+    TuiNotification,
+    AsIntegerPipe
   ],
   templateUrl: './single-release-page.html',
   styleUrl: './single-release-page.scss',
@@ -158,7 +160,7 @@ export class SingleReleasePage implements OnInit {
   protected releaseDownloadCount$ = this.selectedRelease$.pipe(
     switchMap(release => {
       if (release)
-        return this.metricService.getReleaseDownloadsCount(release.id);
+        return this.metricService.getReleaseDownloadsCount(release);
       return of(0);
     })
   )

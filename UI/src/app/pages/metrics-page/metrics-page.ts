@@ -23,7 +23,7 @@ export class MetricsPage {
   protected readonly platformMetrics$ = this.applicationService.selectedApplication$.pipe(
     switchMap(selectedApplication => {
       if (selectedApplication)
-        return this.metricService.getApplicationDownloadForPlatformsCount(selectedApplication.key);
+        return this.metricService.getApplicationDownloadForPlatformsCount(selectedApplication);
       return of([]);
     })
   );
