@@ -42,6 +42,9 @@ public class ReleasesController(
             return Conflict("Release already exists");
 
         var result = await releaseService.CreateReleaseAsync(branch.Id, schema.Platform, schema.Version);
+
+        metricsHelper.PublishDownloadRelease(application.Key, branch.Name, result);
+
         return Ok(result);
     }
 
@@ -74,6 +77,9 @@ public class ReleasesController(
             return Unauthorized();
 
         await releaseService.UploadAssetsAsync(releaseId, assets ?? [], zip.OpenReadStream());
+
+        metricsHelper.PublishDownloadAssets(application.Key, branch.Name, release);
+
         return Ok();
     }
 
@@ -132,6 +138,9 @@ public class ReleasesController(
             return Conflict("Installer already exists");
 
         var installer = await installerService.CreateInstallerAsync(releaseId, file.FileName, file.OpenReadStream());
+
+        metricsHelper.PublishDownloadInstaller(application.Key, branch.Name, release, installer.InstallerId);
+
         return Ok(installer);
     }
 

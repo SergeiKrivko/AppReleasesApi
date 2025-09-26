@@ -73,4 +73,26 @@ public class MetricsHelper : IMetricsHelper
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
             .Inc();
     }
+
+    public void PublishDownloadRelease(string application, string branch, Release release)
+    {
+        _downloadReleaseCounter
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
+            .Publish();
+    }
+
+    public void PublishDownloadAssets(string application, string branch, Release release)
+    {
+        _downloadAssetsHistogram
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
+            .Publish();
+    }
+
+    public void PublishDownloadInstaller(string application, string branch, Release release, Guid installer)
+    {
+        _downloadInstallerCounter
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
+                installer.ToString())
+            .Publish();
+    }
 }
