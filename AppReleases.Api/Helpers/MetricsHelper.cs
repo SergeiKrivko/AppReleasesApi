@@ -7,7 +7,7 @@ namespace AppReleases.Api.Helpers;
 public class MetricsHelper : IMetricsHelper
 {
     private readonly Histogram _downloadAssetsHistogram = Metrics.CreateHistogram(
-        "download_assets_duration_histogram",
+        "download_assets_duration_seconds",
         "Histogram of download assets duration",
         new HistogramConfiguration
         {
@@ -17,7 +17,7 @@ public class MetricsHelper : IMetricsHelper
     );
 
     private readonly Counter _downloadInstallerCounter = Metrics.CreateCounter(
-        "download_installer_counter",
+        "download_installer_total",
         "Counter of download installer",
         new CounterConfiguration
         {
@@ -26,7 +26,7 @@ public class MetricsHelper : IMetricsHelper
     );
 
     private readonly Counter _downloadReleaseCounter = Metrics.CreateCounter(
-        "download_release_counter",
+        "download_release_total",
         "Counter of download release",
         new CounterConfiguration
         {
