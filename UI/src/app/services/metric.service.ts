@@ -5,6 +5,7 @@ import {MetricEntity} from '../entities/metric-entity';
 import moment from 'moment';
 import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {PieMetricEntity} from '../entities/pie-metric-entity';
 
 interface MetricsStore {
   downloadReleaseMetrics: MetricEntity[];
@@ -52,6 +53,16 @@ export class MetricService {
     return this.downloadReleaseMetrics$.pipe(
       map(metrics => metrics.filter(m => m.fields["release"] == releaseId)[0]),
       map(metric => metric ? Number(metric.value) ?? 0 : 0)
+    )
+  }
+
+  getApplicationDownloadForPlatformsCount(applicationKey: string): Observable<PieMetricEntity[]> {
+    return this.downloadReleaseMetrics$.pipe(
+      map(metrics => metrics.filter(m => m.fields["application"] == applicationKey)),
+      map(metrics => metrics.map(m => ({
+        key: m.fields["platform"],
+        value: Number(m.value) ?? 0,
+      })))
     )
   }
 }

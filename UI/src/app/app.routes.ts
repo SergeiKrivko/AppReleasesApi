@@ -7,6 +7,7 @@ import {AuthPage} from './pages/auth-page/auth-page';
 import {TokensPage} from './pages/tokens-page/tokens-page';
 import {SingleReleasePage} from './pages/single-release-page/single-release-page';
 import {ApplicationPage} from './pages/application-page/application-page';
+import {MetricsPage} from './pages/metrics-page/metrics-page';
 
 export const routes: Routes = [
   {path: '', component: HomePage},
@@ -18,6 +19,7 @@ export const routes: Routes = [
       {path: 'releases', component: ReleasesPage,},
       {path: 'releases/:releaseId', component: SingleReleasePage},
       {path: 'branches', component: BranchesPage},
+      {path: 'metrics', component: MetricsPage},
     ]
   },
   {path: "**", redirectTo: "/", pathMatch: "full"}

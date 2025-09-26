@@ -1,0 +1,11 @@
+<div class="pie-container">
+  <label tuiLabel>{{ header() }}</label>
+  <tui-ring-chart
+    class="chart"
+    [value]="values"
+    [(activeItemIndex)]="index"
+  >
+    <span>{{ sum }}</span>
+    <div>{{ label }}</div>
+  </tui-ring-chart>
+</div>
