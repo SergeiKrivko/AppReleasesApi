@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using AppReleases.Core.Abstractions;
+using AppReleases.Models;
 using Prometheus;
 
 namespace AppReleases.Api.Helpers;
@@ -12,7 +13,7 @@ public class MetricsHelper : IMetricsHelper
         new HistogramConfiguration
         {
             Buckets = Histogram.ExponentialBuckets(0.5, 2, 10),
-            LabelNames = ["application", "branch", "release"]
+            LabelNames = ["application", "branch", "release", "platform", "version"]
         }
     );
 
@@ -21,7 +22,7 @@ public class MetricsHelper : IMetricsHelper
         "Counter of download installer",
         new CounterConfiguration
         {
-            LabelNames = ["application", "branch", "release", "installer"]
+            LabelNames = ["application", "branch", "release", "platform", "version", "installer"]
         }
     );
 
@@ -30,20 +31,22 @@ public class MetricsHelper : IMetricsHelper
         "Counter of download release",
         new CounterConfiguration
         {
-            LabelNames = ["application", "branch", "release"]
+            LabelNames = ["application", "branch", "release", "platform", "version"]
         }
     );
 
-    public void AddDownloadAssets(TimeSpan duration, string application, string branch, Guid release)
+    public void AddDownloadAssets(TimeSpan duration, string application, string branch, Release release)
     {
         _downloadAssetsHistogram
-            .WithLabels(application, branch, release.ToString())
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
             .Observe(duration.TotalSeconds);
-        _downloadReleaseCounter.WithLabels(application, branch, release.ToString())
+        _downloadReleaseCounter
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
             .Inc();
     }
 
-    public async Task<T> MeasureDownloadAssets<T>(Func<Task<T>> func, string application, string branch, Guid release)
+    public async Task<T> MeasureDownloadAssets<T>(Func<Task<T>> func, string application, string branch,
+        Release release)
     {
         var stopwatch = Stopwatch.StartNew();
         var result = await func();
@@ -52,7 +55,7 @@ public class MetricsHelper : IMetricsHelper
         return result;
     }
 
-    public async Task MeasureDownloadAssets(Func<Task> func, string application, string branch, Guid release)
+    public async Task MeasureDownloadAssets(Func<Task> func, string application, string branch, Release release)
     {
         var stopwatch = Stopwatch.StartNew();
         await func();
@@ -60,13 +63,14 @@ public class MetricsHelper : IMetricsHelper
         AddDownloadAssets(stopwatch.Elapsed, application, branch, release);
     }
 
-    public void AddDownloadInstaller(string application, string branch, Guid release, Guid installer)
+    public void AddDownloadInstaller(string application, string branch, Release release, Guid installer)
     {
         _downloadInstallerCounter
-            .WithLabels(application, branch, release.ToString(), installer.ToString())
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
+                installer.ToString())
             .Inc();
         _downloadReleaseCounter
-            .WithLabels(application, branch, release.ToString())
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
             .Inc();
     }
 }
