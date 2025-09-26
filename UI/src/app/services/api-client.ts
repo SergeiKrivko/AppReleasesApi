@@ -789,6 +789,76 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @param query (optional)
+     * @param time (optional)
+     * @return OK
+     */
+    metrics(query: string | undefined, time: moment.Moment | undefined): Observable<Metric[]> {
+        let url_ = this.baseUrl + "/api/v1/metrics?";
+        if (query === null)
+            throw new Error("The parameter 'query' cannot be null.");
+        else if (query !== undefined)
+            url_ += "query=" + encodeURIComponent("" + query) + "&";
+        if (time === null)
+            throw new Error("The parameter 'time' cannot be null.");
+        else if (time !== undefined)
+            url_ += "time=" + encodeURIComponent(time ? "" + time.toISOString() : "") + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processMetrics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processMetrics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Metric[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Metric[]>;
+        }));
+    }
+
+    protected processMetrics(response: HttpResponseBase): Observable<Metric[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Metric.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * @param body (optional)
      * @return OK
      */
@@ -1153,7 +1223,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return OK
      */
-    downloadPOST(releaseId: string, body: AssetInfo[] | undefined): Observable<DownloadUrlResponseSchema> {
+    downloadPOST(releaseId: string, body: AssetInfo[] | undefined): Observable<AssetsPack> {
         let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/assets/download";
         if (releaseId === undefined || releaseId === null)
             throw new Error("The parameter 'releaseId' must be defined.");
@@ -1181,14 +1251,14 @@ export class ApiClient extends ApiClientBase {
                 try {
                     return this.processDownloadPOST(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<DownloadUrlResponseSchema>;
+                    return _observableThrow(e) as any as Observable<AssetsPack>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<DownloadUrlResponseSchema>;
+                return _observableThrow(response_) as any as Observable<AssetsPack>;
         }));
     }
 
-    protected processDownloadPOST(response: HttpResponseBase): Observable<DownloadUrlResponseSchema> {
+    protected processDownloadPOST(response: HttpResponseBase): Observable<AssetsPack> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1199,7 +1269,7 @@ export class ApiClient extends ApiClientBase {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = DownloadUrlResponseSchema.fromJS(resultData200);
+            result200 = AssetsPack.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1675,6 +1745,66 @@ export interface IAssetInfo {
     fileHash: string | undefined;
 }
 
+export class AssetsPack implements IAssetsPack {
+    url!: string | undefined;
+    modifiedAssets?: string[] | undefined;
+    deletedAssets?: string[] | undefined;
+
+    constructor(data?: IAssetsPack) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+            if (Array.isArray(_data["modifiedAssets"])) {
+                this.modifiedAssets = [] as any;
+                for (let item of _data["modifiedAssets"])
+                    this.modifiedAssets!.push(item);
+            }
+            if (Array.isArray(_data["deletedAssets"])) {
+                this.deletedAssets = [] as any;
+                for (let item of _data["deletedAssets"])
+                    this.deletedAssets!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AssetsPack {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssetsPack();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        if (Array.isArray(this.modifiedAssets)) {
+            data["modifiedAssets"] = [];
+            for (let item of this.modifiedAssets)
+                data["modifiedAssets"].push(item);
+        }
+        if (Array.isArray(this.deletedAssets)) {
+            data["deletedAssets"] = [];
+            for (let item of this.deletedAssets)
+                data["deletedAssets"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IAssetsPack {
+    url: string | undefined;
+    modifiedAssets?: string[] | undefined;
+    deletedAssets?: string[] | undefined;
+}
+
 export class Branch implements IBranch {
     id?: string;
     applicationId?: string;
@@ -2017,6 +2147,66 @@ export interface IInstaller {
     fileId: string;
     createdAt: moment.Moment;
     deletedAt?: moment.Moment | undefined;
+}
+
+export class Metric implements IMetric {
+    fields!: { [key: string]: string; } | undefined;
+    name!: string | undefined;
+    timestamp?: moment.Moment;
+    value?: string | undefined;
+
+    constructor(data?: IMetric) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (_data["fields"]) {
+                this.fields = {} as any;
+                for (let key in _data["fields"]) {
+                    if (_data["fields"].hasOwnProperty(key))
+                        (<any>this.fields)![key] = _data["fields"][key];
+                }
+            }
+            this.name = _data["name"];
+            this.timestamp = _data["timestamp"] ? moment(_data["timestamp"].toString()) : <any>undefined;
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): Metric {
+        data = typeof data === 'object' ? data : {};
+        let result = new Metric();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.fields) {
+            data["fields"] = {};
+            for (let key in this.fields) {
+                if (this.fields.hasOwnProperty(key))
+                    (<any>data["fields"])[key] = (<any>this.fields)[key];
+            }
+        }
+        data["name"] = this.name;
+        data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IMetric {
+    fields: { [key: string]: string; } | undefined;
+    name: string | undefined;
+    timestamp?: moment.Moment;
+    value?: string | undefined;
 }
 
 export class Release implements IRelease {

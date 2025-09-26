@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, injec
 import {TuiButton, TuiIcon, TuiLabel, TuiNotification, TuiTextfieldComponent} from '@taiga-ui/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ReleaseService} from '../../services/release.service';
-import {catchError, first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {catchError, first, map, NEVER, Observable, of, switchMap, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import {EMPTY_ARRAY, TuiHandler, TuiLet} from '@taiga-ui/cdk';
@@ -12,6 +12,7 @@ import {TuiAccordion, TuiButtonLoading, TuiTextarea, TuiTree} from '@taiga-ui/ki
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {InstallerService} from '../../services/installer.service';
 import {TuiCard} from '@taiga-ui/layout';
+import {MetricService} from '../../services/metric.service';
 
 interface TreeNode {
   name: string;
@@ -46,6 +47,7 @@ interface TreeNode {
 export class SingleReleasePage implements OnInit {
   private readonly releaseService = inject(ReleaseService);
   private readonly installerService = inject(InstallerService);
+  private readonly metricService = inject(MetricService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
@@ -152,6 +154,14 @@ export class SingleReleasePage implements OnInit {
   protected cancelChanges() {
     this.editingDescription = false;
   }
+
+  protected releaseDownloadCount$ = this.selectedRelease$.pipe(
+    switchMap(release => {
+      if (release)
+        return this.metricService.getReleaseDownloadsCount(release.id);
+      return of(0);
+    })
+  )
 }
 
 const assetsListToTree = (assetsList: string[]) : TreeNode | null => {

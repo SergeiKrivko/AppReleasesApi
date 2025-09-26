@@ -9,6 +9,7 @@ import {ReleaseService} from './services/release.service';
 import {AuthService} from './services/auth.service';
 import {TokensService} from './services/tokens.service';
 import {InstallerService} from './services/installer.service';
+import {MetricService} from './services/metric.service';
 
 @Component({
   standalone: true,
@@ -24,6 +25,7 @@ export class App implements OnInit {
   private readonly releaseService = inject(ReleaseService);
   private readonly installerService = inject(InstallerService);
   private readonly authService = inject(AuthService);
+  private readonly metricService = inject(MetricService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
@@ -48,7 +50,8 @@ export class App implements OnInit {
           void this.router.navigateByUrl('auth');
           return NEVER;
         }),
-      )
+      ),
+      this.metricService.loadMetrics(),
     );
   }
 }
