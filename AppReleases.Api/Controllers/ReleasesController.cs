@@ -91,7 +91,7 @@ public class ReleasesController(
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
         var url = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId),
-            application.Key, branch.Name, releaseId);
+            application.Key, branch.Name, release);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url
@@ -106,7 +106,7 @@ public class ReleasesController(
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
         var result = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId, assets),
-            application.Key, branch.Name, releaseId);
+            application.Key, branch.Name, release);
         return Ok(result);
     }
 
@@ -142,7 +142,7 @@ public class ReleasesController(
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
         var url = await installerService.GetDownloadUrlAsync(installerId);
-        metricsHelper.AddDownloadInstaller(application.Key, branch.Name, releaseId, installerId);
+        metricsHelper.AddDownloadInstaller(application.Key, branch.Name, release, installerId);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url
