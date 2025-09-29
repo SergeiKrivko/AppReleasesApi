@@ -54,9 +54,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         return DownloadFileAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
+    public Task<Stream> DownloadFileAsync(FileRepositoryBucket bucket, Guid fileId, string fileName)
     {
-        return DownloadFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
+        return DownloadFileAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}");
     }
 
     public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId)
@@ -64,9 +64,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         return DeleteFileAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
+    public Task DeleteFileAsync(FileRepositoryBucket bucket, Guid fileId, string fileName)
     {
-        return DeleteFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
+        return DeleteFileAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}");
     }
 
     public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId)
@@ -74,9 +74,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         return FileExistsAsync(GetBucket(bucket), fileId.ToString());
     }
 
-    public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId, string extension)
+    public Task<bool> FileExistsAsync(FileRepositoryBucket bucket, Guid fileId, string fileName)
     {
-        return FileExistsAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension));
+        return FileExistsAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}");
     }
 
     public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, Stream fileStream)
@@ -84,9 +84,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         return UploadFileAsync(GetBucket(bucket), fileId.ToString(), fileStream);
     }
 
-    public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, string extension, Stream fileStream)
+    public Task UploadFileAsync(FileRepositoryBucket bucket, Guid fileId, string fileName, Stream fileStream)
     {
-        return UploadFileAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension), fileStream);
+        return UploadFileAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}", fileStream);
     }
 
     public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, TimeSpan timeout)
@@ -94,10 +94,17 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         return GetDownloadUrlAsync(GetBucket(bucket), fileId.ToString(), timeout);
     }
 
-    public Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string extension,
+    public async Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string fileName,
         TimeSpan timeout)
     {
-        return GetDownloadUrlAsync(GetBucket(bucket), Path.ChangeExtension(fileId.ToString(), extension), timeout);
+        try
+        {
+            return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}", timeout);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}.{Path.GetExtension(fileName)}", timeout);
+        }
     }
 
     private async Task<Stream> DownloadFileAsync(string bucket, string fileName)

@@ -33,16 +33,14 @@ public class InstallerService(
             CreatedAt = DateTime.UtcNow,
         };
         await installerRepository.CreateInstallerAsync(installer);
-        await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, installer.FileId,
-            Path.GetExtension(fileName), stream);
+        await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, installer.FileId, fileName, stream);
         return installer;
     }
 
     public async Task DeleteInstallerAsync(Guid installerId)
     {
         var installer = await installerRepository.GetInstallerByIdAsync(installerId);
-        await fileRepository.DeleteFileAsync(FileRepositoryBucket.Installers, installer.FileId,
-            Path.GetExtension(installer.FileName));
+        await fileRepository.DeleteFileAsync(FileRepositoryBucket.Installers, installer.FileId, installer.FileName);
         await installerRepository.DeleteInstallerAsync(installerId);
     }
 
@@ -50,6 +48,6 @@ public class InstallerService(
     {
         var installer = await installerRepository.GetInstallerByIdAsync(installerId);
         return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, installer.FileId,
-            Path.GetExtension(installer.FileName), TimeSpan.FromHours(1));
+            installer.FileName, TimeSpan.FromHours(1));
     }
 }

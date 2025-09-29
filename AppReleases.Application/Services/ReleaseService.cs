@@ -150,11 +150,11 @@ public class ReleaseService(
                 }
             }
 
-            await fileRepository.UploadFileAsync(FileRepositoryBucket.Temp, tempFileId, "zip",
+            await fileRepository.UploadFileAsync(FileRepositoryBucket.Temp, tempFileId, $"{tempFileId}.zip",
                 new MemoryStream(zipStream.ToArray()));
         }
 
-        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Temp, tempFileId, "zip",
+        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Temp, tempFileId, $"{tempFileId}.zip",
             AssetsZipLifetime);
     }
 

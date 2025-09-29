@@ -55,7 +55,7 @@ export class HistogramChart implements OnInit {
   protected readonly hint = ({$implicit}: TuiContext<number>): string =>
     this.value
       .reduce(
-        (result, set) => `${result}${tuiFormatNumber(set[$implicit] ?? 0)}\n`,
+        (result, set) => set[$implicit].toFixed(),
         '',
       )
       .trim();
