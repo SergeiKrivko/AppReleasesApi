@@ -98,7 +98,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
         TimeSpan timeout)
     {
         if (!await FileExistsAsync(bucket, fileId, fileName))
-            return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}.{Path.GetExtension(fileName)}", timeout);
+            return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}{Path.GetExtension(fileName)}", timeout);
         return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}", timeout);
     }
 
