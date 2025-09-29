@@ -97,14 +97,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
     public async Task<string> GetDownloadUrlAsync(FileRepositoryBucket bucket, Guid fileId, string fileName,
         TimeSpan timeout)
     {
-        try
-        {
-            return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}", timeout);
-        }
-        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-        {
+        if (!await FileExistsAsync(bucket, fileId, fileName))
             return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId}.{Path.GetExtension(fileName)}", timeout);
-        }
+        return await GetDownloadUrlAsync(GetBucket(bucket), $"{fileId.ToString()}/{fileName}", timeout);
     }
 
     private async Task<Stream> DownloadFileAsync(string bucket, string fileName)
