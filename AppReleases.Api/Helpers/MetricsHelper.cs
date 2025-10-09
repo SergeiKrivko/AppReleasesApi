@@ -17,12 +17,12 @@ public class MetricsHelper : IMetricsHelper
         }
     );
 
-    private readonly Counter _downloadInstallerCounter = Metrics.CreateCounter(
-        "download_installer_total",
-        "Counter of download installer",
+    private readonly Counter _downloadBundleCounter = Metrics.CreateCounter(
+        "download_bundle_total",
+        "Counter of download bundle",
         new CounterConfiguration
         {
-            LabelNames = ["application", "branch", "release", "platform", "version", "installer"]
+            LabelNames = ["application", "branch", "release", "platform", "version", "bundle"]
         }
     );
 
@@ -63,11 +63,11 @@ public class MetricsHelper : IMetricsHelper
         AddDownloadAssets(stopwatch.Elapsed, application, branch, release);
     }
 
-    public void AddDownloadInstaller(string application, string branch, Release release, Guid installer)
+    public void AddDownloadBundle(string application, string branch, Release release, Guid bundle)
     {
-        _downloadInstallerCounter
+        _downloadBundleCounter
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
-                installer.ToString())
+                bundle.ToString())
             .Inc();
         _downloadReleaseCounter
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
@@ -88,11 +88,11 @@ public class MetricsHelper : IMetricsHelper
             .Publish();
     }
 
-    public void PublishDownloadInstaller(string application, string branch, Release release, Guid installer)
+    public void PublishDownloadBundle(string application, string branch, Release release, Guid bundle)
     {
-        _downloadInstallerCounter
+        _downloadBundleCounter
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
-                installer.ToString())
+                bundle.ToString())
             .Publish();
     }
 }

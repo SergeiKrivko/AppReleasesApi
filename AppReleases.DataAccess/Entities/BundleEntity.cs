@@ -2,9 +2,9 @@
 
 namespace AppReleases.DataAccess.Entities;
 
-public class InstallerEntity
+public class BundleEntity
 {
-    public required Guid InstallerId { get; set; }
+    public required Guid BundleId { get; set; }
     public required Guid ReleaseId { get; set; }
     [MaxLength(64)] public required string FileName { get; set; }
     public required Guid FileId { get; set; }

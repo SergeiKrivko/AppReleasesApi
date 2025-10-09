@@ -19,5 +19,5 @@ public enum FileRepositoryBucket
 {
     Assets,
     Temp,
-    Installers
+    Bundles
 }

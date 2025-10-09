@@ -16,7 +16,7 @@ public class ReleasesController(
     IReleaseService releaseService,
     IApplicationService applicationService,
     IBranchService branchService,
-    IInstallerService installerService,
+    IBundleService bundleService,
     IMetricsHelper metricsHelper) : Controller
 {
     [HttpPost("diff")]
@@ -116,17 +116,17 @@ public class ReleasesController(
         return Ok(result);
     }
 
-    [HttpGet("{releaseId:guid}/installers")]
-    public async Task<ActionResult<IEnumerable<Installer>>> GetReleaseInstallers(Guid releaseId)
+    [HttpGet("{releaseId:guid}/bundles")]
+    public async Task<ActionResult<IEnumerable<Bundle>>> GetReleaseBundles(Guid releaseId)
     {
-        var installers = await installerService.GetAllInstallersAsync(releaseId);
-        return Ok(installers);
+        var bundles = await bundleService.GetAllBundlesAsync(releaseId);
+        return Ok(bundles);
     }
 
-    [HttpPost("{releaseId:guid}/installers")]
+    [HttpPost("{releaseId:guid}/bundles")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     [RequestSizeLimit(104857600)]
-    public async Task<ActionResult<Installer>> CreateReleaseInstaller(Guid releaseId, IFormFile file)
+    public async Task<ActionResult<Bundle>> CreateReleaseBundle(Guid releaseId, IFormFile file)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
@@ -134,24 +134,24 @@ public class ReleasesController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
 
-        if (await installerService.FindInstallerAsync(releaseId, file.FileName) is not null)
-            return Conflict("Installer already exists");
+        if (await bundleService.FindBundleAsync(releaseId, file.FileName) is not null)
+            return Conflict("Bundle already exists");
 
-        var installer = await installerService.CreateInstallerAsync(releaseId, file.FileName, file.OpenReadStream());
+        var bundle = await bundleService.CreateBundleAsync(releaseId, file.FileName, file.OpenReadStream());
 
-        metricsHelper.PublishDownloadInstaller(application.Key, branch.Name, release, installer.InstallerId);
+        metricsHelper.PublishDownloadBundle(application.Key, branch.Name, release, bundle.BundleId);
 
-        return Ok(installer);
+        return Ok(bundle);
     }
 
-    [HttpGet("{releaseId:guid}/installers/{installerId:guid}/download")]
-    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid installerId)
+    [HttpGet("{releaseId:guid}/bundles/{bundleId:guid}/download")]
+    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadBundleUrl(Guid releaseId, Guid bundleId)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
-        var url = await installerService.GetDownloadUrlAsync(installerId);
-        metricsHelper.AddDownloadInstaller(application.Key, branch.Name, release, installerId);
+        var url = await bundleService.GetDownloadUrlAsync(bundleId);
+        metricsHelper.AddDownloadBundle(application.Key, branch.Name, release, bundleId);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url
