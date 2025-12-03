@@ -374,6 +374,125 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @param body (optional)
+     * @return OK
+     */
+    installersPOST(applicationId: string, body: AddInstallerBuilderSchema | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("post", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processInstallersPOST(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInstallersPOST(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processInstallersPOST(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    installersGET(applicationId: string): Observable<string> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processInstallersGET(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInstallersGET(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processInstallersGET(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * @return OK
      */
     releasesAll(applicationId: string): Observable<Release[]> {
@@ -859,6 +978,66 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @return OK
+     */
+    installersAll(): Observable<InstallerBuilderSchema[]> {
+        let url_ = this.baseUrl + "/api/v1/installers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processInstallersAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInstallersAll(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<InstallerBuilderSchema[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<InstallerBuilderSchema[]>;
+        }));
+    }
+
+    protected processInstallersAll(response: HttpResponseBase): Observable<InstallerBuilderSchema[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(InstallerBuilderSchema.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * @param body (optional)
      * @return OK
      */
@@ -1283,8 +1462,8 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    installersAll(releaseId: string): Observable<Installer[]> {
-        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/installers";
+    bundlesAll(releaseId: string): Observable<Bundle[]> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/bundles";
         if (releaseId === undefined || releaseId === null)
             throw new Error("The parameter 'releaseId' must be defined.");
         url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
@@ -1301,20 +1480,20 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("get", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallersAll(response_);
+            return this.processBundlesAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallersAll(response_ as any);
+                    return this.processBundlesAll(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Installer[]>;
+                    return _observableThrow(e) as any as Observable<Bundle[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Installer[]>;
+                return _observableThrow(response_) as any as Observable<Bundle[]>;
         }));
     }
 
-    protected processInstallersAll(response: HttpResponseBase): Observable<Installer[]> {
+    protected processBundlesAll(response: HttpResponseBase): Observable<Bundle[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1328,7 +1507,7 @@ export class ApiClient extends ApiClientBase {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(Installer.fromJS(item));
+                    result200!.push(Bundle.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1347,8 +1526,8 @@ export class ApiClient extends ApiClientBase {
      * @param file (optional)
      * @return OK
      */
-    installers(releaseId: string, file: FileParameter | undefined): Observable<Installer> {
-        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/installers";
+    bundles(releaseId: string, file: FileParameter | undefined): Observable<Bundle> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/bundles";
         if (releaseId === undefined || releaseId === null)
             throw new Error("The parameter 'releaseId' must be defined.");
         url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
@@ -1372,20 +1551,20 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("post", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallers(response_);
+            return this.processBundles(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallers(response_ as any);
+                    return this.processBundles(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Installer>;
+                    return _observableThrow(e) as any as Observable<Bundle>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Installer>;
+                return _observableThrow(response_) as any as Observable<Bundle>;
         }));
     }
 
-    protected processInstallers(response: HttpResponseBase): Observable<Installer> {
+    protected processBundles(response: HttpResponseBase): Observable<Bundle> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1396,7 +1575,7 @@ export class ApiClient extends ApiClientBase {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Installer.fromJS(resultData200);
+            result200 = Bundle.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1410,14 +1589,14 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    downloadGET2(releaseId: string, installerId: string): Observable<DownloadUrlResponseSchema> {
-        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/installers/{installerId}/download";
+    downloadGET2(releaseId: string, bundleId: string): Observable<DownloadUrlResponseSchema> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/bundles/{bundleId}/download";
         if (releaseId === undefined || releaseId === null)
             throw new Error("The parameter 'releaseId' must be defined.");
         url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
-        if (installerId === undefined || installerId === null)
-            throw new Error("The parameter 'installerId' must be defined.");
-        url_ = url_.replace("{installerId}", encodeURIComponent("" + installerId));
+        if (bundleId === undefined || bundleId === null)
+            throw new Error("The parameter 'bundleId' must be defined.");
+        url_ = url_.replace("{bundleId}", encodeURIComponent("" + bundleId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1445,6 +1624,65 @@ export class ApiClient extends ApiClientBase {
     }
 
     protected processDownloadGET2(response: HttpResponseBase): Observable<DownloadUrlResponseSchema> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DownloadUrlResponseSchema.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    downloadGET3(releaseId: string, builderId: string): Observable<DownloadUrlResponseSchema> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}/installers/{builderId}/download";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        if (builderId === undefined || builderId === null)
+            throw new Error("The parameter 'builderId' must be defined.");
+        url_ = url_.replace("{builderId}", encodeURIComponent("" + builderId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processDownloadGET3(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDownloadGET3(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DownloadUrlResponseSchema>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DownloadUrlResponseSchema>;
+        }));
+    }
+
+    protected processDownloadGET3(response: HttpResponseBase): Observable<DownloadUrlResponseSchema> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1635,6 +1873,50 @@ export class ApiClient extends ApiClientBase {
         }
         return _observableOf(null as any);
     }
+}
+
+export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
+    key!: string | undefined;
+    name?: string | undefined;
+    installerLifetime?: string;
+
+    constructor(data?: IAddInstallerBuilderSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.key = _data["key"];
+            this.name = _data["name"];
+            this.installerLifetime = _data["installerLifetime"];
+        }
+    }
+
+    static fromJS(data: any): AddInstallerBuilderSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddInstallerBuilderSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        data["name"] = this.name;
+        data["installerLifetime"] = this.installerLifetime;
+        return data;
+    }
+}
+
+export interface IAddInstallerBuilderSchema {
+    key: string | undefined;
+    name?: string | undefined;
+    installerLifetime?: string;
 }
 
 export class Application implements IApplication {
@@ -1869,6 +2151,62 @@ export interface IBranch {
     useDefaultReleaseLifetime?: boolean;
 }
 
+export class Bundle implements IBundle {
+    bundleId!: string;
+    releaseId!: string;
+    fileName!: string | undefined;
+    fileId!: string;
+    createdAt!: moment.Moment;
+    deletedAt?: moment.Moment | undefined;
+
+    constructor(data?: IBundle) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bundleId = _data["bundleId"];
+            this.releaseId = _data["releaseId"];
+            this.fileName = _data["fileName"];
+            this.fileId = _data["fileId"];
+            this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
+            this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Bundle {
+        data = typeof data === 'object' ? data : {};
+        let result = new Bundle();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bundleId"] = this.bundleId;
+        data["releaseId"] = this.releaseId;
+        data["fileName"] = this.fileName;
+        data["fileId"] = this.fileId;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IBundle {
+    bundleId: string;
+    releaseId: string;
+    fileName: string | undefined;
+    fileId: string;
+    createdAt: moment.Moment;
+    deletedAt?: moment.Moment | undefined;
+}
+
 export class CreateApplicationSchema implements ICreateApplicationSchema {
     key!: string | undefined;
     name!: string | undefined;
@@ -2093,15 +2431,12 @@ export interface IDownloadUrlResponseSchema {
     url: string | undefined;
 }
 
-export class Installer implements IInstaller {
-    installerId!: string;
-    releaseId!: string;
-    fileName!: string | undefined;
-    fileId!: string;
-    createdAt!: moment.Moment;
-    deletedAt?: moment.Moment | undefined;
+export class InstallerBuilderSchema implements IInstallerBuilderSchema {
+    key!: string | undefined;
+    displayName!: string | undefined;
+    description?: string | undefined;
 
-    constructor(data?: IInstaller) {
+    constructor(data?: IInstallerBuilderSchema) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2112,46 +2447,37 @@ export class Installer implements IInstaller {
 
     init(_data?: any) {
         if (_data) {
-            this.installerId = _data["installerId"];
-            this.releaseId = _data["releaseId"];
-            this.fileName = _data["fileName"];
-            this.fileId = _data["fileId"];
-            this.createdAt = _data["createdAt"] ? moment(_data["createdAt"].toString()) : <any>undefined;
-            this.deletedAt = _data["deletedAt"] ? moment(_data["deletedAt"].toString()) : <any>undefined;
+            this.key = _data["key"];
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
         }
     }
 
-    static fromJS(data: any): Installer {
+    static fromJS(data: any): InstallerBuilderSchema {
         data = typeof data === 'object' ? data : {};
-        let result = new Installer();
+        let result = new InstallerBuilderSchema();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["installerId"] = this.installerId;
-        data["releaseId"] = this.releaseId;
-        data["fileName"] = this.fileName;
-        data["fileId"] = this.fileId;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : <any>undefined;
+        data["key"] = this.key;
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
         return data;
     }
 }
 
-export interface IInstaller {
-    installerId: string;
-    releaseId: string;
-    fileName: string | undefined;
-    fileId: string;
-    createdAt: moment.Moment;
-    deletedAt?: moment.Moment | undefined;
+export interface IInstallerBuilderSchema {
+    key: string | undefined;
+    displayName: string | undefined;
+    description?: string | undefined;
 }
 
 export class Metric implements IMetric {
     fields!: { [key: string]: string; } | undefined;
-    name!: string | undefined;
+    name?: string | undefined;
     timestamp?: moment.Moment;
     value?: string | undefined;
 
@@ -2204,7 +2530,7 @@ export class Metric implements IMetric {
 
 export interface IMetric {
     fields: { [key: string]: string; } | undefined;
-    name: string | undefined;
+    name?: string | undefined;
     timestamp?: moment.Moment;
     value?: string | undefined;
 }

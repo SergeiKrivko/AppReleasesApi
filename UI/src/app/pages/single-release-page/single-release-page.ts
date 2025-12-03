@@ -10,7 +10,7 @@ import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
 import {BranchByIdPipe} from '../../pipes/branch-by-id-pipe';
 import {TuiAccordion, TuiButtonLoading, TuiTextarea, TuiTree} from '@taiga-ui/kit';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {InstallerService} from '../../services/installer.service';
+import {BundleService} from '../../services/bundle.service';
 import {TuiCard} from '@taiga-ui/layout';
 import {MetricService} from '../../services/metric.service';
 import {AsIntegerPipe} from '../../pipes/as-integer-pipe';
@@ -48,7 +48,7 @@ interface TreeNode {
 })
 export class SingleReleasePage implements OnInit {
   private readonly releaseService = inject(ReleaseService);
-  private readonly installerService = inject(InstallerService);
+  private readonly installerService = inject(BundleService);
   private readonly metricService = inject(MetricService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -112,7 +112,7 @@ export class SingleReleasePage implements OnInit {
     ).subscribe();
   }
 
-  protected readonly releaseInstallers$ = this.installerService.installers$;
+  protected readonly releaseInstallers$ = this.installerService.bundles$;
 
   protected downloadReleaseInstaller(id: string) {
     this.installerService.getDownloadInstallerUrl(id).pipe(
