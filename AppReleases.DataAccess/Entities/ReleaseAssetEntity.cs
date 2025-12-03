@@ -1,6 +1,4 @@
-﻿using AppReleases.Models;
-
-namespace AppReleases.DataAccess.Entities;
+﻿namespace AppReleases.DataAccess.Entities;
 
 public class ReleaseAssetEntity
 {

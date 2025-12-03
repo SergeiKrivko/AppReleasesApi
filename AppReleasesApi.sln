@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppReleases.Cli", "AppRelea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppReleases.Models", "AppReleases.Models\AppReleases.Models.csproj", "{81E8AF30-4818-475F-B01B-6B1419B8A084}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installers", "Installers", "{519E088A-15A2-4CF1-9978-270C68A785E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppReleases.Installers.Zip", "AppReleases.Installers.Zip\AppReleases.Installers.Zip.csproj", "{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +52,12 @@ Global
 		{81E8AF30-4818-475F-B01B-6B1419B8A084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E8AF30-4818-475F-B01B-6B1419B8A084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E8AF30-4818-475F-B01B-6B1419B8A084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0EFF054-DC79-4FDE-B2AE-20CDAD81249E} = {519E088A-15A2-4CF1-9978-270C68A785E6}
 	EndGlobalSection
 EndGlobal
