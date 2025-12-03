@@ -11,6 +11,7 @@ public interface IMetricsHelper
     public Task MeasureDownloadAssets(Func<Task> func, string application, string branch, Release release);
 
     public void AddDownloadBundle(string application, string branch, Release release, Guid bundle);
+    public void AddDownloadInstaller(string application, string branch, Release release, Guid builder);
     public void PublishDownloadRelease(string application, string branch, Release release);
     public void PublishDownloadAssets(string application, string branch, Release release);
     public void PublishDownloadBundle(string application, string branch, Release release, Guid bundle);

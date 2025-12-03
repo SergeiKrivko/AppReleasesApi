@@ -202,7 +202,9 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
     private static string TempBucket { get; } = Environment.GetEnvironmentVariable("S3_TEMP_BUCKET") ?? "temp";
 
     private static string BundlesBucket { get; } =
-        Environment.GetEnvironmentVariable("S3_INSTALLERS_BUCKET") ?? "temp";
+        Environment.GetEnvironmentVariable("S3_BUNDLES_BUCKET") ?? "bundles";
+    private static string InstallersBucket { get; } =
+        Environment.GetEnvironmentVariable("S3_INSTALLERS_BUCKET") ?? "installers";
 
     private static string GetBucket(FileRepositoryBucket bucket)
     {
@@ -211,6 +213,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             FileRepositoryBucket.Assets => AssetsBucket,
             FileRepositoryBucket.Temp => TempBucket,
             FileRepositoryBucket.Bundles => BundlesBucket,
+            FileRepositoryBucket.Installers => BundlesBucket,
             _ => throw new ArgumentOutOfRangeException(nameof(bucket), bucket, null)
         };
     }

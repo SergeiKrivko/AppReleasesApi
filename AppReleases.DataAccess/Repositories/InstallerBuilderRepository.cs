@@ -9,18 +9,46 @@ namespace AppReleases.DataAccess.Repositories;
 
 public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInstallerBuilderRepository
 {
-    public async Task<IEnumerable<InstallerBuilderUsage>> GetInstallerBuildersOfApplicationAsync(Guid applicationId)
+    public async Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await dbContext.InstallerBuilderUsages
             .Where(x => x.ApplicationId == applicationId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return entities.Select(UsageFromEntity);
+    }
+
+    public async Task<InstallerBuilderUsage?> GetInstallerBuilderByIdAsync(Guid builderId,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await dbContext.InstallerBuilderUsages
+            .FirstOrDefaultAsync(x => x.Id == builderId, cancellationToken);
+        return entity is null ? null : UsageFromEntity(entity);
+    }
+
+    public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey,
+        TimeSpan installerLifetime,
+        CancellationToken cancellationToken = default)
+    {
+        var id = Guid.NewGuid();
+        var entity = new InstallerBuilderUsageEntity
+        {
+            ApplicationId = applicationId,
+            BuilderKey = builderKey,
+            Id = id,
+            CreatedAt = DateTime.UtcNow,
+            InstallerLifetime = installerLifetime,
+        };
+        await dbContext.InstallerBuilderUsages.AddAsync(entity, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return id;
     }
 
     private static InstallerBuilderUsage UsageFromEntity(InstallerBuilderUsageEntity entity)
     {
         return new InstallerBuilderUsage
         {
+            Id = entity.Id,
             BuilderKey = entity.BuilderKey,
             Settings = entity.Settings is null
                 ? new JsonObject()

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.Json;
+﻿using System.Text.Json;
 using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
@@ -17,6 +16,7 @@ public class ReleasesController(
     IApplicationService applicationService,
     IBranchService branchService,
     IBundleService bundleService,
+    IInstallerService installerService,
     IMetricsHelper metricsHelper) : Controller
 {
     [HttpPost("diff")]
@@ -152,6 +152,20 @@ public class ReleasesController(
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
         var url = await bundleService.GetDownloadUrlAsync(bundleId);
         metricsHelper.AddDownloadBundle(application.Key, branch.Name, release, bundleId);
+        return Ok(new DownloadUrlResponseSchema
+        {
+            Url = url
+        });
+    }
+
+    [HttpGet("{releaseId:guid}/installers/{builderId:guid}/download")]
+    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid builderId)
+    {
+        var release = await releaseService.GetReleaseByIdAsync(releaseId);
+        var branch = await branchService.GetBranchByIdAsync(release.BranchId);
+        var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        var url = await installerService.BuildInstallerAsync(application, release, builderId);
+        metricsHelper.AddDownloadBundle(application.Key, branch.Name, release, builderId);
         return Ok(new DownloadUrlResponseSchema
         {
             Url = url

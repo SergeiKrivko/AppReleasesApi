@@ -9,6 +9,10 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
 {
     public string Key => "Zip";
 
+    public string DisplayName => "Архив ZIP";
+
+    public string Description => "Просто собирает все ассеты в zip.";
+
     public async Task<BuiltInstaller> Build(Application application, Release release, IEnumerable<Asset> assets,
         JsonObject settings, CancellationToken cancellationToken = default)
     {
@@ -25,10 +29,9 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
             }
         }
 
-        zipStream.Seek(0, SeekOrigin.Begin);
         return new BuiltInstaller
         {
-            FileStream = zipStream,
+            FileStream = new MemoryStream(zipStream.ToArray()),
             FileName = $"{application.Name}_{release.Version}.zip"
         };
     }

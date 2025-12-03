@@ -26,6 +26,15 @@ public class MetricsHelper : IMetricsHelper
         }
     );
 
+    private readonly Counter _downloadInstallerCounter = Metrics.CreateCounter(
+        "download_installer_total",
+        "Counter of download installer",
+        new CounterConfiguration
+        {
+            LabelNames = ["application", "branch", "release", "platform", "version", "installerBuilder"]
+        }
+    );
+
     private readonly Counter _downloadReleaseCounter = Metrics.CreateCounter(
         "download_release_total",
         "Counter of download release",
@@ -68,6 +77,17 @@ public class MetricsHelper : IMetricsHelper
         _downloadBundleCounter
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
                 bundle.ToString())
+            .Inc();
+        _downloadReleaseCounter
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())
+            .Inc();
+    }
+
+    public void AddDownloadInstaller(string application, string branch, Release release, Guid builder)
+    {
+        _downloadBundleCounter
+            .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString(),
+                builder.ToString())
             .Inc();
         _downloadReleaseCounter
             .WithLabels(application, branch, release.Id.ToString(), release.Platform ?? "", release.Version.ToString())

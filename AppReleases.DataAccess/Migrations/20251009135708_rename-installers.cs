@@ -12,12 +12,14 @@ namespace AppReleases.DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameTable(name: "Installers", newName: "Bundles");
+            migrationBuilder.RenameColumn(name: "InstallerId", table: "Bundles", newName: "BundleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameTable(name: "Bundles", newName: "Installers");
+            migrationBuilder.RenameColumn(name: "BundleId", table: "Installers", newName: "InstallerId");
         }
     }
 }
