@@ -53,6 +53,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             Settings = entity.Settings is null
                 ? new JsonObject()
                 : JsonSerializer.Deserialize<JsonObject>(entity.Settings) ?? new JsonObject(),
+            InstallerLifetime = entity.InstallerLifetime,
         };
     }
 }

@@ -9,4 +9,9 @@ public interface IBuiltInstallerRepository
 
     public Task<Guid> CreateBuiltInstallerAsync(Guid releaseId, Guid builderId, Guid fileId,
         string fileName, CancellationToken cancellationToken = default);
+
+    public Task UpdateDownloadTimeAsync(Guid builderId, CancellationToken cancellationToken = default);
+
+    public Task<int> DeleteInstallersDownloadedBeforeAsync(DateTime time, Guid builderId,
+        CancellationToken cancellationToken = default);
 }

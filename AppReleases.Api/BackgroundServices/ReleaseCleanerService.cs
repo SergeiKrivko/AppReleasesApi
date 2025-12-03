@@ -14,6 +14,7 @@ public class ReleaseCleanerService(ILogger<ReleaseCleanerService> logger, IServi
             {
                 await ClearOldReleases(cancellationToken);
                 await ClearUnusedAssets(cancellationToken);
+                await ClearOldInstallers(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -42,5 +43,15 @@ public class ReleaseCleanerService(ILogger<ReleaseCleanerService> logger, IServi
 
         var count = await cleanerService.ClearUnusedAssetsAsync(cancellationToken);
         logger.LogInformation("Удалено {count} неиспользуемых ассетов", count);
+    }
+
+    private async Task ClearOldInstallers(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Запуск очистки старых установщиков: {time}", DateTime.Now);
+        var scope = services.CreateScope();
+        var cleanerService = scope.ServiceProvider.GetRequiredService<ICleanerService>();
+
+        var count = await cleanerService.ClearOldInstallersAsync(cancellationToken);
+        logger.LogInformation("Удалено {count} установщиков", count);
     }
 }

@@ -29,8 +29,11 @@ public class InstallerService(
         var existing =
             await builtInstallerRepository.FindExistingInstallerAsync(release.Id, builderUsage.Id, cancellationToken);
         if (existing != null)
+        {
+            await builtInstallerRepository.UpdateDownloadTimeAsync(builderUsage.Id, cancellationToken);
             return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, existing.FileId,
                 existing.FileName, DefaultUrlLifetime);
+        }
 
         var assets = await assetRepository.GetAllAssetsAsync(release.Id);
         var builtInstaller =

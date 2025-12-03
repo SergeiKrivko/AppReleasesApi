@@ -12,6 +12,7 @@ public class BuiltInstallerEntity
     public Guid FileId { get; set; }
     [MaxLength(64)] public required string FileName { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DownloadedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
     public virtual InstallerBuilderUsageEntity Builder { get; set; } = null!;

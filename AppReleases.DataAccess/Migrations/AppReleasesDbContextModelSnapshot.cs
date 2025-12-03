@@ -147,6 +147,9 @@ namespace AppReleases.DataAccess.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DownloadedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("FileId")
                         .HasColumnType("uuid");
 
