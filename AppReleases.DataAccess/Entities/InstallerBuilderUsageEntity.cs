@@ -7,7 +7,8 @@ public class InstallerBuilderUsageEntity
     public Guid Id { get; set; }
     public Guid ApplicationId { get; set; }
     [MaxLength(32)] public required string BuilderKey { get; set; }
-    [MaxLength(1024)] public string? Settings { get; set; }
+    [MaxLength(128)] public string? Name { get; set; }
+    [MaxLength(4096)] public string? Settings { get; set; }
     public TimeSpan? InstallerLifetime { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime DeletedAt { get; set; }

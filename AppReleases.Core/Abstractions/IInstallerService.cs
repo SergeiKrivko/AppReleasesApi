@@ -4,10 +4,12 @@ namespace AppReleases.Core.Abstractions;
 
 public interface IInstallerService
 {
+    public Task<IEnumerable<IInstallerBuilder>> GetAllBuildersAsync(CancellationToken cancellationToken);
+
     public Task<string> BuildInstallerAsync(Application application, Release release, Guid builderId,
         CancellationToken cancellationToken = default);
 
-    public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, Guid applicationId,
+    public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
         TimeSpan installerLifetime, CancellationToken cancellationToken = default);
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,

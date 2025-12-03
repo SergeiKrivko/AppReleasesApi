@@ -3,6 +3,7 @@ using System;
 using AppReleases.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AppReleases.DataAccess.Migrations
 {
     [DbContext(typeof(AppReleasesDbContext))]
-    partial class AppReleasesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251203163421_installer-downloaded-at")]
+    partial class installerdownloadedat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,7 +150,7 @@ namespace AppReleases.DataAccess.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DownloadedAt")
+                    b.Property<DateTime?>("DownloadedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("FileId")
@@ -223,13 +226,8 @@ namespace AppReleases.DataAccess.Migrations
                     b.Property<TimeSpan?>("InstallerLifetime")
                         .HasColumnType("interval");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
                     b.Property<string>("Settings")
-                        .HasMaxLength(4096)
+                        .HasMaxLength(1024)
                         .HasColumnType("jsonb");
 
                     b.HasKey("Id");

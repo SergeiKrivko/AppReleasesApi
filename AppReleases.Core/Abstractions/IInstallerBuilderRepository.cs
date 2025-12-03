@@ -9,7 +9,7 @@ public interface IInstallerBuilderRepository
     public Task<InstallerBuilderUsage?> GetInstallerBuilderByIdAsync(Guid builderId,
         CancellationToken cancellationToken = default);
 
-    public Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey,
+    public Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey, string? name,
         TimeSpan installerLifetime,
         CancellationToken cancellationToken = default);
 }

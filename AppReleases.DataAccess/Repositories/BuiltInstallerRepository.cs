@@ -61,6 +61,7 @@ public class BuiltInstallerRepository(AppReleasesDbContext dbContext) : IBuiltIn
             FileId = entity.FileId,
             CreatedAt = entity.CreatedAt,
             DeletedAt = entity.DeletedAt,
+            DownloadedAt = entity.DownloadedAt,
             FileName = entity.FileName,
         };
     }

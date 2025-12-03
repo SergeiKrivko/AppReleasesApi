@@ -17,6 +17,11 @@ public class InstallerService(
 
     private static TimeSpan DefaultUrlLifetime { get; } = TimeSpan.FromHours(1);
 
+    public Task<IEnumerable<IInstallerBuilder>> GetAllBuildersAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IEnumerable<IInstallerBuilder>>(_builders.Values);
+    }
+
     public async Task<string> BuildInstallerAsync(Models.Application application, Release release, Guid builderId,
         CancellationToken cancellationToken = default)
     {
@@ -48,12 +53,12 @@ public class InstallerService(
             builtInstaller.FileName, DefaultUrlLifetime);
     }
 
-    public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, Guid applicationId,
+    public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
         TimeSpan installerLifetime, CancellationToken cancellationToken = default)
     {
         if (!_builders.ContainsKey(builderKey))
             throw new KeyNotFoundException();
-        return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey,
+        return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey, name,
             installerLifetime, cancellationToken);
     }
 

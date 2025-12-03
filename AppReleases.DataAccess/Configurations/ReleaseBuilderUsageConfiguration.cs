@@ -12,7 +12,8 @@ public class ReleaseBuilderUsageConfiguration : IEntityTypeConfiguration<Install
         builder.Property(x => x.Id).IsRequired();
         builder.Property(x => x.ApplicationId).IsRequired();
         builder.Property(x => x.BuilderKey).IsRequired();
-        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.CreatedAt);
         builder.Property(x => x.DeletedAt);
         builder.Property(x => x.InstallerLifetime);
         builder.Property(x => x.Settings)

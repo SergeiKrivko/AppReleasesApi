@@ -13,7 +13,7 @@ public class BuiltInstallerConfiguration : IEntityTypeConfiguration<BuiltInstall
         builder.Property(x => x.ReleaseId).IsRequired();
         builder.Property(x => x.BuilderId).IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
-        builder.Property(x => x.DownloadedAt);
+        builder.Property(x => x.DownloadedAt).IsRequired();
         builder.Property(x => x.DeletedAt);
         builder.Property(x => x.FileId);
         builder.Property(x => x.FileName);

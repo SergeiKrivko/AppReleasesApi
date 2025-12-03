@@ -26,7 +26,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
         return entity is null ? null : UsageFromEntity(entity);
     }
 
-    public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey,
+    public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey, string? name,
         TimeSpan installerLifetime,
         CancellationToken cancellationToken = default)
     {
@@ -36,6 +36,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             ApplicationId = applicationId,
             BuilderKey = builderKey,
             Id = id,
+            Name = name,
             CreatedAt = DateTime.UtcNow,
             InstallerLifetime = installerLifetime,
         };
@@ -50,6 +51,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
         {
             Id = entity.Id,
             BuilderKey = entity.BuilderKey,
+            Name = entity.Name,
             Settings = entity.Settings is null
                 ? new JsonObject()
                 : JsonSerializer.Deserialize<JsonObject>(entity.Settings) ?? new JsonObject(),
