@@ -115,7 +115,7 @@ export class SingleReleasePage implements OnInit {
   protected readonly releaseInstallers$ = this.installerService.bundles$;
 
   protected downloadReleaseInstaller(id: string) {
-    this.installerService.getDownloadInstallerUrl(id).pipe(
+    this.installerService.getDownloadBundleUrl(id).pipe(
       tap(url => {
         console.log(url);
         if (url)

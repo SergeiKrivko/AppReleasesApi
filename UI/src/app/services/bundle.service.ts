@@ -7,7 +7,7 @@ import {EMPTY, first, map, Observable, switchMap, tap} from 'rxjs';
 import {BundleEntity} from '../entities/bundle-entity';
 import {ReleaseService} from './release.service';
 
-interface InstallerStore {
+interface BundleStore {
   bundles: BundleEntity[];
   loadingStatus: LoadingStatus;
 }
@@ -19,7 +19,7 @@ export class BundleService {
   private readonly apiClient = inject(ApiClient);
   private readonly releaseService = inject(ReleaseService);
 
-  private readonly bundles$$ = signalState<InstallerStore>({
+  private readonly bundles$$ = signalState<BundleStore>({
     bundles: [],
     loadingStatus: LoadingStatus.NotStarted,
   });
@@ -52,7 +52,7 @@ export class BundleService {
     );
   }
 
-  getDownloadInstallerUrl(bundleId: string): Observable<string | undefined> {
+  getDownloadBundleUrl(bundleId: string): Observable<string | undefined> {
     return this.releaseService.selectedRelease$.pipe(
       first(),
       switchMap(release => {

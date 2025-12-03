@@ -377,7 +377,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return OK
      */
-    installersPOST(applicationId: string, body: AddInstallerBuilderSchema | undefined): Observable<string> {
+    installers(applicationId: string, body: AddInstallerBuilderSchema | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
@@ -399,11 +399,11 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("post", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallersPOST(response_);
+            return this.processInstallers(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallersPOST(response_ as any);
+                    return this.processInstallers(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -412,7 +412,7 @@ export class ApiClient extends ApiClientBase {
         }));
     }
 
-    protected processInstallersPOST(response: HttpResponseBase): Observable<string> {
+    protected processInstallers(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -438,7 +438,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    installersGET(applicationId: string): Observable<string> {
+    installersAll(applicationId: string): Observable<InstallerBuilderUsage[]> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
@@ -456,20 +456,20 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("get", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallersGET(response_);
+            return this.processInstallersAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallersGET(response_ as any);
+                    return this.processInstallersAll(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
+                    return _observableThrow(e) as any as Observable<InstallerBuilderUsage[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string>;
+                return _observableThrow(response_) as any as Observable<InstallerBuilderUsage[]>;
         }));
     }
 
-    protected processInstallersGET(response: HttpResponseBase): Observable<string> {
+    protected processInstallersAll(response: HttpResponseBase): Observable<InstallerBuilderUsage[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -480,8 +480,14 @@ export class ApiClient extends ApiClientBase {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(InstallerBuilderUsage.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -980,7 +986,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    installersAll(): Observable<InstallerBuilderSchema[]> {
+    installersAll2(): Observable<InstallerBuilderSchema[]> {
         let url_ = this.baseUrl + "/api/v1/installers";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -995,11 +1001,11 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("get", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallersAll(response_);
+            return this.processInstallersAll2(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallersAll(response_ as any);
+                    return this.processInstallersAll2(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<InstallerBuilderSchema[]>;
                 }
@@ -1008,7 +1014,7 @@ export class ApiClient extends ApiClientBase {
         }));
     }
 
-    protected processInstallersAll(response: HttpResponseBase): Observable<InstallerBuilderSchema[]> {
+    protected processInstallersAll2(response: HttpResponseBase): Observable<InstallerBuilderSchema[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2473,6 +2479,150 @@ export interface IInstallerBuilderSchema {
     key: string | undefined;
     displayName: string | undefined;
     description?: string | undefined;
+}
+
+export class InstallerBuilderUsage implements IInstallerBuilderUsage {
+    id?: string;
+    builderKey!: string | undefined;
+    name?: string | undefined;
+    settings!: { [key: string]: JsonNode; } | undefined;
+    installerLifetime?: string | undefined;
+
+    constructor(data?: IInstallerBuilderUsage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.builderKey = _data["builderKey"];
+            this.name = _data["name"];
+            if (_data["settings"]) {
+                this.settings = {} as any;
+                for (let key in _data["settings"]) {
+                    if (_data["settings"].hasOwnProperty(key))
+                        (<any>this.settings)![key] = _data["settings"][key] ? JsonNode.fromJS(_data["settings"][key]) : new JsonNode();
+                }
+            }
+            this.installerLifetime = _data["installerLifetime"];
+        }
+    }
+
+    static fromJS(data: any): InstallerBuilderUsage {
+        data = typeof data === 'object' ? data : {};
+        let result = new InstallerBuilderUsage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["builderKey"] = this.builderKey;
+        data["name"] = this.name;
+        if (this.settings) {
+            data["settings"] = {};
+            for (let key in this.settings) {
+                if (this.settings.hasOwnProperty(key))
+                    (<any>data["settings"])[key] = this.settings[key] ? this.settings[key].toJSON() : <any>undefined;
+            }
+        }
+        data["installerLifetime"] = this.installerLifetime;
+        return data;
+    }
+}
+
+export interface IInstallerBuilderUsage {
+    id?: string;
+    builderKey: string | undefined;
+    name?: string | undefined;
+    settings: { [key: string]: JsonNode; } | undefined;
+    installerLifetime?: string | undefined;
+}
+
+export class JsonNode implements IJsonNode {
+    options?: JsonNodeOptions;
+    parent?: JsonNode;
+    root?: JsonNode;
+
+    constructor(data?: IJsonNode) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.options = _data["options"] ? JsonNodeOptions.fromJS(_data["options"]) : <any>undefined;
+            this.parent = _data["parent"] ? JsonNode.fromJS(_data["parent"]) : <any>undefined;
+            this.root = _data["root"] ? JsonNode.fromJS(_data["root"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): JsonNode {
+        data = typeof data === 'object' ? data : {};
+        let result = new JsonNode();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["options"] = this.options ? this.options.toJSON() : <any>undefined;
+        data["parent"] = this.parent ? this.parent.toJSON() : <any>undefined;
+        data["root"] = this.root ? this.root.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IJsonNode {
+    options?: JsonNodeOptions;
+    parent?: JsonNode;
+    root?: JsonNode;
+}
+
+export class JsonNodeOptions implements IJsonNodeOptions {
+    propertyNameCaseInsensitive?: boolean;
+
+    constructor(data?: IJsonNodeOptions) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.propertyNameCaseInsensitive = _data["propertyNameCaseInsensitive"];
+        }
+    }
+
+    static fromJS(data: any): JsonNodeOptions {
+        data = typeof data === 'object' ? data : {};
+        let result = new JsonNodeOptions();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["propertyNameCaseInsensitive"] = this.propertyNameCaseInsensitive;
+        return data;
+    }
+}
+
+export interface IJsonNodeOptions {
+    propertyNameCaseInsensitive?: boolean;
 }
 
 export class Metric implements IMetric {
