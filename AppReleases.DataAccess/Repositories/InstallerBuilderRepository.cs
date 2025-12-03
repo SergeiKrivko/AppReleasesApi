@@ -11,7 +11,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
 {
     public async Task<IEnumerable<InstallerBuilderUsage>> GetInstallerBuildersOfApplicationAsync(Guid applicationId)
     {
-        var entities = await dbContext.InstallerBuilderUsage
+        var entities = await dbContext.InstallerBuilderUsages
             .Where(x => x.ApplicationId == applicationId)
             .ToListAsync();
         return entities.Select(UsageFromEntity);

@@ -2,6 +2,14 @@
 
 public class BuiltInstaller
 {
-    public required Stream File { get; init; }
+    public required Stream FileStream { get; init; }
     public required string FileName { get; init; }
+}
+
+public class BuiltInstallerModel
+{
+    public Guid FileId { get; init; }
+    public required string FileName { get; init; }
+    public DateTime CreatedAt { get; init; }
+    public DateTime? DeletedAt { get; init; }
 }

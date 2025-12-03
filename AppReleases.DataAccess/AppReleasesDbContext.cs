@@ -13,7 +13,8 @@ public class AppReleasesDbContext : DbContext
     public DbSet<ReleaseAssetEntity> ReleaseAssets { get; init; }
     public DbSet<BranchEntity> Branches { get; init; }
     public DbSet<BundleEntity> Bundles { get; init; }
-    public DbSet<InstallerBuilderUsageEntity> InstallerBuilderUsage { get; init; }
+    public DbSet<InstallerBuilderUsageEntity> InstallerBuilderUsages { get; init; }
+    public DbSet<BuiltInstallerEntity> BuiltInstallers { get; init; }
 
     public AppReleasesDbContext(DbContextOptions<AppReleasesDbContext> options) : base(options)
     {

@@ -8,6 +8,10 @@ public class InstallerBuilderUsageEntity
     public Guid ApplicationId { get; set; }
     [MaxLength(32)] public required string BuilderKey { get; set; }
     [MaxLength(1024)] public string? Settings { get; set; }
+    public TimeSpan? InstallerLifetime { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime DeletedAt { get; set; }
 
-    public ApplicationEntity Application { get; set; } = null!;
+    public virtual ApplicationEntity Application { get; set; } = null!;
+    public virtual ICollection<BuiltInstallerEntity> BuiltInstallers { get; set; } = null!;
 }

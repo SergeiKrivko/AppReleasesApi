@@ -6,5 +6,7 @@ namespace AppReleases.Core.Abstractions;
 public interface IInstallerBuilder
 {
     public string Key { get; }
-    public Task<BuiltInstaller> Build(Application application, Release release, JsonObject settings);
+
+    public Task<BuiltInstaller> Build(Application application, Release release, IEnumerable<Asset> assets,
+        JsonObject settings, CancellationToken cancellationToken = default);
 }
