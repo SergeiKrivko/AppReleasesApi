@@ -4,7 +4,14 @@ import {Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {TuiAppearance, TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {
+  TuiAppearance,
+  TuiButton,
+  tuiDialog,
+  TuiLabel,
+  TuiTextfieldComponent,
+  TuiTextfieldDirective
+} from '@taiga-ui/core';
 import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
 import {AsyncPipe} from '@angular/common';
@@ -16,6 +23,7 @@ import {TuiLet} from '@taiga-ui/cdk';
 import {InstallersService} from '../../services/installers.service';
 import {UsingInstallerBuilderEntity} from '../../entities/using-installer-builder-entity';
 import {AvailableInstallerBuilderEntity} from '../../entities/available-installer-builder-entity';
+import {NewInstallerBuilderDialog} from '../../components/new-installer-builder-dialog/new-installer-builder-dialog';
 
 @Component({
   standalone: true,
@@ -148,5 +156,14 @@ export class ApplicationConfigPage implements OnInit {
     return this.availableInstallers$.pipe(
       map(available => available.find(e => e.key == usingBuilder.builderKey))
     );
+  }
+
+  private readonly newInstallerDialog = tuiDialog(NewInstallerBuilderDialog, {
+    dismissible: false,
+    label: 'Новый установщик',
+  });
+
+  protected newInstaller(): void {
+    this.newInstallerDialog(undefined).subscribe();
   }
 }

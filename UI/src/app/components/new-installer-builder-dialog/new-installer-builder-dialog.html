@@ -1,0 +1,35 @@
+<form class="container" [formGroup]="control" (ngSubmit)="submit()">
+  <label tuiLabel>Название (не обязательно):</label>
+  <tui-textfield>
+    <input tuiTextfield formControlName="name"/>
+  </tui-textfield>
+
+  <label tuiLabel>Шаблон:</label>
+  <tui-textfield tuiChevron class="field" [content]="template">
+    <input tuiSelect formControlName="builder"/>
+    <tui-data-list-wrapper
+      *tuiTextfieldDropdown
+      new
+      [itemContent]="template"
+      [items]="availableBuilders$ | async"
+    />
+  </tui-textfield>
+
+  <div class="bottom-container">
+    <button tuiButton [loading]="loading" type="submit">Создать</button>
+  </div>
+</form>
+
+<ng-template
+    #template
+    let-builder
+>
+    <span tuiCell>
+        <span tuiTitle>
+            <span tuiFade>{{ builder.displayName }}</span>
+            <span tuiSubtitle>
+                {{ builder.description }}
+            </span>
+        </span>
+    </span>
+</ng-template>

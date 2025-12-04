@@ -42,7 +42,7 @@
   <div class="installers-container">
     <div class="installers-header-container">
       <h2>Используемые установщики:</h2>
-      <button tuiButton size="m" iconStart="@tui.plus">Добавить</button>
+      <button tuiButton size="m" iconStart="@tui.plus" (click)="newInstaller()">Добавить</button>
     </div>
     <div class="using-installers-container">
       @for (usingInstaller of usingInstallers$ | async; track usingInstaller.id) {
