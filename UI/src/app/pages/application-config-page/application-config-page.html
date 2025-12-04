@@ -55,6 +55,7 @@
               type="button"
               iconStart="@tui.pencil"
               appearance="flat"
+              (click)="updateInstaller(usingInstaller)"
             ></button>
             <button
               size="s"
@@ -62,6 +63,7 @@
               type="button"
               iconStart="@tui.trash"
               appearance="flat-destructive"
+              (click)="removeInstaller(usingInstaller)"
             ></button>
           </div>
         </div>

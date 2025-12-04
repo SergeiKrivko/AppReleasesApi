@@ -377,7 +377,7 @@ export class ApiClient extends ApiClientBase {
      * @param body (optional)
      * @return OK
      */
-    installers(applicationId: string, body: AddInstallerBuilderSchema | undefined): Observable<string> {
+    installersPOST(applicationId: string, body: AddInstallerBuilderSchema | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
@@ -399,11 +399,11 @@ export class ApiClient extends ApiClientBase {
         return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
             return this.http.request("post", url_, transformedOptions_);
         })).pipe(_observableMergeMap((response_: any) => {
-            return this.processInstallers(response_);
+            return this.processInstallersPOST(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInstallers(response_ as any);
+                    return this.processInstallersPOST(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -412,7 +412,7 @@ export class ApiClient extends ApiClientBase {
         }));
     }
 
-    protected processInstallers(response: HttpResponseBase): Observable<string> {
+    protected processInstallersPOST(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -489,6 +489,121 @@ export class ApiClient extends ApiClientBase {
                 result200 = <any>null;
             }
             return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    installersDELETE(applicationId: string, installerId: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers/{installerId}";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        if (installerId === undefined || installerId === null)
+            throw new Error("The parameter 'installerId' must be defined.");
+        url_ = url_.replace("{installerId}", encodeURIComponent("" + installerId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("delete", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processInstallersDELETE(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInstallersDELETE(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processInstallersDELETE(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param body (optional)
+     * @return OK
+     */
+    installersPUT(applicationId: string, installerId: string, body: UpdateInstallerBuilderSchema | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers/{installerId}";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        if (installerId === undefined || installerId === null)
+            throw new Error("The parameter 'installerId' must be defined.");
+        url_ = url_.replace("{installerId}", encodeURIComponent("" + installerId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("put", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processInstallersPUT(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInstallersPUT(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processInstallersPUT(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2999,6 +3114,58 @@ export interface IUpdateBranchSchema {
     releaseLifetime?: string | undefined;
     latestReleaseLifetime?: string | undefined;
     useDefaultReleaseLifetime?: boolean;
+}
+
+export class UpdateInstallerBuilderSchema implements IUpdateInstallerBuilderSchema {
+    name?: string | undefined;
+    installerLifetime?: string;
+    platforms?: string[] | undefined;
+
+    constructor(data?: IUpdateInstallerBuilderSchema) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.installerLifetime = _data["installerLifetime"];
+            if (Array.isArray(_data["platforms"])) {
+                this.platforms = [] as any;
+                for (let item of _data["platforms"])
+                    this.platforms!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateInstallerBuilderSchema {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateInstallerBuilderSchema();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["installerLifetime"] = this.installerLifetime;
+        if (Array.isArray(this.platforms)) {
+            data["platforms"] = [];
+            for (let item of this.platforms)
+                data["platforms"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IUpdateInstallerBuilderSchema {
+    name?: string | undefined;
+    installerLifetime?: string;
+    platforms?: string[] | undefined;
 }
 
 export class UpdateReleaseSchema implements IUpdateReleaseSchema {

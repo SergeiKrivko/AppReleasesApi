@@ -24,6 +24,9 @@ import {InstallersService} from '../../services/installers.service';
 import {UsingInstallerBuilderEntity} from '../../entities/using-installer-builder-entity';
 import {AvailableInstallerBuilderEntity} from '../../entities/available-installer-builder-entity';
 import {NewInstallerBuilderDialog} from '../../components/new-installer-builder-dialog/new-installer-builder-dialog';
+import {
+  UpdateInstallerBuilderDialog
+} from '../../components/update-installer-builder-dialog/update-installer-builder-dialog';
 
 @Component({
   standalone: true,
@@ -163,7 +166,21 @@ export class ApplicationConfigPage implements OnInit {
     label: 'Новый установщик',
   });
 
+  private readonly updateInstallerDialog = tuiDialog(UpdateInstallerBuilderDialog, {
+    dismissible: false,
+    label: 'Редактирование установщика',
+  });
+
   protected newInstaller(): void {
     this.newInstallerDialog(undefined).subscribe();
+  }
+
+  protected updateInstaller(installer: UsingInstallerBuilderEntity): void {
+    this.installersService.selectInstaller(installer);
+    this.updateInstallerDialog(undefined).subscribe();
+  }
+
+  protected removeInstaller(installer: UsingInstallerBuilderEntity): void {
+    this.installersService.removeInstaller(installer.id).subscribe();
   }
 }

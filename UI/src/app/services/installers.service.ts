@@ -13,6 +13,7 @@ import {ReleaseService} from './release.service';
 interface InstallersStore {
   availableInstallers: AvailableInstallerBuilderEntity[],
   usingInstallers: UsingInstallerBuilderEntity[],
+  selectedInstaller: UsingInstallerBuilderEntity | null,
   loadingStatus: LoadingStatus,
 }
 
@@ -27,11 +28,13 @@ export class InstallersService {
   private readonly store$$ = signalState<InstallersStore>({
     availableInstallers: [],
     usingInstallers: [],
+    selectedInstaller: null,
     loadingStatus: LoadingStatus.NotStarted,
   });
 
   readonly availableInstallers$ = toObservable(this.store$$.availableInstallers);
   readonly usingInstallers$ = toObservable(this.store$$.usingInstallers);
+  readonly selectedInstaller$ = toObservable(this.store$$.selectedInstaller);
 
   readonly loadInstallersOnApplicationChange$ = this.applicationService.selectedApplication$.pipe(
     tap(() => patchState(this.store$$, {usingInstallers: [], loadingStatus: LoadingStatus.InProgress,})),
@@ -51,9 +54,16 @@ export class InstallersService {
     return this.apiClient.installersAll2().pipe(
       tap(installers => patchState(this.store$$, {
         availableInstallers: installers.map(installerBuilderToEntity),
+        selectedInstaller: null,
       })),
       switchMap(() => NEVER),
     );
+  }
+
+  selectInstaller(installer: UsingInstallerBuilderEntity) {
+    patchState(this.store$$, {
+      selectedInstaller: installer,
+    });
   }
 
   createNewInstaller(name: string | null, builderKey: string, lifetime: Duration, platforms: string[]) {
@@ -61,14 +71,59 @@ export class InstallersService {
       first(),
       switchMap(application => {
         if (application)
-          return this.apiClient.installers(application.id, AddInstallerBuilderSchema.fromJS({
+          return this.apiClient.installersPOST(application.id, AddInstallerBuilderSchema.fromJS({
             name: name,
             key: builderKey,
             installerLifetime: lifetime,
             platforms: platforms,
           }));
         return NEVER;
-      })
+      }),
+      switchMap(() => this.updateInstallers()),
+    );
+  }
+
+  updateInstaller(installerId: string, name: string | null, lifetime: Duration, platforms: string[]) {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(application => {
+        if (application)
+          return this.apiClient.installersPUT(application.id, installerId, AddInstallerBuilderSchema.fromJS({
+            name: name,
+            installerLifetime: lifetime,
+            platforms: platforms,
+          }));
+        return NEVER;
+      }),
+      switchMap(() => this.updateInstallers()),
+    );
+  }
+
+  removeInstaller(installerId: string) {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(application => {
+        if (application)
+          return this.apiClient.installersDELETE(application.id, installerId);
+        return NEVER;
+      }),
+      switchMap(() => this.updateInstallers()),
+    );
+  }
+
+  private updateInstallers() {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(application => {
+        if (application)
+          return this.apiClient.installersAll(application.id);
+        return of([]);
+      }),
+      tap(installers => patchState(this.store$$, {
+        usingInstallers: installers.map(installerUsageToEntity),
+        loadingStatus: LoadingStatus.Completed,
+      })),
+      switchMap(() => of(true)),
     );
   }
 
