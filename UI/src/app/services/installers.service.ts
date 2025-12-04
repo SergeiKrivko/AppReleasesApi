@@ -2,12 +2,12 @@ import {inject, Injectable} from '@angular/core';
 import {AvailableInstallerBuilderEntity} from '../entities/available-installer-builder-entity';
 import {UsingInstallerBuilderEntity} from '../entities/using-installer-builder-entity';
 import {LoadingStatus} from '../entities/loading-status';
-import {ApiClient, InstallerBuilderSchema, InstallerBuilderUsage} from './api-client';
+import {AddInstallerBuilderSchema, ApiClient, InstallerBuilderSchema, InstallerBuilderUsage} from './api-client';
 import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ApplicationService} from './application.service';
-import {NEVER, of, switchMap, tap} from 'rxjs';
-import {duration} from 'moment';
+import {first, NEVER, of, switchMap, tap} from 'rxjs';
+import {Duration, duration} from 'moment';
 
 interface InstallersStore {
   availableInstallers: AvailableInstallerBuilderEntity[],
@@ -51,6 +51,22 @@ export class InstallersService {
         availableInstallers: installers.map(installerBuilderToEntity),
       })),
       switchMap(() => NEVER),
+    );
+  }
+
+  createNewInstaller(name: string | null, builderKey: string, lifetime: Duration, platforms: string[]) {
+    return this.applicationService.selectedApplication$.pipe(
+      first(),
+      switchMap(application => {
+        if (application)
+          return this.apiClient.installers(application.id, AddInstallerBuilderSchema.fromJS({
+            name: name,
+            key: builderKey,
+            installerLifetime: lifetime,
+            platforms: platforms,
+          }));
+        return NEVER;
+      })
     );
   }
 }

@@ -15,14 +15,33 @@
     />
   </tui-textfield>
 
+  <label tuiLabel>Время хранения установщика:</label>
+  <div class="field field-container">
+    <tui-textfield class="field">
+      <input tuiInputNumber formControlName="installerLifetime"/>
+    </tui-textfield>
+    <span>часов</span>
+  </div>
+
+  <label tuiLabel>Платформы:</label>
+  <tui-textfield multi tuiChevron class="field">
+    <input tuiInputChip tuiSelectLike formControlName="platforms"/>
+    <tui-data-list-wrapper
+      *tuiTextfieldDropdown
+      new
+      tuiMultiSelectGroup
+      [items]="platforms$ | async"
+    />
+  </tui-textfield>
+
   <div class="bottom-container">
-    <button tuiButton [loading]="loading" type="submit">Создать</button>
+    <button tuiButton appearance="primary" [loading]="loading" type="submit">Создать</button>
   </div>
 </form>
 
 <ng-template
-    #template
-    let-builder
+  #template
+  let-builder
 >
     <span tuiCell>
         <span tuiTitle>

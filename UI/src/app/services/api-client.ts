@@ -1885,6 +1885,7 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
     key!: string | undefined;
     name?: string | undefined;
     installerLifetime?: string;
+    platforms?: string[] | undefined;
 
     constructor(data?: IAddInstallerBuilderSchema) {
         if (data) {
@@ -1900,6 +1901,11 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
             this.key = _data["key"];
             this.name = _data["name"];
             this.installerLifetime = _data["installerLifetime"];
+            if (Array.isArray(_data["platforms"])) {
+                this.platforms = [] as any;
+                for (let item of _data["platforms"])
+                    this.platforms!.push(item);
+            }
         }
     }
 
@@ -1915,6 +1921,11 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
         data["key"] = this.key;
         data["name"] = this.name;
         data["installerLifetime"] = this.installerLifetime;
+        if (Array.isArray(this.platforms)) {
+            data["platforms"] = [];
+            for (let item of this.platforms)
+                data["platforms"].push(item);
+        }
         return data;
     }
 }
@@ -1923,6 +1934,7 @@ export interface IAddInstallerBuilderSchema {
     key: string | undefined;
     name?: string | undefined;
     installerLifetime?: string;
+    platforms?: string[] | undefined;
 }
 
 export class Application implements IApplication {
