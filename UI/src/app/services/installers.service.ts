@@ -46,6 +46,7 @@ export class InstallersService {
     tap(installers => patchState(this.store$$, {
       usingInstallers: installers.map(installerUsageToEntity),
       loadingStatus: LoadingStatus.Completed,
+      selectedInstaller: null,
     })),
     switchMap(() => NEVER),
   );
