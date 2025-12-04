@@ -12,4 +12,10 @@ public interface IInstallerBuilderRepository
     public Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey, string? name,
         TimeSpan installerLifetime, string[] platforms,
         CancellationToken cancellationToken = default);
+
+    public Task DeleteInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default);
+
+    public Task UpdateInstallerBuilderAsync(Guid builderId, string? name,
+        TimeSpan installerLifetime, string[] platforms,
+        CancellationToken cancellationToken = default);
 }

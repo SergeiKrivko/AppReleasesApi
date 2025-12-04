@@ -34,4 +34,28 @@ public class ApplicationInstallersController(
             await installerService.GetAllInstallerBuildersOfApplicationAsync(applicationId, cancellationToken);
         return Ok(builders);
     }
+
+    [HttpDelete("{installerId:guid}")]
+    public async Task<ActionResult> DeleteInstallerBuilder(Guid applicationId, Guid installerId,
+        CancellationToken cancellationToken)
+    {
+        var application = await applicationService.GetApplicationByIdAsync(applicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
+        await installerService.RemoveInstallerBuilderAsync(installerId, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPut("{installerId:guid}")]
+    public async Task<ActionResult> UpdateInstallerBuilder(Guid applicationId, Guid installerId,
+        UpdateInstallerBuilderSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var application = await applicationService.GetApplicationByIdAsync(applicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
+        await installerService.UpdateInstallerBuilderAsync(installerId, schema.Name, schema.InstallerLifetime,
+            schema.Platforms, cancellationToken);
+        return Ok();
+    }
 }

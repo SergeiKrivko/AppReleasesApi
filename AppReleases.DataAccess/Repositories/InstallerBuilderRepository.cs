@@ -26,7 +26,8 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
         return entity is null ? null : UsageFromEntity(entity);
     }
 
-    public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey, string? name,
+    public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey,
+        string? name,
         TimeSpan installerLifetime, string[] platforms,
         CancellationToken cancellationToken = default)
     {
@@ -44,6 +45,30 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
         await dbContext.InstallerBuilderUsages.AddAsync(entity, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
         return id;
+    }
+
+    public async Task DeleteInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default)
+    {
+        await dbContext.InstallerBuilderUsages
+            .Where(e => e.Id == builderId)
+            .ExecuteUpdateAsync(x => x
+                    .SetProperty(e => e.DeletedAt, DateTime.UtcNow),
+                cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
+        string[] platforms,
+        CancellationToken cancellationToken = default)
+    {
+        await dbContext.InstallerBuilderUsages
+            .Where(e => e.Id == builderId)
+            .ExecuteUpdateAsync(x => x
+                    .SetProperty(e => e.Name, name)
+                    .SetProperty(e => e.InstallerLifetime, installerLifetime)
+                    .SetProperty(e => e.Platforms, platforms),
+                cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static InstallerBuilderUsage UsageFromEntity(InstallerBuilderUsageEntity entity)

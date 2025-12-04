@@ -53,13 +53,28 @@ public class InstallerService(
             builtInstaller.FileName, DefaultUrlLifetime);
     }
 
-    public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
+    public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name,
+        Guid applicationId,
         TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default)
     {
         if (!_builders.ContainsKey(builderKey))
             throw new KeyNotFoundException();
-        return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey, name,
+        return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey,
+            name,
             installerLifetime, platforms, cancellationToken);
+    }
+
+    public async Task RemoveInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default)
+    {
+        await installerBuilderRepository.DeleteInstallerBuilderAsync(builderId, cancellationToken);
+    }
+
+    public async Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
+        string[] platforms,
+        CancellationToken cancellationToken = default)
+    {
+        await installerBuilderRepository.UpdateInstallerBuilderAsync(builderId, name, installerLifetime, platforms,
+            cancellationToken);
     }
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
