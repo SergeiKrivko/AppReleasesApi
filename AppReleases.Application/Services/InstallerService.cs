@@ -54,12 +54,12 @@ public class InstallerService(
     }
 
     public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
-        TimeSpan installerLifetime, CancellationToken cancellationToken = default)
+        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default)
     {
         if (!_builders.ContainsKey(builderKey))
             throw new KeyNotFoundException();
         return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey, name,
-            installerLifetime, cancellationToken);
+            installerLifetime, platforms, cancellationToken);
     }
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,

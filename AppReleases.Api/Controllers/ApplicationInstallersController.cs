@@ -22,8 +22,7 @@ public class ApplicationInstallersController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
         var id = await installerService.AddNewInstallerBuilderForApplicationAsync(schema.Key, schema.Name,
-            applicationId,
-            schema.InstallerLifetime, cancellationToken);
+            applicationId, schema.InstallerLifetime, schema.Platforms, cancellationToken);
         return Ok(id);
     }
 

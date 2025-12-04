@@ -10,4 +10,6 @@ public class AddInstallerBuilderSchema
 
     [JsonConverter(typeof(TimeSpanConverter))]
     public TimeSpan InstallerLifetime { get; init; }
+
+    public string[] Platforms { get; init; } = [];
 }

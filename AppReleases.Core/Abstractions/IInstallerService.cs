@@ -10,7 +10,7 @@ public interface IInstallerService
         CancellationToken cancellationToken = default);
 
     public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
-        TimeSpan installerLifetime, CancellationToken cancellationToken = default);
+        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default);
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
         CancellationToken cancellationToken = default);

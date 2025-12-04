@@ -3,6 +3,7 @@ using System;
 using AppReleases.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AppReleases.DataAccess.Migrations
 {
     [DbContext(typeof(AppReleasesDbContext))]
-    partial class AppReleasesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204084805_installer-platforms")]
+    partial class installerplatforms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

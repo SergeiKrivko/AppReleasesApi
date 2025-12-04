@@ -27,7 +27,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
     }
 
     public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey, string? name,
-        TimeSpan installerLifetime,
+        TimeSpan installerLifetime, string[] platforms,
         CancellationToken cancellationToken = default)
     {
         var id = Guid.NewGuid();
@@ -37,6 +37,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             BuilderKey = builderKey,
             Id = id,
             Name = name,
+            Platforms = platforms,
             CreatedAt = DateTime.UtcNow,
             InstallerLifetime = installerLifetime,
         };

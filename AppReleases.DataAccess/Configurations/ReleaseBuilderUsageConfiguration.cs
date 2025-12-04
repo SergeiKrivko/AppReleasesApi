@@ -16,6 +16,7 @@ public class ReleaseBuilderUsageConfiguration : IEntityTypeConfiguration<Install
         builder.Property(x => x.CreatedAt);
         builder.Property(x => x.DeletedAt);
         builder.Property(x => x.InstallerLifetime);
+        builder.Property(x => x.Platforms);
         builder.Property(x => x.Settings)
             .HasColumnType("jsonb");
 

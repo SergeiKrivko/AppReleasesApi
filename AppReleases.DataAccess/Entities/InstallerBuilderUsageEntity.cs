@@ -10,6 +10,7 @@ public class InstallerBuilderUsageEntity
     [MaxLength(128)] public string? Name { get; set; }
     [MaxLength(4096)] public string? Settings { get; set; }
     public TimeSpan? InstallerLifetime { get; set; }
+    public required string[] Platforms { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime DeletedAt { get; set; }
 
