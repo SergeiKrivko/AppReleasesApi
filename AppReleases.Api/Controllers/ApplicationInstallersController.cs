@@ -1,6 +1,7 @@
 ﻿using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
+using AppReleases.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;
@@ -27,7 +28,7 @@ public class ApplicationInstallersController(
     }
 
     [HttpGet]
-    public async Task<ActionResult<Guid>> GetAllInstallerBuilders(Guid applicationId,
+    public async Task<ActionResult<IEnumerable<InstallerBuilderUsage>>> GetAllInstallerBuilders(Guid applicationId,
         CancellationToken cancellationToken)
     {
         var builders =
