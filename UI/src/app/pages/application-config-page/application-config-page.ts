@@ -2,15 +2,20 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@a
 import {ApplicationService} from '../../services/application.service';
 import {Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {first, NEVER, switchMap, tap} from 'rxjs';
+import {first, map, NEVER, Observable, switchMap, tap} from 'rxjs';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {TuiAppearance, TuiButton, TuiLabel, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {TUI_CONFIRM, TuiCheckbox, TuiConfirmData, TuiInputNumber, TuiTextarea} from '@taiga-ui/kit';
 import {ApplicationEntity} from '../../entities/application-entity';
 import {AsyncPipe} from '@angular/common';
 import {Duration} from 'moment';
 import {TuiResponsiveDialogService} from '@taiga-ui/addon-mobile';
 import {InputLifetime} from '../../components/input-lifetime/input-lifetime';
+import {TuiCard} from '@taiga-ui/layout';
+import {TuiLet} from '@taiga-ui/cdk';
+import {InstallersService} from '../../services/installers.service';
+import {UsingInstallerBuilderEntity} from '../../entities/using-installer-builder-entity';
+import {AvailableInstallerBuilderEntity} from '../../entities/available-installer-builder-entity';
 
 @Component({
   standalone: true,
@@ -26,7 +31,10 @@ import {InputLifetime} from '../../components/input-lifetime/input-lifetime';
     TuiCheckbox,
     TuiInputNumber,
     AsyncPipe,
-    InputLifetime
+    InputLifetime,
+    TuiCard,
+    TuiLet,
+    TuiAppearance
   ],
   templateUrl: './application-config-page.html',
   styleUrl: './application-config-page.scss',
@@ -34,6 +42,7 @@ import {InputLifetime} from '../../components/input-lifetime/input-lifetime';
 })
 export class ApplicationConfigPage implements OnInit {
   private readonly applicationService = inject(ApplicationService);
+  private readonly installersService = inject(InstallersService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialogs = inject(TuiResponsiveDialogService);
   private readonly router = inject(Router);
@@ -130,5 +139,14 @@ export class ApplicationConfigPage implements OnInit {
               }),
             )
             .subscribe();
+  }
+
+  protected readonly usingInstallers$ = this.installersService.usingInstallers$;
+  protected readonly availableInstallers$ = this.installersService.availableInstallers$;
+
+  getBuilder(usingBuilder: UsingInstallerBuilderEntity): Observable<AvailableInstallerBuilderEntity | undefined> {
+    return this.availableInstallers$.pipe(
+      map(available => available.find(e => e.key == usingBuilder.builderKey))
+    );
   }
 }
