@@ -12,7 +12,7 @@ public class InstallerBuilderUsageEntity
     public TimeSpan? InstallerLifetime { get; set; }
     public required string[] Platforms { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime DeletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public virtual ApplicationEntity Application { get; set; } = null!;
     public virtual ICollection<BuiltInstallerEntity> BuiltInstallers { get; set; } = null!;

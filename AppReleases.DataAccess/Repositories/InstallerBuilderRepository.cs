@@ -13,7 +13,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
         CancellationToken cancellationToken = default)
     {
         var entities = await dbContext.InstallerBuilderUsages
-            .Where(x => x.ApplicationId == applicationId)
+            .Where(x => x.ApplicationId == applicationId && x.DeletedAt == null)
             .ToListAsync(cancellationToken);
         return entities.Select(UsageFromEntity);
     }
