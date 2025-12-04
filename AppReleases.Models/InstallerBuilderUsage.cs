@@ -8,5 +8,6 @@ public class InstallerBuilderUsage
     public required string BuilderKey { get; init; }
     public string? Name { get; init; }
     public required JsonObject Settings { get; init; }
+    public string[] Platforms { get; init; } = [];
     public TimeSpan? InstallerLifetime { get; init; }
 }

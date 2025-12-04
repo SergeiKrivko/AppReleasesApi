@@ -53,6 +53,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             Id = entity.Id,
             BuilderKey = entity.BuilderKey,
             Name = entity.Name,
+            Platforms = entity.Platforms,
             Settings = entity.Settings is null
                 ? new JsonObject()
                 : JsonSerializer.Deserialize<JsonObject>(entity.Settings) ?? new JsonObject(),
