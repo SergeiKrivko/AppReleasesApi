@@ -4,10 +4,19 @@ namespace AppReleases.Core.Abstractions;
 
 public interface IInstallerService
 {
-    public Task<Installer> GetInstallerByIdAsync(Guid id);
-    public Task<IEnumerable<Installer>> GetAllInstallersAsync(Guid releaseId);
-    public Task<Installer?> FindInstallerAsync(Guid releaseId, string fileName);
-    public Task<Installer> CreateInstallerAsync(Guid releaseId, string fileName, Stream stream);
-    public Task DeleteInstallerAsync(Guid installerId);
-    public Task<string> GetDownloadUrlAsync(Guid installerId);
+    public Task<IEnumerable<IInstallerBuilder>> GetAllBuildersAsync(CancellationToken cancellationToken);
+
+    public Task<string> BuildInstallerAsync(Application application, Release release, Guid builderId,
+        CancellationToken cancellationToken = default);
+
+    public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
+        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default);
+
+    public Task RemoveInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default);
+
+    public Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
+        string[] platforms, CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
+        CancellationToken cancellationToken = default);
 }

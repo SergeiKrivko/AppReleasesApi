@@ -49,10 +49,10 @@ if (arguments.Directory is not null)
     Console.WriteLine();
 }
 
-foreach (var installer in arguments.Installers)
+foreach (var bundle in arguments.Bundles)
 {
-    Console.WriteLine($"Uploading installer '{installer}'...");
-    await client.UploadReleaseInstaller(release.Id, installer);
+    Console.WriteLine($"Uploading bundle '{bundle}'...");
+    await client.UploadReleaseBundle(release.Id, bundle);
 }
 
 Console.WriteLine("DONE");

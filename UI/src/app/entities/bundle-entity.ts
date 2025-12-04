@@ -1,6 +1,6 @@
 import {Moment} from 'moment';
 
-export interface InstallerEntity {
+export interface BundleEntity {
   id: string;
   releaseId: string;
   fileName: string;

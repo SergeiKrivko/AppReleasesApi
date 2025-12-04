@@ -10,7 +10,7 @@ public class ReleaseService(
     IReleaseRepository releaseRepository,
     IAssetRepository assetRepository,
     IFileRepository fileRepository,
-    IInstallerService installerService,
+    IBundleService bundleService,
     ILogger<ReleaseService> logger) : IReleaseService
 {
     public Task<Release> GetReleaseByIdAsync(Guid releaseId)
@@ -118,9 +118,9 @@ public class ReleaseService(
 
     public async Task DeleteReleaseAsync(Guid releaseId)
     {
-        foreach (var installer in await installerService.GetAllInstallersAsync(releaseId))
+        foreach (var bundle in await bundleService.GetAllBundlesAsync(releaseId))
         {
-            await installerService.DeleteInstallerAsync(installer.InstallerId);
+            await bundleService.DeleteBundleAsync(bundle.BundleId);
         }
         await releaseRepository.DeleteReleaseAsync(releaseId);
     }

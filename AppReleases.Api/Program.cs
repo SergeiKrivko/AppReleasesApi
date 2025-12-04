@@ -32,14 +32,17 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
-builder.Services.AddScoped<IInstallerRepository, InstallerRepository>();
+builder.Services.AddScoped<IBundleRepository, BundleRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IReleaseRepository, ReleaseRepository>();
+builder.Services.AddScoped<IInstallerBuilderRepository, InstallerBuilderRepository>();
+builder.Services.AddScoped<IBuiltInstallerRepository, BuiltInstallerRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddSingleton<IFileRepository, S3Repository>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<IReleaseService, ReleaseService>();
+builder.Services.AddScoped<IBundleService, BundleService>();
 builder.Services.AddScoped<IInstallerService, InstallerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICleanerService, CleanerService>();

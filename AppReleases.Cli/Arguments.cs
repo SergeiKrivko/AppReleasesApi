@@ -8,8 +8,8 @@ public class Arguments
         HelpText = "Директория, из которой следует взять ассеты. Если не указана, ассеты не будут загружены")]
     public string? Directory { get; set; }
 
-    [Option(shortName: 'i', longName: "installer", Required = false, HelpText = "Список файлов установщиков")]
-    public IEnumerable<string> Installers { get; set; } = [];
+    [Option(shortName: 'b', longName: "bundle", Required = false, HelpText = "Список файлов установщиков")]
+    public IEnumerable<string> Bundles { get; set; } = [];
 
     [Option(shortName: 'u', longName: "url", Required = true, HelpText = "Ссылка на API")]
     public string Url { get; set; } = null!;

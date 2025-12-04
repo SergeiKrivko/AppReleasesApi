@@ -75,19 +75,41 @@
       </tui-accordion-item>
     }
     <tui-accordion-item class="accordion">
+      Пакеты
+      <ng-template tuiAccordionItemContent>
+        <div class="bundles-container" *tuiLet="releaseBundles$ | async as releaseBundles">
+          @if (releaseBundles?.length) {
+            @for (bundle of releaseBundles ?? []; track bundle.id) {
+              <div tuiCardLarge class="bundle-card-container">
+                <label tuiLabel>{{ bundle.fileName }}</label>
+                <button tuiIconButton iconStart="@tui.download" size="s" [disabled]="release?.deletedAt"
+                        (click)="downloadReleaseBundle(bundle.id)"></button>
+              </div>
+            }
+          } @else {
+            <p>Нет загруженных пакетов для этого релиза. В будущем можно будет загрузить их прямо отсюда</p>
+          }
+        </div>
+      </ng-template>
+    </tui-accordion-item>
+    <tui-accordion-item class="accordion">
       Установщики
       <ng-template tuiAccordionItemContent>
-        <div class="installers-container" *tuiLet="releaseInstallers$ | async as releaseInstallers">
-          @if (releaseInstallers?.length) {
-            @for (installer of releaseInstallers ?? []; track installer.id) {
+        <div class="bundles-container" *tuiLet="usingInstallers$ | async as usingInstallers">
+          @if (usingInstallers?.length) {
+            @for (installer of usingInstallers ?? []; track installer.id) {
               <div tuiCardLarge class="installer-card-container">
-                <label tuiLabel>{{ installer.fileName }}</label>
+                <div class="builder-info-container"
+                     *tuiLet="getInstallerBuilder(installer.builderKey) | async as builder">
+                  <h3 tuiLabel>{{ installer.name || builder?.displayName }}</h3>
+                  <p>{{ builder?.description }}</p>
+                </div>
                 <button tuiIconButton iconStart="@tui.download" size="s" [disabled]="release?.deletedAt"
                         (click)="downloadReleaseInstaller(installer.id)"></button>
               </div>
             }
           } @else {
-            <p>Нет загруженных установщиков для этого релиза. В будущем можно будет загрузить их прямо отсюда</p>
+            <p>Нет доступных установщиков для этого приложения. Их можно добавить на странице конфигурации</p>
           }
         </div>
       </ng-template>

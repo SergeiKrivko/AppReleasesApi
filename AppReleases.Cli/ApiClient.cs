@@ -46,12 +46,12 @@ public class ApiClient(string baseUrl, string apiKey)
         resp.EnsureSuccessStatusCode();
     }
 
-    public async Task UploadReleaseInstaller(Guid releaseId, string fileName)
+    public async Task UploadReleaseBundle(Guid releaseId, string fileName)
     {
         await using var fileStream = File.OpenRead(fileName);
         var content = new MultipartFormDataContent();
         content.Add(new StreamContent(fileStream), "file", Path.GetFileName(fileName));
-        var resp = await _httpClient.PostAsync($"api/v1/releases/{releaseId}/installers", content);
+        var resp = await _httpClient.PostAsync($"api/v1/releases/{releaseId}/bundles", content);
         resp.EnsureSuccessStatusCode();
     }
 }

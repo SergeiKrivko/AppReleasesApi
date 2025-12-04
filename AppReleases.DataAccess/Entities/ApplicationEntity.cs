@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AppReleases.Models;
 
 namespace AppReleases.DataAccess.Entities;
 
@@ -14,4 +15,5 @@ public class ApplicationEntity
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
     public virtual ICollection<BranchEntity> Branches { get; init; } = [];
+    public virtual ICollection<InstallerBuilderUsageEntity> InstallerBuilders { get; init; } = [];
 }

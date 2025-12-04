@@ -10,4 +10,6 @@ public interface ICleanerService
     public Task<int> ClearOldReleasesOfBranchAsync(Guid branchId);
     public Task<int> ClearOldReleasesOfBranchAsync(Application application, Branch branch);
     public Task<int> ClearUnusedAssetsAsync(CancellationToken cancellationToken);
+    public Task<int> ClearOldInstallersAsync(CancellationToken cancellationToken);
+    public Task<int> ClearOldInstallersOfApplicationAsync(Guid applicationId, CancellationToken cancellationToken);
 }

@@ -132,9 +132,47 @@ namespace AppReleases.DataAccess.Migrations
                     b.ToTable("Branches");
                 });
 
-            modelBuilder.Entity("AppReleases.DataAccess.Entities.InstallerEntity", b =>
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.BuiltInstallerEntity", b =>
                 {
-                    b.Property<Guid>("InstallerId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BuilderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DownloadedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("ReleaseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuilderId");
+
+                    b.HasIndex("ReleaseId");
+
+                    b.ToTable("BuiltInstallers");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.BundleEntity", b =>
+                {
+                    b.Property<Guid>("BundleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -155,11 +193,54 @@ namespace AppReleases.DataAccess.Migrations
                     b.Property<Guid>("ReleaseId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("InstallerId");
+                    b.HasKey("BundleId");
 
                     b.HasIndex("ReleaseId");
 
-                    b.ToTable("Installers");
+                    b.ToTable("Bundles");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.InstallerBuilderUsageEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BuilderKey")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan?>("InstallerLifetime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string[]>("Platforms")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Settings")
+                        .HasMaxLength(4096)
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("InstallerBuilderUsages");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseAssetEntity", b =>
@@ -259,15 +340,45 @@ namespace AppReleases.DataAccess.Migrations
                     b.Navigation("Application");
                 });
 
-            modelBuilder.Entity("AppReleases.DataAccess.Entities.InstallerEntity", b =>
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.BuiltInstallerEntity", b =>
+                {
+                    b.HasOne("AppReleases.DataAccess.Entities.InstallerBuilderUsageEntity", "Builder")
+                        .WithMany("BuiltInstallers")
+                        .HasForeignKey("BuilderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppReleases.DataAccess.Entities.ReleaseEntity", "Release")
+                        .WithMany("BuiltInstallers")
+                        .HasForeignKey("ReleaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Builder");
+
+                    b.Navigation("Release");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.BundleEntity", b =>
                 {
                     b.HasOne("AppReleases.DataAccess.Entities.ReleaseEntity", "Release")
-                        .WithMany("Installers")
+                        .WithMany("Bundles")
                         .HasForeignKey("ReleaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Release");
+                });
+
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.InstallerBuilderUsageEntity", b =>
+                {
+                    b.HasOne("AppReleases.DataAccess.Entities.ApplicationEntity", "Application")
+                        .WithMany("InstallerBuilders")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseAssetEntity", b =>
@@ -303,6 +414,8 @@ namespace AppReleases.DataAccess.Migrations
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ApplicationEntity", b =>
                 {
                     b.Navigation("Branches");
+
+                    b.Navigation("InstallerBuilders");
                 });
 
             modelBuilder.Entity("AppReleases.DataAccess.Entities.AssetEntity", b =>
@@ -315,9 +428,16 @@ namespace AppReleases.DataAccess.Migrations
                     b.Navigation("Releases");
                 });
 
+            modelBuilder.Entity("AppReleases.DataAccess.Entities.InstallerBuilderUsageEntity", b =>
+                {
+                    b.Navigation("BuiltInstallers");
+                });
+
             modelBuilder.Entity("AppReleases.DataAccess.Entities.ReleaseEntity", b =>
                 {
-                    b.Navigation("Installers");
+                    b.Navigation("BuiltInstallers");
+
+                    b.Navigation("Bundles");
 
                     b.Navigation("ReleaseAssets");
                 });

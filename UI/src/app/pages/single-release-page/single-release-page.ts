@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, injec
 import {TuiButton, TuiIcon, TuiLabel, TuiNotification, TuiTextfieldComponent} from '@taiga-ui/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ReleaseService} from '../../services/release.service';
-import {catchError, first, map, NEVER, Observable, of, switchMap, tap} from 'rxjs';
+import {catchError, combineLatest, first, map, NEVER, Observable, of, switchMap, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import {EMPTY_ARRAY, TuiHandler, TuiLet} from '@taiga-ui/cdk';
@@ -10,10 +10,13 @@ import {DateFromNowPipe} from '../../pipes/date-from-now-pipe';
 import {BranchByIdPipe} from '../../pipes/branch-by-id-pipe';
 import {TuiAccordion, TuiButtonLoading, TuiTextarea, TuiTree} from '@taiga-ui/kit';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {InstallerService} from '../../services/installer.service';
+import {BundleService} from '../../services/bundle.service';
 import {TuiCard} from '@taiga-ui/layout';
 import {MetricService} from '../../services/metric.service';
 import {AsIntegerPipe} from '../../pipes/as-integer-pipe';
+import {InstallersService} from '../../services/installers.service';
+import {UsingInstallerBuilderEntity} from '../../entities/using-installer-builder-entity';
+import {AvailableInstallerBuilderEntity} from '../../entities/available-installer-builder-entity';
 
 interface TreeNode {
   name: string;
@@ -48,7 +51,8 @@ interface TreeNode {
 })
 export class SingleReleasePage implements OnInit {
   private readonly releaseService = inject(ReleaseService);
-  private readonly installerService = inject(InstallerService);
+  private readonly bundleService = inject(BundleService);
+  private readonly installersService = inject(InstallersService);
   private readonly metricService = inject(MetricService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -74,6 +78,19 @@ export class SingleReleasePage implements OnInit {
   protected selectedRelease$ = this.releaseService.selectedRelease$.pipe(
     tap(release => this.control.setValue(release?.releaseNotes ?? ""))
   );
+
+  protected readonly usingInstallers$: Observable<UsingInstallerBuilderEntity[]> = combineLatest([
+    this.installersService.usingInstallers$,
+    this.selectedRelease$,
+  ]).pipe(
+    map(([installers, release]) => installers.filter(e => e.platforms.length == 0 || e.platforms.includes(release?.platform ?? "")))
+  );
+
+  protected getInstallerBuilder(key: string): Observable<AvailableInstallerBuilderEntity | undefined> {
+    return this.installersService.availableInstallers$.pipe(
+      map(builders => builders.find(e => e.key == key)),
+    );
+  }
 
   protected releaseAssets$: Observable<TreeNode | null> = this.selectedRelease$.pipe(
     switchMap(release => {
@@ -112,10 +129,20 @@ export class SingleReleasePage implements OnInit {
     ).subscribe();
   }
 
-  protected readonly releaseInstallers$ = this.installerService.installers$;
+  protected readonly releaseBundles$ = this.bundleService.bundles$;
+
+  protected downloadReleaseBundle(id: string) {
+    this.bundleService.getDownloadBundleUrl(id).pipe(
+      tap(url => {
+        console.log(url);
+        if (url)
+          window.location.href = url;
+      })
+    ).subscribe();
+  }
 
   protected downloadReleaseInstaller(id: string) {
-    this.installerService.getDownloadInstallerUrl(id).pipe(
+    this.installersService.getDownloadInstallerUrl(id).pipe(
       tap(url => {
         console.log(url);
         if (url)
@@ -166,7 +193,7 @@ export class SingleReleasePage implements OnInit {
   )
 }
 
-const assetsListToTree = (assetsList: string[]) : TreeNode | null => {
+const assetsListToTree = (assetsList: string[]): TreeNode | null => {
   if (assetsList.length == 0)
     return null;
   const root: TreeNode = {name: '/', children: []};

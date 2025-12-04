@@ -9,6 +9,8 @@ public class CleanerService(
     IBranchService branchService,
     IApplicationService applicationService,
     IAssetRepository assetRepository,
+    IInstallerBuilderRepository installerBuilderRepository,
+    IBuiltInstallerRepository builtInstallerRepository,
     IFileRepository fileRepository,
     ILogger<CleanerService> logger) : ICleanerService
 {
@@ -91,6 +93,33 @@ public class CleanerService(
             count++;
         }
 
+        return count;
+    }
+
+    public async Task<int> ClearOldInstallersAsync(CancellationToken cancellationToken)
+    {
+        var count = 0;
+        var applications = await applicationService.GetAllApplicationsAsync();
+        foreach (var application in applications)
+        {
+            count += await ClearOldInstallersOfApplicationAsync(application.Id, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+        }
+
+        return count;
+    }
+
+    public async Task<int> ClearOldInstallersOfApplicationAsync(Guid applicationId, CancellationToken cancellationToken)
+    {
+        var count = 0;
+        foreach (var builder in await installerBuilderRepository
+                     .GetAllInstallerBuildersOfApplicationAsync(applicationId, cancellationToken))
+        {
+            var lifetime = builder.InstallerLifetime ?? TimeSpan.FromDays(1);
+            count += await builtInstallerRepository.DeleteInstallersDownloadedBeforeAsync(DateTime.UtcNow - lifetime,
+                builder.Id,
+                cancellationToken);
+        }
         return count;
     }
 }

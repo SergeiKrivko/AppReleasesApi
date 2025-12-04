@@ -1,53 +1,85 @@
 ﻿using AppReleases.Core.Abstractions;
+using AppReleases.Installers.Zip;
 using AppReleases.Models;
 
 namespace AppReleases.Application.Services;
 
 public class InstallerService(
-    IInstallerRepository installerRepository,
+    IBuiltInstallerRepository builtInstallerRepository,
+    IInstallerBuilderRepository installerBuilderRepository,
+    IAssetRepository assetRepository,
     IFileRepository fileRepository) : IInstallerService
 {
-    public Task<Installer> GetInstallerByIdAsync(Guid id)
+    private readonly Dictionary<string, IInstallerBuilder> _builders = new List<IInstallerBuilder>
     {
-        return installerRepository.GetInstallerByIdAsync(id);
+        new ZipInstallerBuilder(fileRepository)
+    }.ToDictionary(x => x.Key, x => x);
+
+    private static TimeSpan DefaultUrlLifetime { get; } = TimeSpan.FromHours(1);
+
+    public Task<IEnumerable<IInstallerBuilder>> GetAllBuildersAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IEnumerable<IInstallerBuilder>>(_builders.Values);
     }
 
-    public Task<IEnumerable<Installer>> GetAllInstallersAsync(Guid releaseId)
+    public async Task<string> BuildInstallerAsync(Models.Application application, Release release, Guid builderId,
+        CancellationToken cancellationToken = default)
     {
-        return installerRepository.GetAllInstallersAsync(releaseId);
-    }
-
-    public Task<Installer?> FindInstallerAsync(Guid releaseId, string fileName)
-    {
-        return installerRepository.FindInstallerAsync(releaseId, fileName);
-    }
-
-    public async Task<Installer> CreateInstallerAsync(Guid releaseId, string fileName, Stream stream)
-    {
-        var installer = new Installer
+        var builderUsage = await installerBuilderRepository.GetInstallerBuilderByIdAsync(builderId, cancellationToken);
+        if (builderUsage == null)
+            throw new ApplicationException($"No builder found with id {builderId}");
+        var builder = _builders[builderUsage.BuilderKey];
+        if (builderUsage == null)
+            throw new KeyNotFoundException();
+        var existing =
+            await builtInstallerRepository.FindExistingInstallerAsync(release.Id, builderUsage.Id, cancellationToken);
+        if (existing != null)
         {
-            InstallerId = Guid.NewGuid(),
-            ReleaseId = releaseId,
-            FileId = Guid.NewGuid(),
-            FileName = fileName,
-            CreatedAt = DateTime.UtcNow,
-        };
-        await installerRepository.CreateInstallerAsync(installer);
-        await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, installer.FileId, fileName, stream);
-        return installer;
+            await builtInstallerRepository.UpdateDownloadTimeAsync(builderUsage.Id, cancellationToken);
+            return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, existing.FileId,
+                existing.FileName, DefaultUrlLifetime);
+        }
+
+        var assets = await assetRepository.GetAllAssetsAsync(release.Id);
+        var builtInstaller =
+            await builder.Build(application, release, assets, builderUsage.Settings, cancellationToken);
+        var id = Guid.NewGuid();
+        await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, id, builtInstaller.FileName,
+            builtInstaller.FileStream);
+        await builtInstallerRepository.CreateBuiltInstallerAsync(release.Id, builderUsage.Id, id,
+            builtInstaller.FileName,
+            cancellationToken);
+        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, id,
+            builtInstaller.FileName, DefaultUrlLifetime);
     }
 
-    public async Task DeleteInstallerAsync(Guid installerId)
+    public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name,
+        Guid applicationId,
+        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default)
     {
-        var installer = await installerRepository.GetInstallerByIdAsync(installerId);
-        await fileRepository.DeleteFileAsync(FileRepositoryBucket.Installers, installer.FileId, installer.FileName);
-        await installerRepository.DeleteInstallerAsync(installerId);
+        if (!_builders.ContainsKey(builderKey))
+            throw new KeyNotFoundException();
+        return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey,
+            name,
+            installerLifetime, platforms, cancellationToken);
     }
 
-    public async Task<string> GetDownloadUrlAsync(Guid installerId)
+    public async Task RemoveInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default)
     {
-        var installer = await installerRepository.GetInstallerByIdAsync(installerId);
-        return await fileRepository.GetDownloadUrlAsync(FileRepositoryBucket.Installers, installer.FileId,
-            installer.FileName, TimeSpan.FromHours(1));
+        await installerBuilderRepository.DeleteInstallerBuilderAsync(builderId, cancellationToken);
+    }
+
+    public async Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
+        string[] platforms,
+        CancellationToken cancellationToken = default)
+    {
+        await installerBuilderRepository.UpdateInstallerBuilderAsync(builderId, name, installerLifetime, platforms,
+            cancellationToken);
+    }
+
+    public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
+        CancellationToken cancellationToken = default)
+    {
+        return installerBuilderRepository.GetAllInstallerBuildersOfApplicationAsync(applicationId, cancellationToken);
     }
 }

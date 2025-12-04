@@ -1,8 +1,8 @@
 ﻿namespace AppReleases.Models;
 
-public class Installer
+public class Bundle
 {
-    public required Guid InstallerId { get; set; }
+    public required Guid BundleId { get; set; }
     public required Guid ReleaseId { get; set; }
     public required string FileName { get; set; }
     public required Guid FileId { get; set; }

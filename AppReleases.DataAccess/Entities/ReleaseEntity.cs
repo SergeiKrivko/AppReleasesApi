@@ -15,5 +15,6 @@ public class ReleaseEntity
     public virtual BranchEntity Branch { get; init; } = null!;
     public virtual ICollection<AssetEntity> Assets { get; init; } = [];
     public virtual ICollection<ReleaseAssetEntity> ReleaseAssets { get; init; } = [];
-    public virtual ICollection<InstallerEntity> Installers { get; init; } = [];
+    public virtual ICollection<BundleEntity> Bundles { get; init; } = [];
+    public virtual ICollection<BuiltInstallerEntity> BuiltInstallers { get; init; } = [];
 }
