@@ -2498,6 +2498,7 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
     builderKey!: string | undefined;
     name?: string | undefined;
     settings!: { [key: string]: JsonNode; } | undefined;
+    platforms?: string[] | undefined;
     installerLifetime?: string | undefined;
 
     constructor(data?: IInstallerBuilderUsage) {
@@ -2520,6 +2521,11 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
                     if (_data["settings"].hasOwnProperty(key))
                         (<any>this.settings)![key] = _data["settings"][key] ? JsonNode.fromJS(_data["settings"][key]) : new JsonNode();
                 }
+            }
+            if (Array.isArray(_data["platforms"])) {
+                this.platforms = [] as any;
+                for (let item of _data["platforms"])
+                    this.platforms!.push(item);
             }
             this.installerLifetime = _data["installerLifetime"];
         }
@@ -2544,6 +2550,11 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
                     (<any>data["settings"])[key] = this.settings[key] ? this.settings[key].toJSON() : <any>undefined;
             }
         }
+        if (Array.isArray(this.platforms)) {
+            data["platforms"] = [];
+            for (let item of this.platforms)
+                data["platforms"].push(item);
+        }
         data["installerLifetime"] = this.installerLifetime;
         return data;
     }
@@ -2554,6 +2565,7 @@ export interface IInstallerBuilderUsage {
     builderKey: string | undefined;
     name?: string | undefined;
     settings: { [key: string]: JsonNode; } | undefined;
+    platforms?: string[] | undefined;
     installerLifetime?: string | undefined;
 }
 

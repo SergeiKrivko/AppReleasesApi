@@ -60,17 +60,38 @@
       }
     }
 
-    .installers-container {
+    .bundles-container {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       align-items: stretch;
+
+      .bundle-card-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
 
       .installer-card-container {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+
+        .builder-info-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          span, p, label, h3 {
+            margin: 0;
+          }
+        }
+
+        button {
+          margin: 0;
+        }
       }
     }
   }

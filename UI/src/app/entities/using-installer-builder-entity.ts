@@ -5,5 +5,6 @@ export interface UsingInstallerBuilderEntity {
   builderKey: string,
   name: string | null,
   settings: object,
+  platforms: string[];
   installerLifetime: Duration,
 }

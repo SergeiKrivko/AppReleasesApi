@@ -6,8 +6,9 @@ import {AddInstallerBuilderSchema, ApiClient, InstallerBuilderSchema, InstallerB
 import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ApplicationService} from './application.service';
-import {first, NEVER, of, switchMap, tap} from 'rxjs';
+import {first, map, NEVER, Observable, of, switchMap, tap} from 'rxjs';
 import {Duration, duration} from 'moment';
+import {ReleaseService} from './release.service';
 
 interface InstallersStore {
   availableInstallers: AvailableInstallerBuilderEntity[],
@@ -21,6 +22,7 @@ interface InstallersStore {
 export class InstallersService {
   private readonly apiClient = inject(ApiClient);
   private readonly applicationService = inject(ApplicationService);
+  private readonly releaseService = inject(ReleaseService);
 
   private readonly store$$ = signalState<InstallersStore>({
     availableInstallers: [],
@@ -69,6 +71,18 @@ export class InstallersService {
       })
     );
   }
+
+  getDownloadInstallerUrl(installerId: string): Observable<string | undefined> {
+    return this.releaseService.selectedRelease$.pipe(
+      first(),
+      switchMap(release => {
+        if (release)
+          return this.apiClient.downloadGET3(release.id, installerId);
+        return NEVER;
+      }),
+      map(resp => resp.url),
+    );
+  }
 }
 
 const installerUsageToEntity = (installer: InstallerBuilderUsage): UsingInstallerBuilderEntity => ({
@@ -76,6 +90,7 @@ const installerUsageToEntity = (installer: InstallerBuilderUsage): UsingInstalle
   name: installer.name ?? null,
   builderKey: installer.builderKey ?? "",
   settings: installer.settings ?? {},
+  platforms: installer.platforms ?? [],
   installerLifetime: duration(installer.installerLifetime) ?? duration(24, 'hours'),
 });
 
