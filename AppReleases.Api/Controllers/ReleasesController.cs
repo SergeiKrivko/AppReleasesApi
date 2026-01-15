@@ -19,6 +19,13 @@ public class ReleasesController(
     IInstallerService installerService,
     IMetricsHelper metricsHelper) : Controller
 {
+    [HttpGet("{releaseId:guid}")]
+    public async Task<ActionResult<Release>> GetReleaseAsync(Guid releaseId)
+    {
+        var result = await releaseService.GetReleaseByIdAsync(releaseId);
+        return Ok(result);
+    }
+
     [HttpPost("diff")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<ActionResult<ReleaseDifference>> GetReleaseDifference([FromBody] AssetInfo[] assets)

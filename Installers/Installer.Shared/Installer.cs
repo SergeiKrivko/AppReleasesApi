@@ -57,6 +57,8 @@ public class Installer
     {
         _config = JsonSerializer.Deserialize(await File.ReadAllTextAsync(ConfigPath),
             InstallerJsonSerializerContext.Default.ConfigSchema);
+        if (_config is not null)
+            _apiClient = new ApiClient(_config.ApiUrl);
     }
 
     private void AddAssetsToConfig(IEnumerable<AssetSchema> assets)
@@ -122,9 +124,13 @@ public class Installer
         await ReadConfig();
         ThrowIfNotInitialized();
 
+        Console.WriteLine("Получение информации об установленном релизе...");
+        var installedRelease = await _apiClient.GetReleaseByIdAsync(_config.InstalledReleaseId);
+
         Console.WriteLine("Получение информации о последнем релизе...");
-        var latestRelease = await _apiClient.GetLatestReleaseAsync(_config.ApplicationId);
-        if (latestRelease.Id == _config.InstalledReleaseId)
+        var latestRelease = await _apiClient.GetLatestReleaseAsync(_config.ApplicationId,
+            installedRelease.Platform ?? throw new Exception("Platform is null"));
+        if (latestRelease.Version <= installedRelease.Version)
         {
             Console.WriteLine("Уже установлена последняя версия приложения. Обновление не требуется.");
             return;

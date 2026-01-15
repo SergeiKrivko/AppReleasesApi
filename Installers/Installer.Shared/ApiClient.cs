@@ -25,10 +25,19 @@ public class ApiClient(string apiUrl)
         return data?.Url ?? throw new Exception("Invalid response");
     }
 
-    public async Task<ReleaseSchema> GetLatestReleaseAsync(Guid applicationId)
+    public async Task<ReleaseSchema> GetReleaseByIdAsync(Guid releaseId)
+    {
+        Console.WriteLine($"GET api/v1/releases/{releaseId}");
+        var resp = await _httpClient.GetAsync($"api/v1/releases/{releaseId}");
+        resp.EnsureSuccessStatusCode();
+        var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.ReleaseSchema);
+        return data ?? throw new Exception("Invalid response");
+    }
+
+    public async Task<ReleaseSchema> GetLatestReleaseAsync(Guid applicationId, string platform)
     {
         Console.WriteLine($"GET api/v1/apps/{applicationId}/releases/latest");
-        var resp = await _httpClient.GetAsync($"api/v1/apps/{applicationId}/releases/latest");
+        var resp = await _httpClient.GetAsync($"api/v1/apps/{applicationId}/releases/latest?platform={platform}");
         resp.EnsureSuccessStatusCode();
         var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.ReleaseSchema);
         return data ?? throw new Exception("Invalid response");
