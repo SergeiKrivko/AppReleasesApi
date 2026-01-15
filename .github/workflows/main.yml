@@ -32,6 +32,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Install dependencies for linux-arm64
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'linux-arm64'
+        run: |
+          # Для кросс-компиляции ARM64 на x64
+          apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
       - name: Build Installer
         run: |
