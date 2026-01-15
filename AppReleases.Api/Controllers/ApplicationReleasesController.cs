@@ -16,13 +16,4 @@ public class ApplicationReleasesController(IReleaseService releaseService) : Con
         var releases = await releaseService.GetAllReleasesOfApplicationAsync(applicationId);
         return Ok(releases);
     }
-
-    [HttpGet("latest")]
-    public async Task<ActionResult<Release>> GetLatestApplicationRelease(Guid applicationId, string platform)
-    {
-        var release = await releaseService.GetLatestReleaseAsync(applicationId, platform);
-        if (release == null)
-            return NotFound();
-        return Ok(release);
-    }
 }

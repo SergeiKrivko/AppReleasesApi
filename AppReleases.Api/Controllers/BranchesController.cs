@@ -12,6 +12,7 @@ namespace AppReleases.Api.Controllers;
 public class BranchesController(
     AuthorizationHelper authorizationHelper,
     IBranchService branchService,
+    IReleaseService releaseService,
     IApplicationService applicationService) : Controller
 {
     [HttpGet]
@@ -82,5 +83,15 @@ public class BranchesController(
 
         await branchService.DeleteBranchAsync(branchId);
         return Ok();
+    }
+
+    [HttpGet("{branchId:guid}/releases/latest")]
+    public async Task<ActionResult<Release>> GetLatestApplicationRelease(Guid applicationId, Guid branchId,
+        string platform)
+    {
+        var release = await releaseService.GetLatestReleaseAsync(branchId, platform);
+        if (release == null)
+            return NotFound();
+        return Ok(release);
     }
 }
