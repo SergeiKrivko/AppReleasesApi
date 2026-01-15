@@ -159,12 +159,14 @@ public class ReleasesController(
     }
 
     [HttpGet("{releaseId:guid}/installers/{builderId:guid}/download")]
-    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid builderId)
+    public async Task<ActionResult<DownloadUrlResponseSchema>> GetDownloadInstallerUrl(Guid releaseId, Guid builderId,
+        CancellationToken cancellationToken)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
-        var url = await installerService.BuildInstallerAsync(application, release, builderId);
+        var url = await installerService.BuildInstallerAsync(application, release, builderId,
+            $"{Request.Scheme}://{Request.Host}", cancellationToken);
         metricsHelper.AddDownloadBundle(application.Key, branch.Name, release, builderId);
         return Ok(new DownloadUrlResponseSchema
         {

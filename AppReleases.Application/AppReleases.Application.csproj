@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AppReleases.Core\AppReleases.Core.csproj" />
+      <ProjectReference Include="..\AppReleases.installers.Console\AppReleases.installers.Console.csproj" />
       <ProjectReference Include="..\AppReleases.Installers.Zip\AppReleases.Installers.Zip.csproj" />
     </ItemGroup>
 

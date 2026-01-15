@@ -31,8 +31,4 @@
       <ProjectReference Include="..\AppReleases.S3\AppReleases.S3.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\" />
-    </ItemGroup>
-
 </Project>

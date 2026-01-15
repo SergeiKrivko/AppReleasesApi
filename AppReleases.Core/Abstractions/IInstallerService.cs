@@ -7,6 +7,7 @@ public interface IInstallerService
     public Task<IEnumerable<IInstallerBuilder>> GetAllBuildersAsync(CancellationToken cancellationToken);
 
     public Task<string> BuildInstallerAsync(Application application, Release release, Guid builderId,
+        string apiUrl,
         CancellationToken cancellationToken = default);
 
     public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,

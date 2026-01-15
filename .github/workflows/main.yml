@@ -1,11 +1,50 @@
 name: Build
-on: [push]
+on: [ push ]
 
 env:
+  DOTNET_VERSION: 8.0.x
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  build-installers:
+    name: Build Installers for Multiple Platforms
+    strategy:
+      matrix:
+        include:
+          - target: linux-x64
+            os: ubuntu-latest
+          - target: linux-arm64
+            os: ubuntu-latest
+          - target: win-x64
+            os: windows-latest
+          - target: win-arm64
+            os: windows-latest
+    runs-on: ${{matrix.os}}
+    outputs:
+      artifacts: ${{ steps.prepare.outputs.artifacts }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build Installer
+        run: |
+          cd Installers/ConsoleInstaller
+          dotnet publish -c Release -r ${{ matrix.target }} --self-contained true -p:PublishSingleFile=true -p:PublishAot=true -o ../../_installers/${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.target }}
+          path: _installers/${{ matrix.target }}/
+          retention-days: 1
+  
   build-and-push:
     name: Build Docker and push to GitHub Container Registry
     runs-on: ubuntu-latest
@@ -17,6 +56,63 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+          
+      - name: Download linux-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-linux-x64
+          path: all_installers/linux-x64
+  
+      - name: Download linux-arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-linux-arm64
+          path: all_installers/linux-arm64
+
+      - name: Download win-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-win-x64
+          path: all_installers/win-x64
+
+      - name: Download win-arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-win-arm64
+          path: all_installers/win-arm64
+
+      - name: Prepare installers directory
+        run: |
+          mkdir -p AppReleases.Api/wwwroot/static/installers
+          
+          # Linux x64
+          if [ -f "all_installers/linux-x64/ConsoleInstaller" ]; then
+            cp all_installers/linux-x64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-x64
+            chmod +x AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-x64
+          fi
+          
+          # Linux arm64
+          if [ -f "all_installers/linux-arm64/ConsoleInstaller" ]; then
+            cp all_installers/linux-arm64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-arm64
+            chmod +x AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-arm64
+          fi
+          
+          # Windows x64
+          if [ -f "all_installers/win-x64/ConsoleInstaller.exe" ]; then
+            cp all_installers/win-x64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-win-x64.exe
+          fi
+          
+          # Windows arm64
+          if [ -f "all_installers/win-arm64/ConsoleInstaller.exe" ]; then
+            cp all_installers/win-arm64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-win-arm64.exe
+          fi
+          
+          # Проверяем результат
+          echo "=== Installed files ==="
+          ls -la AppReleases.Api/wwwroot/static/installers/
+          echo ""
+          echo "File sizes:"
+          find AppReleases.Api/wwwroot/static/installers -type f -exec ls -lh {} \;
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -38,7 +134,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          
+
 #      - name: Deploy
 #        run: |
 #          curl -X 'POST' \

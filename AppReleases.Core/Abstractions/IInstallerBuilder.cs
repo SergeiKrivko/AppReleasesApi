@@ -10,6 +10,14 @@ public interface IInstallerBuilder
     public string DisplayName { get; }
     public string? Description { get; }
 
-    public Task<BuiltInstaller> Build(Application application, Release release, IEnumerable<Asset> assets,
-        JsonObject settings, CancellationToken cancellationToken = default);
+    public Task<BuiltInstaller> Build(InstallerBuilderContext context, CancellationToken cancellationToken = default);
+}
+
+public class InstallerBuilderContext
+{
+    public required Application Application { get; init; }
+    public required Release Release { get; init; }
+    public IEnumerable<Asset>? Assets { get; init; }
+    public required JsonObject Settings { get; init; }
+    public string? ApiUrl { get; init; }
 }

@@ -13,14 +13,13 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
 
     public string Description => "Просто собирает все ассеты в zip.";
 
-    public async Task<BuiltInstaller> Build(Application application, Release release, IEnumerable<Asset> assets,
-        JsonObject settings, CancellationToken cancellationToken = default)
+    public async Task<BuiltInstaller> Build(InstallerBuilderContext context, CancellationToken cancellationToken = default)
     {
         var zipStream = new MemoryStream();
 
         using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create))
         {
-            foreach (var asset in assets)
+            foreach (var asset in context.Assets ?? [])
             {
                 await using var zipEntry = zip.CreateEntry(asset.FileName).Open();
                 await using var stream =
@@ -32,7 +31,7 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
         return new BuiltInstaller
         {
             FileStream = new MemoryStream(zipStream.ToArray()),
-            FileName = $"{application.Name}_{release.Version}.zip"
+            FileName = $"{context.Application.Key}_{context.Release.Version}.zip"
         };
     }
 }

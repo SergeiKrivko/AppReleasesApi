@@ -1,4 +1,5 @@
 ﻿using AppReleases.Core.Abstractions;
+using AppReleases.installers.Console;
 using AppReleases.Installers.Zip;
 using AppReleases.Models;
 
@@ -12,7 +13,8 @@ public class InstallerService(
 {
     private readonly Dictionary<string, IInstallerBuilder> _builders = new List<IInstallerBuilder>
     {
-        new ZipInstallerBuilder(fileRepository)
+        new ZipInstallerBuilder(fileRepository),
+        new ConsoleInstallerBuilder(),
     }.ToDictionary(x => x.Key, x => x);
 
     private static TimeSpan DefaultUrlLifetime { get; } = TimeSpan.FromHours(1);
@@ -23,6 +25,7 @@ public class InstallerService(
     }
 
     public async Task<string> BuildInstallerAsync(Models.Application application, Release release, Guid builderId,
+        string apiUrl,
         CancellationToken cancellationToken = default)
     {
         var builderUsage = await installerBuilderRepository.GetInstallerBuilderByIdAsync(builderId, cancellationToken);
@@ -42,7 +45,14 @@ public class InstallerService(
 
         var assets = await assetRepository.GetAllAssetsAsync(release.Id);
         var builtInstaller =
-            await builder.Build(application, release, assets, builderUsage.Settings, cancellationToken);
+            await builder.Build(new InstallerBuilderContext
+            {
+                Application = application,
+                Release = release,
+                Settings = builderUsage.Settings,
+                Assets = assets,
+                ApiUrl = apiUrl
+            }, cancellationToken);
         var id = Guid.NewGuid();
         await fileRepository.UploadFileAsync(FileRepositoryBucket.Installers, id, builtInstaller.FileName,
             builtInstaller.FileStream);
