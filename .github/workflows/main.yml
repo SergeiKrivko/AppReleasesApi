@@ -8,7 +8,6 @@ env:
 
 jobs:
   build-installers:
-    name: Build Installers for Multiple Platforms
     strategy:
       matrix:
         include:
@@ -20,7 +19,8 @@ jobs:
             os: windows-latest
           - target: win-arm64
             os: windows-latest
-    runs-on: ${{matrix.os}}
+    name: Build Installers for ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
     outputs:
       artifacts: ${{ steps.prepare.outputs.artifacts }}
     
@@ -36,7 +36,7 @@ jobs:
       - name: Build Installer
         run: |
           cd Installers/ConsoleInstaller
-          dotnet publish -c Release -r ${{ matrix.target }} --self-contained true -p:PublishSingleFile=true -p:PublishAot=true -o ../../_installers/${{ matrix.target }}
+          dotnet publish -c Release -r ${{ matrix.target }} -o ../../_installers/${{ matrix.target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -48,6 +48,7 @@ jobs:
   build-and-push:
     name: Build Docker and push to GitHub Container Registry
     runs-on: ubuntu-latest
+    needs: build-installers
 
     permissions:
       contents: write
@@ -56,13 +57,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-          
+
       - name: Download linux-x64
         uses: actions/download-artifact@v4
         with:
           name: installer-linux-x64
           path: all_installers/linux-x64
-  
+
       - name: Download linux-arm64
         uses: actions/download-artifact@v4
         with:
