@@ -13,7 +13,7 @@ public class ApiClient
     public async Task<ApplicationSchema> GetApplicationInfoAsync(string applicationId)
     {
         Console.WriteLine($"GET api/v1/apps/{applicationId}");
-        var resp = await _httpClient.GetAsync($"GET api/v1/apps/{applicationId}");
+        var resp = await _httpClient.GetAsync($"api/v1/apps/{applicationId}");
         resp.EnsureSuccessStatusCode();
         var data = await resp.Content.ReadFromJsonAsync(ApiClientJsonSerializerContext.Default.ApplicationSchema);
         return data ?? throw new Exception("Invalid response");
