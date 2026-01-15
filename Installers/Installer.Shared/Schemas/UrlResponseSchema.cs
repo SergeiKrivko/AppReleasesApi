@@ -1,4 +1,4 @@
-﻿namespace ConsoleInstaller.Schemas;
+﻿namespace Installer.Shared.Schemas;
 
 public class UrlResponseSchema
 {

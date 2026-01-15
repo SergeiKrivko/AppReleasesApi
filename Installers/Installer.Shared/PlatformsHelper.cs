@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Versioning;
 using System.Security.Principal;
-using ConsoleInstaller.Schemas;
+using Installer.Shared.Schemas;
 
-namespace ConsoleInstaller;
+namespace Installer.Shared;
 
 public static class PlatformsHelper
 {

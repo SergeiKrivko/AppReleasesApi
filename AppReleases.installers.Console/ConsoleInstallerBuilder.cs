@@ -13,7 +13,7 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
 
     private static async Task<byte[]> ReadInstallerAsync(string platform, CancellationToken token)
     {
-        var filename = $"wwwroot/static/installers/ConsoleInstaller_{platform}";
+        var filename = $"wwwroot/static/installers/Installer.Console_{platform}";
         if (platform.StartsWith("win"))
             filename += ".exe";
         return await File.ReadAllBytesAsync(Path.Join(AppContext.BaseDirectory, filename), token);

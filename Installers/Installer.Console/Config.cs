@@ -1,4 +1,4 @@
-﻿namespace ConsoleInstaller;
+﻿namespace Installer.Console;
 
 public static class Config
 {
