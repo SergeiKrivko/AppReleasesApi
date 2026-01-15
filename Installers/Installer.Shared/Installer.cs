@@ -112,7 +112,7 @@ public class Installer
         _config.ReleaseId = Guid.Empty;
         await DownloadUpdater(
             "Installer.Console.Updater_" + release.Platform + (OperatingSystem.IsWindows() ? ".exe" : ""),
-            "Uninstall" + (OperatingSystem.IsWindows() ? ".exe" : ""));
+            Path.Join(directory, "Uninstall" + (OperatingSystem.IsWindows() ? ".exe" : "")));
         await SaveConfig(Path.Join(directory, ConfigFileName));
 
         Console.WriteLine("Установка завершена!");

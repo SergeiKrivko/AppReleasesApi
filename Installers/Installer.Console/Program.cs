@@ -23,4 +23,7 @@ catch (Exception e)
     return 1;
 }
 
+Console.WriteLine("Нажмите любую клавишу для завершения");
+Console.ReadKey();
+
 return 0;

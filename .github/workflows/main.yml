@@ -133,8 +133,8 @@ jobs:
             cp all_installers/linux-x64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-x64
             chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-x64
           fi
-          if [ -f "all_installers/linux-x64/Installer.Console.Updater" ]; then
-            cp all_installers/linux-x64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-x64
+          if [ -f "all_updaters/linux-x64/Installer.Console.Updater" ]; then
+            cp all_updaters/linux-x64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-x64
             chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-x64
           fi
           
@@ -143,8 +143,8 @@ jobs:
             cp all_installers/linux-arm64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-arm64
             chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-arm64
           fi
-          if [ -f "all_installers/linux-arm64/Installer.Console.Updater" ]; then
-            cp all_installers/linux-arm64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-arm64
+          if [ -f "all_updaters/linux-arm64/Installer.Console.Updater" ]; then
+            cp all_updaters/linux-arm64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-arm64
             chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-arm64
           fi
           
@@ -152,16 +152,16 @@ jobs:
           if [ -f "all_installers/win-x64/Installer.Console.exe" ]; then
             cp all_installers/win-x64/Installer.Console.exe AppReleases.Api/wwwroot/static/installers/Installer.Console_win-x64.exe
           fi
-          if [ -f "all_installers/win-x64/Installer.Console.Updater.exe" ]; then
-            cp all_installers/win-x64/Installer.Console.Updater.exe AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_win-x64.exe
+          if [ -f "all_updaters/win-x64/Installer.Console.Updater.exe" ]; then
+            cp all_updaters/win-x64/Installer.Console.Updater.exe AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_win-x64.exe
           fi
           
           # Windows arm64
           if [ -f "all_installers/win-arm64/Installer.Console.exe" ]; then
             cp all_installers/win-arm64/Installer.Console.exe AppReleases.Api/wwwroot/static/installers/Installer.Console_win-arm64.exe
           fi
-          if [ -f "all_installers/win-arm64/Installer.Console.Updater.exe" ]; then
-            cp all_installers/win-arm64/Installer.Console.Updater.exe AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_win-arm64.exe
+          if [ -f "all_updaters/win-arm64/Installer.Console.Updater.exe" ]; then
+            cp all_updaters/win-arm64/Installer.Console.Updater.exe AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_win-arm64.exe
           fi
           
           # Проверяем результат
