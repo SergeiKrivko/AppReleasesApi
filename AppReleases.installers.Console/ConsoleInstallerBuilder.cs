@@ -30,9 +30,12 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
             .PatchString("API_URL_HERE____________________________________________", context.ApiUrl)
             .PatchString("APPLICATION_ID_HERE_____________________", context.Application.Id.ToString())
             .PatchString("RELEASE_ID_HERE_________________________", context.Release.Id.ToString());
+        var filename = $"{context.Application.Key}_{context.Release.Version}";
+        if (OperatingSystem.IsWindows())
+            filename += ".exe";
         return new BuiltInstaller
         {
-            FileName = $"{context.Application.Key}_{context.Release.Version}.exe",
+            FileName = filename,
             FileStream = new MemoryStream(bytes),
         };
     }

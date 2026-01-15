@@ -22,7 +22,7 @@ public static class PlatformsHelper
     /// Проверяет права администратора и перезапускает приложение при необходимости
     /// </summary>
     /// <returns>True если приложение было перезапущено, иначе False</returns>
-    public static bool EnsureAdminRights()
+    public static async Task<bool> EnsureAdminRights()
     {
         var args = Environment.GetCommandLineArgs();
         if (OperatingSystem.IsWindows())
@@ -32,11 +32,11 @@ public static class PlatformsHelper
             RelaunchAsWindowsAdministrator(args);
             return true;
         }
-        else if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux())
         {
             if (CheckUnixRoot())
                 return false;
-            RelaunchAsUnixRoot(args);
+            await RelaunchAsUnixRoot(args);
             return true;
         }
 
@@ -100,7 +100,7 @@ public static class PlatformsHelper
     /// <summary>
     /// Перезапуск с правами root в Unix-системах
     /// </summary>
-    private static void RelaunchAsUnixRoot(string[] args)
+    private static async Task RelaunchAsUnixRoot(string[] args)
     {
         var exePath = args[0];
 
@@ -115,7 +115,9 @@ public static class PlatformsHelper
             UseShellExecute = true
         };
 
-        Process.Start(startInfo);
+        var process = Process.Start(startInfo);
+        if (process != null)
+            await process.WaitForExitAsync();
     }
 
     /// <summary>
