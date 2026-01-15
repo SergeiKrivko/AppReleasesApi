@@ -131,21 +131,17 @@ jobs:
           # Linux x64
           if [ -f "all_installers/linux-x64/Installer.Console" ]; then
             cp all_installers/linux-x64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-x64
-            chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-x64
           fi
           if [ -f "all_updaters/linux-x64/Installer.Console.Updater" ]; then
             cp all_updaters/linux-x64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-x64
-            chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-x64
           fi
           
           # Linux arm64
           if [ -f "all_installers/linux-arm64/Installer.Console" ]; then
             cp all_installers/linux-arm64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-arm64
-            chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console_linux-arm64
           fi
           if [ -f "all_updaters/linux-arm64/Installer.Console.Updater" ]; then
             cp all_updaters/linux-arm64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-arm64
-            chmod +x AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_linux-arm64
           fi
           
           # Windows x64

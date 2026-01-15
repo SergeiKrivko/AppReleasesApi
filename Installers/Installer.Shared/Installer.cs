@@ -67,6 +67,10 @@ public class Installer
         await using var stream = await _apiClient.DownloadStaticFileAsync(sourceFileName);
         await using var fileStream = new FileStream(destinationFileName, FileMode.Create);
         await stream.CopyToAsync(fileStream);
+        if (OperatingSystem.IsLinux())
+            File.SetUnixFileMode(destinationFileName,
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | UnixFileMode.GroupRead |
+                UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
     }
 
     private void AddAssetsToConfig(IEnumerable<AssetSchema> assets)
