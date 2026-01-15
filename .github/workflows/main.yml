@@ -94,24 +94,24 @@ jobs:
           
           # Linux x64
           if [ -f "all_installers/linux-x64/ConsoleInstaller" ]; then
-            cp all_installers/linux-x64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-x64
+            cp all_installers/linux-x64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller_linux-x64
             chmod +x AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-x64
           fi
           
           # Linux arm64
           if [ -f "all_installers/linux-arm64/ConsoleInstaller" ]; then
-            cp all_installers/linux-arm64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-arm64
+            cp all_installers/linux-arm64/ConsoleInstaller AppReleases.Api/wwwroot/static/installers/ConsoleInstaller_linux-arm64
             chmod +x AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-linux-arm64
           fi
           
           # Windows x64
           if [ -f "all_installers/win-x64/ConsoleInstaller.exe" ]; then
-            cp all_installers/win-x64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-win-x64.exe
+            cp all_installers/win-x64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller_win-x64.exe
           fi
           
           # Windows arm64
           if [ -f "all_installers/win-arm64/ConsoleInstaller.exe" ]; then
-            cp all_installers/win-arm64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller-win-arm64.exe
+            cp all_installers/win-arm64/ConsoleInstaller.exe AppReleases.Api/wwwroot/static/installers/ConsoleInstaller_win-arm64.exe
           fi
           
           # Проверяем результат
