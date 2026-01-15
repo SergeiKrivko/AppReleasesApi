@@ -13,8 +13,8 @@ jobs:
         include:
           - target: linux-x64
             os: ubuntu-latest
-          - target: linux-arm64
-            os: ubuntu-latest
+#          - target: linux-arm64
+#            os: ubuntu-latest
           - target: win-x64
             os: windows-latest
           - target: win-arm64
@@ -70,11 +70,11 @@ jobs:
           name: installer-linux-x64
           path: all_installers/linux-x64
 
-      - name: Download linux-arm64
-        uses: actions/download-artifact@v4
-        with:
-          name: installer-linux-arm64
-          path: all_installers/linux-arm64
+#      - name: Download linux-arm64
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: installer-linux-arm64
+#          path: all_installers/linux-arm64
 
       - name: Download win-x64
         uses: actions/download-artifact@v4
