@@ -31,7 +31,7 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
             .PatchString("APPLICATION_ID_HERE_____________________", context.Application.Id.ToString())
             .PatchString("RELEASE_ID_HERE_________________________", context.Release.Id.ToString());
         var filename = $"{context.Application.Key}_{context.Release.Version}";
-        if (OperatingSystem.IsWindows())
+        if (context.Release.Platform.StartsWith("win"))
             filename += ".exe";
         return new BuiltInstaller
         {

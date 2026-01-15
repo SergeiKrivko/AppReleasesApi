@@ -48,7 +48,9 @@ public class Installer
 
     private async Task SaveConfig(string? path = null)
     {
-        await File.WriteAllTextAsync(path ?? ConfigPath, JsonSerializer.Serialize(_config));
+        ThrowIfNotInitialized();
+        await File.WriteAllTextAsync(path ?? ConfigPath,
+            JsonSerializer.Serialize(_config, InstallerJsonSerializerContext.Default.ConfigSchema));
     }
 
     private async Task ReadConfig()
