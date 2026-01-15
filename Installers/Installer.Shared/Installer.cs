@@ -61,6 +61,14 @@ public class Installer
             _apiClient = new ApiClient(_config.ApiUrl);
     }
 
+    private async Task DownloadUpdater(string sourceFileName, string destinationFileName)
+    {
+        ThrowIfNotInitialized();
+        await using var stream = await _apiClient.DownloadStaticFileAsync(sourceFileName);
+        await using var fileStream = new FileStream(destinationFileName, FileMode.Create);
+        await stream.CopyToAsync(fileStream);
+    }
+
     private void AddAssetsToConfig(IEnumerable<AssetSchema> assets)
     {
         ThrowIfNotInitialized();
@@ -88,6 +96,9 @@ public class Installer
         var application = await _apiClient.GetApplicationInfoAsync(_config.ApplicationId);
         var directory = PlatformsHelper.GetInstallPath(application);
 
+        Console.WriteLine("Получение информации о релизе...");
+        var release = await _apiClient.GetReleaseByIdAsync(_config.ReleaseId);
+
         Console.WriteLine("Подготовка к загрузке...");
         var url = await _apiClient.GetAssetsUrlAsync(_config.ReleaseId);
 
@@ -99,6 +110,9 @@ public class Installer
         AddAssetsToConfig(directory);
         _config.InstalledReleaseId = _config.ReleaseId;
         _config.ReleaseId = Guid.Empty;
+        await DownloadUpdater(
+            "Installer.Console.Updater_" + release.Platform + (OperatingSystem.IsWindows() ? ".exe" : ""),
+            "Uninstall" + (OperatingSystem.IsWindows() ? ".exe" : ""));
         await SaveConfig(Path.Join(directory, ConfigFileName));
 
         Console.WriteLine("Установка завершена!");

@@ -53,4 +53,10 @@ public class ApiClient(string apiUrl)
         var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.AssetsPackSchema);
         return data ?? throw new Exception("Invalid response");
     }
+
+    public async Task<Stream> DownloadStaticFileAsync(string fileName)
+    {
+        Console.WriteLine($"GET static/installers/{fileName}");
+        return await _httpClient.GetStreamAsync($"static/installers/{fileName}");
+    }
 }
