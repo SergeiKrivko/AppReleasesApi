@@ -13,4 +13,7 @@ var installer = new Installer.Shared.Installer()
     });
 await installer.InstallRelease();
 
+Console.WriteLine("Нажмите любую клавишу для завершения");
+Console.ReadKey();
+
 return 0;

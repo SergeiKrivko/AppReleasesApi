@@ -9,4 +9,7 @@ else
     await installer.UninstallRelease();
 await installer.InstallRelease();
 
+Console.WriteLine("Нажмите любую клавишу для завершения");
+Console.ReadKey();
+
 return 0;

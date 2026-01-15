@@ -43,11 +43,12 @@ public class Installer
         return directory;
     }
 
-    private static string ConfigPath => Path.Join(AppContext.BaseDirectory, "InstallerConfig.json");
+    private const string ConfigFileName = "InstallerConfig.json";
+    private static string ConfigPath => Path.Join(AppContext.BaseDirectory, ConfigFileName);
 
-    private async Task SaveConfig()
+    private async Task SaveConfig(string? path = null)
     {
-        await File.WriteAllTextAsync(ConfigPath, JsonSerializer.Serialize(_config));
+        await File.WriteAllTextAsync(path ?? ConfigPath, JsonSerializer.Serialize(_config));
     }
 
     private async Task ReadConfig()
@@ -94,7 +95,7 @@ public class Installer
         AddAssetsToConfig(directory);
         _config.InstalledReleaseId = _config.ReleaseId;
         _config.ReleaseId = Guid.Empty;
-        await SaveConfig();
+        await SaveConfig(Path.Join(directory, ConfigFileName));
 
         Console.WriteLine("Установка завершена!");
     }
