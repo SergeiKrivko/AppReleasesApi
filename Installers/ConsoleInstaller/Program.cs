@@ -1,4 +1,8 @@
 ﻿using ConsoleInstaller;
 
-var installer = new Installer(@"C:\Users\sergi\Desktop\Nachert");
+if (PlatformsHelper.EnsureAdminRights())
+    return 0;
+var installer = new Installer();
 await installer.InstallRelease();
+
+return 0;
