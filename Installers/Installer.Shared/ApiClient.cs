@@ -34,10 +34,11 @@ public class ApiClient(string apiUrl)
         return data ?? throw new Exception("Invalid response");
     }
 
-    public async Task<ReleaseSchema> GetLatestReleaseAsync(Guid applicationId, string platform)
+    public async Task<ReleaseSchema> GetLatestReleaseAsync(Guid applicationId, Guid branchId, string platform)
     {
-        Console.WriteLine($"GET api/v1/apps/{applicationId}/releases/latest");
-        var resp = await _httpClient.GetAsync($"api/v1/apps/{applicationId}/releases/latest?platform={platform}");
+        Console.WriteLine($"GET api/v1/apps/{applicationId}/branches/{branchId}/releases/latest?platform={platform}");
+        var resp = await _httpClient.GetAsync(
+            $"api/v1/apps/{applicationId}/branches/{branchId}/releases/latest?platform={platform}");
         resp.EnsureSuccessStatusCode();
         var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.ReleaseSchema);
         return data ?? throw new Exception("Invalid response");
@@ -47,7 +48,7 @@ public class ApiClient(string apiUrl)
     {
         Console.WriteLine($"POST api/v1/releases/{releaseId}/assets/download");
         var resp = await _httpClient.PostAsync($"api/v1/releases/{releaseId}/assets/download",
-            JsonContent.Create(assets));
+            JsonContent.Create(assets.ToArray(), InstallerJsonSerializerContext.Default.AssetSchemaArray));
         resp.EnsureSuccessStatusCode();
         var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.AssetsPackSchema);
         return data ?? throw new Exception("Invalid response");

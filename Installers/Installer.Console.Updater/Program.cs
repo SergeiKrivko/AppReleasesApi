@@ -9,7 +9,6 @@ try
         await installer.UpdateRelease();
     else
         await installer.UninstallRelease();
-    await installer.InstallRelease();
 }
 catch (Exception e)
 {

@@ -30,7 +30,7 @@ public class Installer
     {
         var client = new HttpClient();
         await using var stream = await client.GetStreamAsync(url);
-        var tempPath = Path.GetTempFileName();
+        var tempPath = Path.Join(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(stream, tempPath);
         return tempPath;
     }
@@ -128,7 +128,7 @@ public class Installer
         var installedRelease = await _apiClient.GetReleaseByIdAsync(_config.InstalledReleaseId);
 
         Console.WriteLine("Получение информации о последнем релизе...");
-        var latestRelease = await _apiClient.GetLatestReleaseAsync(_config.ApplicationId,
+        var latestRelease = await _apiClient.GetLatestReleaseAsync(_config.ApplicationId, installedRelease.BranchId,
             installedRelease.Platform ?? throw new Exception("Platform is null"));
         if (latestRelease.Version <= installedRelease.Version)
         {
@@ -156,7 +156,7 @@ public class Installer
         _config.Assets = _config.Assets.Where(a => !pack.DeletedAssets.Contains(a.FileName)).ToArray();
         AddAssetsToConfig(tempPath);
         Directory.Delete(tempPath, true);
-        _config.InstalledReleaseId = _config.ReleaseId;
+        _config.InstalledReleaseId = latestRelease.Id;
         await SaveConfig();
 
         Console.WriteLine("Обновление завершено!");
