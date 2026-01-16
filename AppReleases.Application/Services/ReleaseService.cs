@@ -148,7 +148,11 @@ public class ReleaseService(
             {
                 foreach (var asset in assets)
                 {
-                    await using var zipEntry = zip.CreateEntry(asset.FileName).Open();
+                    await using var zipEntry = zip
+                        .CreateEntry(asset.FileName.StartsWith('/')
+                            ? "__system_root__" + asset.FileName
+                            : asset.FileName)
+                        .Open();
                     await using var stream =
                         await fileRepository.DownloadFileAsync(FileRepositoryBucket.Assets, asset.FileId);
                     await stream.CopyToAsync(zipEntry);
