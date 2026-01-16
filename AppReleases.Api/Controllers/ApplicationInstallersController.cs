@@ -1,4 +1,6 @@
-﻿using AppReleases.Api.Helpers;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
@@ -22,17 +24,28 @@ public class ApplicationInstallersController(
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
         var id = await installerService.AddNewInstallerBuilderForApplicationAsync(schema.Key, schema.Name,
-            applicationId, schema.InstallerLifetime, schema.Platforms, cancellationToken);
+            applicationId, schema.InstallerLifetime, schema.Platforms,
+            schema.Settings is JsonElement jsonElement
+                ? JsonObject.Create(jsonElement) ?? new JsonObject()
+                : new JsonObject(), cancellationToken);
         return Ok(id);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<InstallerBuilderUsage>>> GetAllInstallerBuilders(Guid applicationId,
+    public async Task<ActionResult<IEnumerable<InstallerBuilderUsageSchema>>> GetAllInstallerBuilders(Guid applicationId,
         CancellationToken cancellationToken)
     {
         var builders =
             await installerService.GetAllInstallerBuildersOfApplicationAsync(applicationId, cancellationToken);
-        return Ok(builders);
+        return Ok(builders.Select(e => new InstallerBuilderUsageSchema
+        {
+            Id = e.Id,
+            BuilderKey = e.BuilderKey,
+            Name = e.Name,
+            InstallerLifetime = e.InstallerLifetime,
+            Platforms = e.Platforms,
+            Settings = e.Settings
+        }));
     }
 
     [HttpDelete("{installerId:guid}")]
@@ -54,8 +67,12 @@ public class ApplicationInstallersController(
         var application = await applicationService.GetApplicationByIdAsync(applicationId);
         if (!await authorizationHelper.VerifyApplication(User, application))
             return Unauthorized();
+
         await installerService.UpdateInstallerBuilderAsync(installerId, schema.Name, schema.InstallerLifetime,
-            schema.Platforms, cancellationToken);
+            schema.Platforms,
+            schema.Settings is JsonElement jsonElement
+                ? JsonObject.Create(jsonElement) ?? new JsonObject()
+                : new JsonObject(), cancellationToken);
         return Ok();
     }
 }

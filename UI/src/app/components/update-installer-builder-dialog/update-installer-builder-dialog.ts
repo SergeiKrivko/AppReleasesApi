@@ -25,6 +25,9 @@ import {ReleaseService} from '../../services/release.service';
 import {duration} from 'moment';
 import {injectContext} from '@taiga-ui/polymorpheus';
 import {TuiLet} from '@taiga-ui/cdk';
+import {
+  ConsoleInstallerSettings
+} from '../installer-builder-settings/console-installer-settings/console-installer-settings.component';
 
 @Component({
   standalone: true,
@@ -48,7 +51,8 @@ import {TuiLet} from '@taiga-ui/cdk';
     TuiInputNumber,
     TuiButton,
     TuiLet,
-    TuiAppearance
+    TuiAppearance,
+    ConsoleInstallerSettings
   ],
   templateUrl: './update-installer-builder-dialog.html',
   styleUrl: './update-installer-builder-dialog.scss',
@@ -69,6 +73,7 @@ export class UpdateInstallerBuilderDialog implements OnInit {
           name: installer?.name ?? null,
           installerLifetime: installer?.installerLifetime.asHours() || 24,
           platforms: installer?.platforms ?? [],
+          settings: installer?.settings,
         })
       })
     ).subscribe();
@@ -84,6 +89,7 @@ export class UpdateInstallerBuilderDialog implements OnInit {
     name: new FormControl<string | null>(null),
     installerLifetime: new FormControl<number>(24),
     platforms: new FormControl<string[]>([]),
+    settings: new FormControl<any>({}),
   });
 
   protected readonly platforms$ = this.releaseService.releases$.pipe(
@@ -109,6 +115,7 @@ export class UpdateInstallerBuilderDialog implements OnInit {
             this.control.value.name ?? null,
             duration(this.control.value.installerLifetime, 'hours'),
             this.control.value.platforms ?? [],
+            this.control.value.settings,
           );
         return NEVER;
       })

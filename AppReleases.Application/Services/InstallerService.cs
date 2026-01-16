@@ -1,4 +1,5 @@
-﻿using AppReleases.Core.Abstractions;
+﻿using System.Text.Json.Nodes;
+using AppReleases.Core.Abstractions;
 using AppReleases.installers.Console;
 using AppReleases.Installers.Zip;
 using AppReleases.Models;
@@ -64,14 +65,14 @@ public class InstallerService(
     }
 
     public async Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name,
-        Guid applicationId,
-        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default)
+        Guid applicationId, TimeSpan installerLifetime, string[] platforms, JsonObject settings, 
+        CancellationToken cancellationToken = default)
     {
         if (!_builders.ContainsKey(builderKey))
             throw new KeyNotFoundException();
         return await installerBuilderRepository.CreateInstallerBuilderForApplicationAsync(applicationId, builderKey,
             name,
-            installerLifetime, platforms, cancellationToken);
+            installerLifetime, platforms, settings, cancellationToken);
     }
 
     public async Task RemoveInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default)
@@ -80,11 +81,11 @@ public class InstallerService(
     }
 
     public async Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
-        string[] platforms,
+        string[] platforms, JsonObject settings,
         CancellationToken cancellationToken = default)
     {
         await installerBuilderRepository.UpdateInstallerBuilderAsync(builderId, name, installerLifetime, platforms,
-            cancellationToken);
+            settings, cancellationToken);
     }
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,

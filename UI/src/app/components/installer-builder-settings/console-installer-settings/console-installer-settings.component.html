@@ -1,0 +1,11 @@
+<form [formGroup]="control" class="container">
+  <label tuiLabel>Платформа установщика:</label>
+  <tui-textfield tuiChevron class="field">
+    <input tuiSelect formControlName="installerPlatform"/>
+    <tui-data-list-wrapper
+      *tuiTextfieldDropdown
+      new
+      [items]="installerPlatforms$"
+    />
+  </tui-textfield>
+</form>

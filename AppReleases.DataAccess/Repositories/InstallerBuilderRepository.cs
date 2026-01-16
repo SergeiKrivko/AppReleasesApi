@@ -27,8 +27,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
     }
 
     public async Task<Guid> CreateInstallerBuilderForApplicationAsync(Guid applicationId, string builderKey,
-        string? name,
-        TimeSpan installerLifetime, string[] platforms,
+        string? name, TimeSpan installerLifetime, string[] platforms, JsonObject settings,
         CancellationToken cancellationToken = default)
     {
         var id = Guid.NewGuid();
@@ -41,6 +40,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             Platforms = platforms,
             CreatedAt = DateTime.UtcNow,
             InstallerLifetime = installerLifetime,
+            Settings = settings.ToJsonString(),
         };
         await dbContext.InstallerBuilderUsages.AddAsync(entity, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -58,7 +58,7 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
     }
 
     public async Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
-        string[] platforms,
+        string[] platforms, JsonObject settings,
         CancellationToken cancellationToken = default)
     {
         await dbContext.InstallerBuilderUsages
@@ -66,7 +66,8 @@ public class InstallerBuilderRepository(AppReleasesDbContext dbContext) : IInsta
             .ExecuteUpdateAsync(x => x
                     .SetProperty(e => e.Name, name)
                     .SetProperty(e => e.InstallerLifetime, installerLifetime)
-                    .SetProperty(e => e.Platforms, platforms),
+                    .SetProperty(e => e.Platforms, platforms)
+                    .SetProperty(e => e.Settings, settings.ToJsonString(null)),
                 cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

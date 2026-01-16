@@ -1,4 +1,5 @@
-﻿using AppReleases.Models;
+﻿using System.Text.Json.Nodes;
+using AppReleases.Models;
 
 namespace AppReleases.Core.Abstractions;
 
@@ -11,12 +12,12 @@ public interface IInstallerService
         CancellationToken cancellationToken = default);
 
     public Task<Guid> AddNewInstallerBuilderForApplicationAsync(string builderKey, string? name, Guid applicationId,
-        TimeSpan installerLifetime, string[] platforms, CancellationToken cancellationToken = default);
+        TimeSpan installerLifetime, string[] platforms, JsonObject settings, CancellationToken cancellationToken = default);
 
     public Task RemoveInstallerBuilderAsync(Guid builderId, CancellationToken cancellationToken = default);
 
     public Task UpdateInstallerBuilderAsync(Guid builderId, string? name, TimeSpan installerLifetime,
-        string[] platforms, CancellationToken cancellationToken = default);
+        string[] platforms, JsonObject settings, CancellationToken cancellationToken = default);
 
     public Task<IEnumerable<InstallerBuilderUsage>> GetAllInstallerBuildersOfApplicationAsync(Guid applicationId,
         CancellationToken cancellationToken = default);

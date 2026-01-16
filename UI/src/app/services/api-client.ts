@@ -438,7 +438,7 @@ export class ApiClient extends ApiClientBase {
     /**
      * @return OK
      */
-    installersAll(applicationId: string): Observable<InstallerBuilderUsage[]> {
+    installersAll(applicationId: string): Observable<InstallerBuilderUsageSchema[]> {
         let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/installers";
         if (applicationId === undefined || applicationId === null)
             throw new Error("The parameter 'applicationId' must be defined.");
@@ -462,14 +462,14 @@ export class ApiClient extends ApiClientBase {
                 try {
                     return this.processInstallersAll(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<InstallerBuilderUsage[]>;
+                    return _observableThrow(e) as any as Observable<InstallerBuilderUsageSchema[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<InstallerBuilderUsage[]>;
+                return _observableThrow(response_) as any as Observable<InstallerBuilderUsageSchema[]>;
         }));
     }
 
-    protected processInstallersAll(response: HttpResponseBase): Observable<InstallerBuilderUsage[]> {
+    protected processInstallersAll(response: HttpResponseBase): Observable<InstallerBuilderUsageSchema[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -483,7 +483,7 @@ export class ApiClient extends ApiClientBase {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(InstallerBuilderUsage.fromJS(item));
+                    result200!.push(InstallerBuilderUsageSchema.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -975,6 +975,70 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @param platform (optional)
+     * @return OK
+     */
+    latest(applicationId: string, branchId: string, platform: string | undefined): Observable<Release> {
+        let url_ = this.baseUrl + "/api/v1/apps/{applicationId}/branches/{branchId}/releases/latest?";
+        if (applicationId === undefined || applicationId === null)
+            throw new Error("The parameter 'applicationId' must be defined.");
+        url_ = url_.replace("{applicationId}", encodeURIComponent("" + applicationId));
+        if (branchId === undefined || branchId === null)
+            throw new Error("The parameter 'branchId' must be defined.");
+        url_ = url_.replace("{branchId}", encodeURIComponent("" + branchId));
+        if (platform === null)
+            throw new Error("The parameter 'platform' cannot be null.");
+        else if (platform !== undefined)
+            url_ += "platform=" + encodeURIComponent("" + platform) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processLatest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processLatest(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Release>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Release>;
+        }));
+    }
+
+    protected processLatest(response: HttpResponseBase): Observable<Release> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Release.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * @return OK
      */
     migrate(): Observable<string> {
@@ -1159,6 +1223,123 @@ export class ApiClient extends ApiClientBase {
     }
 
     /**
+     * @return OK
+     */
+    releasesGET(releaseId: string): Observable<Release> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("get", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processReleasesGET(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReleasesGET(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Release>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Release>;
+        }));
+    }
+
+    protected processReleasesGET(response: HttpResponseBase): Observable<Release> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Release.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param body (optional)
+     * @return OK
+     */
+    releasesPUT(releaseId: string, body: UpdateReleaseSchema | undefined): Observable<Release> {
+        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}";
+        if (releaseId === undefined || releaseId === null)
+            throw new Error("The parameter 'releaseId' must be defined.");
+        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("put", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processReleasesPUT(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReleasesPUT(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Release>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Release>;
+        }));
+    }
+
+    protected processReleasesPUT(response: HttpResponseBase): Observable<Release> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Release.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
      * @param body (optional)
      * @return OK
      */
@@ -1264,67 +1445,6 @@ export class ApiClient extends ApiClientBase {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = ReleaseDifference.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    /**
-     * @param body (optional)
-     * @return OK
-     */
-    releasesPUT(releaseId: string, body: UpdateReleaseSchema | undefined): Observable<Release> {
-        let url_ = this.baseUrl + "/api/v1/releases/{releaseId}";
-        if (releaseId === undefined || releaseId === null)
-            throw new Error("The parameter 'releaseId' must be defined.");
-        url_ = url_.replace("{releaseId}", encodeURIComponent("" + releaseId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
-            return this.http.request("put", url_, transformedOptions_);
-        })).pipe(_observableMergeMap((response_: any) => {
-            return this.processReleasesPUT(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processReleasesPUT(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Release>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Release>;
-        }));
-    }
-
-    protected processReleasesPUT(response: HttpResponseBase): Observable<Release> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Release.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2001,6 +2121,7 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
     name?: string | undefined;
     installerLifetime?: string;
     platforms?: string[] | undefined;
+    settings!: any | undefined;
 
     constructor(data?: IAddInstallerBuilderSchema) {
         if (data) {
@@ -2021,6 +2142,7 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
                 for (let item of _data["platforms"])
                     this.platforms!.push(item);
             }
+            this.settings = _data["settings"];
         }
     }
 
@@ -2041,6 +2163,7 @@ export class AddInstallerBuilderSchema implements IAddInstallerBuilderSchema {
             for (let item of this.platforms)
                 data["platforms"].push(item);
         }
+        data["settings"] = this.settings;
         return data;
     }
 }
@@ -2050,6 +2173,7 @@ export interface IAddInstallerBuilderSchema {
     name?: string | undefined;
     installerLifetime?: string;
     platforms?: string[] | undefined;
+    settings: any | undefined;
 }
 
 export class Application implements IApplication {
@@ -2608,15 +2732,15 @@ export interface IInstallerBuilderSchema {
     description?: string | undefined;
 }
 
-export class InstallerBuilderUsage implements IInstallerBuilderUsage {
+export class InstallerBuilderUsageSchema implements IInstallerBuilderUsageSchema {
     id?: string;
     builderKey!: string | undefined;
     name?: string | undefined;
-    settings!: { [key: string]: JsonNode; } | undefined;
+    settings!: any | undefined;
     platforms?: string[] | undefined;
     installerLifetime?: string | undefined;
 
-    constructor(data?: IInstallerBuilderUsage) {
+    constructor(data?: IInstallerBuilderUsageSchema) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2630,13 +2754,7 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
             this.id = _data["id"];
             this.builderKey = _data["builderKey"];
             this.name = _data["name"];
-            if (_data["settings"]) {
-                this.settings = {} as any;
-                for (let key in _data["settings"]) {
-                    if (_data["settings"].hasOwnProperty(key))
-                        (<any>this.settings)![key] = _data["settings"][key] ? JsonNode.fromJS(_data["settings"][key]) : new JsonNode();
-                }
-            }
+            this.settings = _data["settings"];
             if (Array.isArray(_data["platforms"])) {
                 this.platforms = [] as any;
                 for (let item of _data["platforms"])
@@ -2646,9 +2764,9 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
         }
     }
 
-    static fromJS(data: any): InstallerBuilderUsage {
+    static fromJS(data: any): InstallerBuilderUsageSchema {
         data = typeof data === 'object' ? data : {};
-        let result = new InstallerBuilderUsage();
+        let result = new InstallerBuilderUsageSchema();
         result.init(data);
         return result;
     }
@@ -2658,13 +2776,7 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
         data["id"] = this.id;
         data["builderKey"] = this.builderKey;
         data["name"] = this.name;
-        if (this.settings) {
-            data["settings"] = {};
-            for (let key in this.settings) {
-                if (this.settings.hasOwnProperty(key))
-                    (<any>data["settings"])[key] = this.settings[key] ? this.settings[key].toJSON() : <any>undefined;
-            }
-        }
+        data["settings"] = this.settings;
         if (Array.isArray(this.platforms)) {
             data["platforms"] = [];
             for (let item of this.platforms)
@@ -2675,93 +2787,13 @@ export class InstallerBuilderUsage implements IInstallerBuilderUsage {
     }
 }
 
-export interface IInstallerBuilderUsage {
+export interface IInstallerBuilderUsageSchema {
     id?: string;
     builderKey: string | undefined;
     name?: string | undefined;
-    settings: { [key: string]: JsonNode; } | undefined;
+    settings: any | undefined;
     platforms?: string[] | undefined;
     installerLifetime?: string | undefined;
-}
-
-export class JsonNode implements IJsonNode {
-    options?: JsonNodeOptions;
-    parent?: JsonNode;
-    root?: JsonNode;
-
-    constructor(data?: IJsonNode) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.options = _data["options"] ? JsonNodeOptions.fromJS(_data["options"]) : <any>undefined;
-            this.parent = _data["parent"] ? JsonNode.fromJS(_data["parent"]) : <any>undefined;
-            this.root = _data["root"] ? JsonNode.fromJS(_data["root"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): JsonNode {
-        data = typeof data === 'object' ? data : {};
-        let result = new JsonNode();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["options"] = this.options ? this.options.toJSON() : <any>undefined;
-        data["parent"] = this.parent ? this.parent.toJSON() : <any>undefined;
-        data["root"] = this.root ? this.root.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IJsonNode {
-    options?: JsonNodeOptions;
-    parent?: JsonNode;
-    root?: JsonNode;
-}
-
-export class JsonNodeOptions implements IJsonNodeOptions {
-    propertyNameCaseInsensitive?: boolean;
-
-    constructor(data?: IJsonNodeOptions) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.propertyNameCaseInsensitive = _data["propertyNameCaseInsensitive"];
-        }
-    }
-
-    static fromJS(data: any): JsonNodeOptions {
-        data = typeof data === 'object' ? data : {};
-        let result = new JsonNodeOptions();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["propertyNameCaseInsensitive"] = this.propertyNameCaseInsensitive;
-        return data;
-    }
-}
-
-export interface IJsonNodeOptions {
-    propertyNameCaseInsensitive?: boolean;
 }
 
 export class Metric implements IMetric {
@@ -3120,6 +3152,7 @@ export class UpdateInstallerBuilderSchema implements IUpdateInstallerBuilderSche
     name?: string | undefined;
     installerLifetime?: string;
     platforms?: string[] | undefined;
+    settings!: any | undefined;
 
     constructor(data?: IUpdateInstallerBuilderSchema) {
         if (data) {
@@ -3139,6 +3172,7 @@ export class UpdateInstallerBuilderSchema implements IUpdateInstallerBuilderSche
                 for (let item of _data["platforms"])
                     this.platforms!.push(item);
             }
+            this.settings = _data["settings"];
         }
     }
 
@@ -3158,6 +3192,7 @@ export class UpdateInstallerBuilderSchema implements IUpdateInstallerBuilderSche
             for (let item of this.platforms)
                 data["platforms"].push(item);
         }
+        data["settings"] = this.settings;
         return data;
     }
 }
@@ -3166,6 +3201,7 @@ export interface IUpdateInstallerBuilderSchema {
     name?: string | undefined;
     installerLifetime?: string;
     platforms?: string[] | undefined;
+    settings: any | undefined;
 }
 
 export class UpdateReleaseSchema implements IUpdateReleaseSchema {

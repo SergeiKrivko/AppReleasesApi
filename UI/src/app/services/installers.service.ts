@@ -2,7 +2,13 @@ import {inject, Injectable} from '@angular/core';
 import {AvailableInstallerBuilderEntity} from '../entities/available-installer-builder-entity';
 import {UsingInstallerBuilderEntity} from '../entities/using-installer-builder-entity';
 import {LoadingStatus} from '../entities/loading-status';
-import {AddInstallerBuilderSchema, ApiClient, InstallerBuilderSchema, InstallerBuilderUsage} from './api-client';
+import {
+  AddInstallerBuilderSchema,
+  ApiClient,
+  InstallerBuilderSchema,
+  InstallerBuilderUsageSchema,
+  UpdateInstallerBuilderSchema
+} from './api-client';
 import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ApplicationService} from './application.service';
@@ -67,7 +73,7 @@ export class InstallersService {
     });
   }
 
-  createNewInstaller(name: string | null, builderKey: string, lifetime: Duration, platforms: string[]) {
+  createNewInstaller(name: string | null, builderKey: string, lifetime: Duration, platforms: string[], settings: any) {
     return this.applicationService.selectedApplication$.pipe(
       first(),
       switchMap(application => {
@@ -77,6 +83,7 @@ export class InstallersService {
             key: builderKey,
             installerLifetime: lifetime,
             platforms: platforms,
+            settings: settings ?? {},
           }));
         return NEVER;
       }),
@@ -84,15 +91,16 @@ export class InstallersService {
     );
   }
 
-  updateInstaller(installerId: string, name: string | null, lifetime: Duration, platforms: string[]) {
+  updateInstaller(installerId: string, name: string | null, lifetime: Duration, platforms: string[], settings: any) {
     return this.applicationService.selectedApplication$.pipe(
       first(),
       switchMap(application => {
         if (application)
-          return this.apiClient.installersPUT(application.id, installerId, AddInstallerBuilderSchema.fromJS({
+          return this.apiClient.installersPUT(application.id, installerId, UpdateInstallerBuilderSchema.fromJS({
             name: name,
             installerLifetime: lifetime,
             platforms: platforms,
+            settings: settings ?? {},
           }));
         return NEVER;
       }),
@@ -141,7 +149,7 @@ export class InstallersService {
   }
 }
 
-const installerUsageToEntity = (installer: InstallerBuilderUsage): UsingInstallerBuilderEntity => ({
+const installerUsageToEntity = (installer: InstallerBuilderUsageSchema): UsingInstallerBuilderEntity => ({
   id: installer.id ?? "",
   name: installer.name ?? null,
   builderKey: installer.builderKey ?? "",

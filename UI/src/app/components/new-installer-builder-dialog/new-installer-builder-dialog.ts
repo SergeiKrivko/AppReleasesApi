@@ -16,6 +16,9 @@ import {first, map, tap} from 'rxjs';
 import {ReleaseService} from '../../services/release.service';
 import {duration} from 'moment';
 import {injectContext} from '@taiga-ui/polymorpheus';
+import {
+  ConsoleInstallerSettings
+} from '../installer-builder-settings/console-installer-settings/console-installer-settings.component';
 
 @Component({
   standalone: true,
@@ -37,7 +40,8 @@ import {injectContext} from '@taiga-ui/polymorpheus';
     TuiFade,
     TuiSelect,
     TuiInputNumber,
-    TuiButton
+    TuiButton,
+    ConsoleInstallerSettings
   ],
   templateUrl: './new-installer-builder-dialog.html',
   styleUrl: './new-installer-builder-dialog.scss',
@@ -55,6 +59,7 @@ export class NewInstallerBuilderDialog {
     builder: new FormControl<AvailableInstallerBuilderEntity | null>(null),
     installerLifetime: new FormControl<number>(24),
     platforms: new FormControl<string[]>([]),
+    settings: new FormControl<any>({}),
   });
 
   protected readonly platforms$ = this.releaseService.releases$.pipe(
@@ -80,6 +85,7 @@ export class NewInstallerBuilderDialog {
       builderKey,
       duration(this.control.value.installerLifetime, 'hours'),
       this.control.value.platforms ?? [],
+      this.control.value.settings,
     ).pipe(
       tap(() => {
         this.context.completeWith();

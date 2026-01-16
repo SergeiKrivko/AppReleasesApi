@@ -23,15 +23,15 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context.ApiUrl);
-        if (context.Release.Platform == null)
-            throw new NotSupportedException("Installer for multiplatform release is not supported");
-        var bytes = await ReadInstallerAsync(context.Release.Platform, cancellationToken);
+        var installerPlatform = context.Settings["platform"]?.GetValue<string>();
+        ArgumentNullException.ThrowIfNull(installerPlatform);
+        var bytes = await ReadInstallerAsync(installerPlatform, cancellationToken);
         bytes = bytes
             .PatchString("API_URL_HERE____________________________________________", context.ApiUrl)
             .PatchString("APPLICATION_ID_HERE_____________________", context.Application.Id.ToString())
             .PatchString("RELEASE_ID_HERE_________________________", context.Release.Id.ToString());
         var filename = $"{context.Application.Key}_{context.Release.Version}";
-        if (context.Release.Platform.StartsWith("win"))
+        if (installerPlatform.StartsWith("win"))
             filename += ".exe";
         return new BuiltInstaller
         {

@@ -33,6 +33,12 @@
     />
   </tui-textfield>
 
+  @switch (installer?.builderKey) {
+    @case ("Console") {
+      <app-console-installer-settings formControlName="settings"/>
+    }
+  }
+
   <div class="bottom-container">
     <button tuiButton appearance="primary" [loading]="loading" iconStart="@tui.save" type="submit">Сохранить</button>
   </div>

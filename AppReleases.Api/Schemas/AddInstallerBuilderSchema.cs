@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using TimeSpanConverter = AppReleases.Models.Json.TimeSpanConverter;
 
 namespace AppReleases.Api.Schemas;
@@ -12,4 +13,5 @@ public class AddInstallerBuilderSchema
     public TimeSpan InstallerLifetime { get; init; }
 
     public string[] Platforms { get; init; } = [];
+    public required object Settings { get; init; }
 }
