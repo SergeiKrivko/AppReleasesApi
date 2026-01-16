@@ -32,7 +32,7 @@ public class Arguments
     [Option('t', "token", Required = true, HelpText = "Токен авторизации")]
     public string Token { get; set; } = null!;
 
-    [Option(longName: "--from-root", Required = false,
+    [Option(longName: "from-root", Required = false,
         HelpText = "Директория, из которой следует взять ассеты. " +
                    "При этом относительный путь от этой директории будет рассматриваться как абсолютный для установленного файла. " +
                    "Может быть передан вместе с --directory.")]
