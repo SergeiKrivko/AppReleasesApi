@@ -28,7 +28,7 @@ if (arguments.Directory is not null)
             : Directory.EnumerateFiles(arguments.FromRootDirectory, "*", SearchOption.AllDirectories)
                 .Select(f => new AssetInfo
                 {
-                    FileName = "/" + Path.GetRelativePath(arguments.Directory, f),
+                    FileName = "/" + Path.GetRelativePath(arguments.FromRootDirectory, f),
                     FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
                 }))
         .ToArray();
