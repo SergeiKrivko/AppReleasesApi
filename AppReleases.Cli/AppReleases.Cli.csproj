@@ -7,7 +7,7 @@
         <Nullable>enable</Nullable>
         <PackageId>Avalux.Releases.Tools</PackageId>
         <PackAsTool>true</PackAsTool>
-        <PackageVersion>1.2.1</PackageVersion>
+        <PackageVersion>1.2.2</PackageVersion>
         <ToolCommandName>dotnet-avalux-releases</ToolCommandName>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
