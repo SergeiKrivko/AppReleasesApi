@@ -48,8 +48,8 @@ if (arguments.Directory is not null)
                     .CreateEntry(fileToUpload.StartsWith('/') ? "__system_root__" + fileToUpload : fileToUpload)
                     .Open();
                 var path = fileToUpload.StartsWith('/')
-                    ? Path.Join(arguments.Directory, fileToUpload)
-                    : Path.Join(arguments.FromRootDirectory, fileToUpload);
+                    ? Path.Join(arguments.FromRootDirectory, fileToUpload)
+                    : Path.Join(arguments.Directory, fileToUpload);
                 await using var stream = File.OpenRead(path);
                 await stream.CopyToAsync(zipEntry);
             }
