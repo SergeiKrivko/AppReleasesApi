@@ -64,15 +64,19 @@ public class ReleaseService(
             var existing = await assetRepository.FindAssetAsync(asset.FileName, asset.FileHash);
             if (existing == null)
             {
-                var zipEntry = zip.GetEntry(asset.FileName);
+                var zipEntry = zip.GetEntry(asset.FileName.StartsWith('/')
+                    ? "__system_root__" + asset.FileName
+                    : asset.FileName);
                 if (zipEntry == null)
                     throw new FileNotFoundException($"File '{asset.FileName}' not found");
                 using var memoryStream = new MemoryStream();
-                logger.LogInformation("{done} / {all} --- Extracting asset {asset} from zip", count, assets.Length, asset.FileName);
+                logger.LogInformation("{done} / {all} --- Extracting asset {asset} from zip", count, assets.Length,
+                    asset.FileName);
                 await using (var entryStream = zipEntry.Open())
                     await entryStream.CopyToAsync(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                logger.LogInformation("{done} / {all} --- Uploading asset {asset} to S3", count, assets.Length, asset.FileName);
+                logger.LogInformation("{done} / {all} --- Uploading asset {asset} to S3", count, assets.Length,
+                    asset.FileName);
                 existing = await UploadAssetAsync(asset, memoryStream);
             }
 
@@ -122,6 +126,7 @@ public class ReleaseService(
         {
             await bundleService.DeleteBundleAsync(bundle.BundleId);
         }
+
         await releaseRepository.DeleteReleaseAsync(releaseId);
     }
 

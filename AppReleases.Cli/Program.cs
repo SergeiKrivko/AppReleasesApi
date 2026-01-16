@@ -22,15 +22,21 @@ if (arguments.Directory is not null)
         {
             FileName = Path.GetRelativePath(arguments.Directory, f),
             FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
-        }).ToArray();
-
-    Console.WriteLine("Uploading assets:");
-    foreach (var asset in assets)
-    {
-        Console.WriteLine($"{asset.FileName} ----- {asset.FileHash}");
-    }
+        })
+        .Concat(arguments.FromRootDirectory == null
+            ? []
+            : Directory.EnumerateFiles(arguments.FromRootDirectory, "*", SearchOption.AllDirectories)
+                .Select(f => new AssetInfo
+                {
+                    FileName = "/" + Path.GetRelativePath(arguments.Directory, f),
+                    FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
+                }))
+        .ToArray();
 
     var difference = await client.GetReleaseDifferenceAsync(assets);
+
+    Console.WriteLine("Assets to upload:");
+    Console.WriteLine(string.Join('\n', difference.FilesToUpload));
 
     using (var zipStream = new MemoryStream())
     {
@@ -38,14 +44,20 @@ if (arguments.Directory is not null)
         {
             foreach (var fileToUpload in difference.FilesToUpload)
             {
-                await using var zipEntry = zip.CreateEntry(fileToUpload).Open();
-                await using var stream = File.OpenRead(Path.Join(arguments.Directory, fileToUpload));
+                await using var zipEntry = zip
+                    .CreateEntry(fileToUpload.StartsWith('/') ? "__system_root__" + fileToUpload : fileToUpload)
+                    .Open();
+                var path = fileToUpload.StartsWith('/')
+                    ? Path.Join(arguments.Directory, fileToUpload)
+                    : Path.Join(arguments.FromRootDirectory, fileToUpload);
+                await using var stream = File.OpenRead(path);
                 await stream.CopyToAsync(zipEntry);
             }
         }
 
         await client.UploadReleaseAssets(release.Id, assets, new MemoryStream(zipStream.ToArray()));
     }
+
     Console.WriteLine();
 }
 
