@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Installer.Shared.Schemas;
@@ -39,7 +40,7 @@ public class Installer
     {
         var client = new HttpClient();
         await using var stream = await client.GetStreamAsync(url);
-        ZipFile.ExtractToDirectory(stream, directory);
+        ZipFile.ExtractToDirectory(stream, directory, overwriteFiles: true);
         return directory;
     }
 
@@ -115,7 +116,7 @@ public class Installer
         _config.InstalledReleaseId = _config.ReleaseId;
         _config.ReleaseId = Guid.Empty;
         await DownloadUpdater(
-            $"Installer.Console.Updater_{release.Platform}.exe",
+            $"Installer.Console.Updater_{RuntimeInformation.RuntimeIdentifier}.exe",
             Path.Join(directory, "Uninstall" + (OperatingSystem.IsWindows() ? ".exe" : "")));
         await SaveConfig(Path.Join(directory, ConfigFileName));
 
