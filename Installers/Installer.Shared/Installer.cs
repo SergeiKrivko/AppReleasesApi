@@ -101,8 +101,9 @@ public class Installer
         {
             var relativePath = Path.GetRelativePath(assetsDirectory, file);
             var destinationPath = relativePath.StartsWith(SystemRootDirectory)
-                ? Path.Join(systemRoot, relativePath.Substring(SystemRootDirectory.Length + 1))
+                ? systemRoot + relativePath.Substring(SystemRootDirectory.Length + 1)
                 : Path.Join(destinationDirectory, relativePath);
+            Console.WriteLine($"Relative path: {relativePath}; Destination path: {destinationPath}");
             File.Move(file, destinationPath, true);
         }
     }
