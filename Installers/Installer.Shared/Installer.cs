@@ -67,7 +67,7 @@ public class Installer
         await using var stream = await _apiClient.DownloadStaticFileAsync(sourceFileName);
         await using var fileStream = new FileStream(destinationFileName, FileMode.Create);
         await stream.CopyToAsync(fileStream);
-        if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             File.SetUnixFileMode(destinationFileName,
                 UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | UnixFileMode.GroupRead |
                 UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
@@ -115,7 +115,7 @@ public class Installer
         _config.InstalledReleaseId = _config.ReleaseId;
         _config.ReleaseId = Guid.Empty;
         await DownloadUpdater(
-            "Installer.Console.Updater_" + release.Platform + (OperatingSystem.IsWindows() ? ".exe" : ""),
+            $"Installer.Console.Updater_{release.Platform}.exe",
             Path.Join(directory, "Uninstall" + (OperatingSystem.IsWindows() ? ".exe" : "")));
         await SaveConfig(Path.Join(directory, ConfigFileName));
 

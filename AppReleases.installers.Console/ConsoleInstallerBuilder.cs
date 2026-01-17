@@ -13,9 +13,7 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
 
     private static async Task<byte[]> ReadInstallerAsync(string platform, CancellationToken token)
     {
-        var filename = $"wwwroot/static/installers/Installer.Console_{platform}";
-        if (platform.StartsWith("win"))
-            filename += ".exe";
+        var filename = $"wwwroot/static/installers/Installer.Console_{platform}.exe";
         return await File.ReadAllBytesAsync(Path.Join(AppContext.BaseDirectory, filename), token);
     }
 
@@ -23,7 +21,7 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context.ApiUrl);
-        var installerPlatform = context.Settings["platform"]?.GetValue<string>();
+        var installerPlatform = context.Settings["installerPlatform"]?.GetValue<string>();
         ArgumentNullException.ThrowIfNull(installerPlatform);
         var bytes = await ReadInstallerAsync(installerPlatform, cancellationToken);
         bytes = bytes
