@@ -66,31 +66,12 @@ public class Installer
                 UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
     }
 
-    private void AddAssetsToConfig(IEnumerable<AssetSchema> assets)
-    {
-        ThrowIfNotInitialized();
-        _config.Assets = _config.Assets
-            .Concat(assets)
-            .ToArray();
-    }
-
-    private void AddAssetsToConfig(string directory)
-    {
-        ThrowIfNotInitialized();
-        AddAssetsToConfig(Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
-            .Select(f => new AssetSchema
-            {
-                FileName = Path.GetRelativePath(directory, f),
-                FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", "")
-            }));
-    }
-
     private const string SystemRootDirectory = "__system_root__";
 
     private void InstallAssets(string assetsDirectory, string destinationDirectory)
     {
         ThrowIfNotInitialized();
-        AddAssetsToConfig(assetsDirectory);
+        var assetsList = new List<InstalledAssetSchema>();
 
         Directory.CreateDirectory(destinationDirectory);
         var systemRoot = OperatingSystem.IsWindows()
@@ -103,9 +84,18 @@ public class Installer
             var destinationPath = relativePath.StartsWith(SystemRootDirectory)
                 ? systemRoot + relativePath.Substring(SystemRootDirectory.Length + 1)
                 : Path.Join(destinationDirectory, relativePath);
-            Console.WriteLine($"Relative path: {relativePath}; Destination path: {destinationPath}");
+            assetsList.Add(new InstalledAssetSchema
+            {
+                FileName = relativePath.StartsWith(SystemRootDirectory)
+                    ? relativePath.Substring(SystemRootDirectory.Length)
+                    : relativePath,
+                InstalledFileName = destinationPath,
+                FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(file))).Replace("-", "")
+            });
             File.Move(file, destinationPath, true);
         }
+
+        _config.Assets = _config.Assets.Concat(assetsList).ToArray();
     }
 
     public async Task InstallRelease()
@@ -145,10 +135,7 @@ public class Installer
         ThrowIfNotInitialized();
         foreach (var asset in _config.Assets)
         {
-            var path = Path.IsPathRooted(asset.FileName)
-                ? asset.FileName
-                : Path.Join(AppContext.BaseDirectory, asset.FileName);
-            File.Delete(path);
+            File.Delete(asset.InstalledFileName);
         }
 
         File.Delete(ConfigPath);
@@ -175,7 +162,8 @@ public class Installer
         var pack = await _apiClient.GetAssetsPackAsync(latestRelease.Id, _config.Assets.Select(asset => new AssetSchema
         {
             FileName = asset.FileName,
-            FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(asset.FileName))).Replace("-", "")
+            FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(asset.InstalledFileName)))
+                .Replace("-", "")
         }));
 
         Console.WriteLine("Загрузка обновления...");

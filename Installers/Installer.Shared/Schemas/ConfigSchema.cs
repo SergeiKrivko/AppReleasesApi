@@ -13,5 +13,5 @@ public class ConfigSchema
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public Guid InstalledReleaseId { get; set; }
 
-    public AssetSchema[] Assets { get; set; } = [];
+    public InstalledAssetSchema[] Assets { get; set; } = [];
 }
