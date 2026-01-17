@@ -92,9 +92,10 @@ public class Installer
         ThrowIfNotInitialized();
         AddAssetsToConfig(assetsDirectory);
 
+        Directory.CreateDirectory(destinationDirectory);
         var systemRoot = OperatingSystem.IsWindows()
-            ? DriveInfo.GetDrives()[0].RootDirectory.Name
-            : SystemRootDirectory;
+            ? Environment.GetLogicalDrives().First()
+            : "/";
 
         foreach (var file in Directory.EnumerateFiles(assetsDirectory, "*", SearchOption.AllDirectories))
         {
