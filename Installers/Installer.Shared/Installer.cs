@@ -36,14 +36,6 @@ public class Installer
         return tempPath;
     }
 
-    private static async Task<string> DownloadAssets(string url, string directory)
-    {
-        var client = new HttpClient();
-        await using var stream = await client.GetStreamAsync(url);
-        ZipFile.ExtractToDirectory(stream, directory, overwriteFiles: true);
-        return directory;
-    }
-
     private const string ConfigFileName = "InstallerConfig.json";
     private static string ConfigPath => Path.Join(AppContext.BaseDirectory, ConfigFileName);
 
@@ -93,6 +85,27 @@ public class Installer
             }));
     }
 
+    private const string SystemRootDirectory = "__system_root__";
+
+    private void InstallAssets(string assetsDirectory, string destinationDirectory)
+    {
+        ThrowIfNotInitialized();
+        AddAssetsToConfig(assetsDirectory);
+
+        var systemRoot = OperatingSystem.IsWindows()
+            ? DriveInfo.GetDrives()[0].RootDirectory.Name
+            : SystemRootDirectory;
+
+        foreach (var file in Directory.EnumerateFiles(assetsDirectory, "*", SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(assetsDirectory, file);
+            var destinationPath = relativePath.StartsWith(SystemRootDirectory)
+                ? Path.Join(systemRoot, relativePath.Substring(SystemRootDirectory.Length + 1))
+                : Path.Join(destinationDirectory, relativePath);
+            File.Move(file, destinationPath, true);
+        }
+    }
+
     public async Task InstallRelease()
     {
         ThrowIfNotInitialized();
@@ -109,10 +122,11 @@ public class Installer
 
         Console.WriteLine("Загрузка и установка...");
 
-        await DownloadAssets(url, directory);
+        var tempDirectory = await DownloadAssets(url);
+        InstallAssets(tempDirectory, directory);
+        Directory.Delete(tempDirectory, true);
 
         Console.WriteLine("Завершение установки...");
-        AddAssetsToConfig(directory);
         _config.InstalledReleaseId = _config.ReleaseId;
         _config.ReleaseId = Guid.Empty;
         await DownloadUpdater(
@@ -168,12 +182,10 @@ public class Installer
         Console.WriteLine("Установка обновления...");
         foreach (var path in pack.DeletedAssets)
             File.Delete(Path.IsPathRooted(path) ? path : Path.Join(AppContext.BaseDirectory, path));
-        foreach (var path in pack.ModifiedAssets)
-            File.Copy(Path.Join(tempPath, path), Path.Join(AppContext.BaseDirectory, path), true);
+        InstallAssets(tempPath, AppContext.BaseDirectory);
 
         Console.WriteLine("Завершение установки...");
         _config.Assets = _config.Assets.Where(a => !pack.DeletedAssets.Contains(a.FileName)).ToArray();
-        AddAssetsToConfig(tempPath);
         Directory.Delete(tempPath, true);
         _config.InstalledReleaseId = latestRelease.Id;
         await SaveConfig();
