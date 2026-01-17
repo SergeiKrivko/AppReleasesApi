@@ -8,6 +8,7 @@ namespace Installer.Shared;
 [JsonSerializable(typeof(ApplicationSchema))]
 [JsonSerializable(typeof(ReleaseSchema))]
 [JsonSerializable(typeof(ConfigSchema))]
+[JsonSerializable(typeof(AssetSchema[]))]
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 internal partial class InstallerJsonSerializerContext : JsonSerializerContext
 {
