@@ -31,7 +31,7 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
             }
 
             var updaterPlatform = context.Settings["updaterPlatform"]?.GetValue<string?>();
-            if (updaterPlatform != null)
+            if (updaterPlatform?.Length > 4)
             {
                 var updaterBytes =
                     await InstallersHelper.ReadStaticAsync($"Installer.Console.Updater_{context.Release.Platform}.exe",

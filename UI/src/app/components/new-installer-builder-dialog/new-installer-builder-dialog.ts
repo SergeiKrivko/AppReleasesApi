@@ -19,6 +19,7 @@ import {injectContext} from '@taiga-ui/polymorpheus';
 import {
   ConsoleInstallerSettings
 } from '../installer-builder-settings/console-installer-settings/console-installer-settings.component';
+import {ZipInstallerSettings} from '../installer-builder-settings/zip-installer-settings/zip-installer-settings';
 
 @Component({
   standalone: true,
@@ -41,7 +42,8 @@ import {
     TuiSelect,
     TuiInputNumber,
     TuiButton,
-    ConsoleInstallerSettings
+    ConsoleInstallerSettings,
+    ZipInstallerSettings
   ],
   templateUrl: './new-installer-builder-dialog.html',
   styleUrl: './new-installer-builder-dialog.scss',

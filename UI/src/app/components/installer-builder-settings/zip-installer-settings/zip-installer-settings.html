@@ -1,0 +1,11 @@
+<form [formGroup]="control" class="container">
+  <label tuiLabel>Платформа программы обновления:</label>
+  <tui-textfield tuiChevron class="field">
+    <input tuiSelect formControlName="updaterPlatform"/>
+    <tui-data-list-wrapper
+      *tuiTextfieldDropdown
+      new
+      [items]="updaterPlatforms$"
+    />
+  </tui-textfield>
+</form>

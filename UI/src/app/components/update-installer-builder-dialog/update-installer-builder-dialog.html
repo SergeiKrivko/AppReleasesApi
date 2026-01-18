@@ -34,6 +34,9 @@
   </tui-textfield>
 
   @switch (installer?.builderKey) {
+    @case ("Zip") {
+      <app-zip-installer-settings formControlName="settings"/>
+    }
     @case ("Console") {
       <app-console-installer-settings formControlName="settings"/>
     }

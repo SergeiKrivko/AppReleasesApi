@@ -28,6 +28,7 @@ import {TuiLet} from '@taiga-ui/cdk';
 import {
   ConsoleInstallerSettings
 } from '../installer-builder-settings/console-installer-settings/console-installer-settings.component';
+import {ZipInstallerSettings} from "../installer-builder-settings/zip-installer-settings/zip-installer-settings";
 
 @Component({
   standalone: true,
@@ -52,7 +53,8 @@ import {
     TuiButton,
     TuiLet,
     TuiAppearance,
-    ConsoleInstallerSettings
+    ConsoleInstallerSettings,
+    ZipInstallerSettings
   ],
   templateUrl: './update-installer-builder-dialog.html',
   styleUrl: './update-installer-builder-dialog.scss',
