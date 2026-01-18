@@ -19,6 +19,10 @@ jobs:
             os: windows-latest
           - target: win-arm64
             os: windows-latest
+          - target: osx-x64
+            os: macos-latest
+          - target: osx-arm64
+            os: macos-latest
     name: Build Installers for ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     outputs:
@@ -100,6 +104,18 @@ jobs:
           name: installer-win-arm64
           path: all_installers/win-arm64
 
+      - name: Download osx-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-osx-x64
+          path: all_installers/osx-x64
+
+      - name: Download osx-arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: installer-osx-arm64
+          path: all_installers/osx-arm64
+
       - name: Download linux-x64
         uses: actions/download-artifact@v4
         with:
@@ -123,6 +139,18 @@ jobs:
         with:
           name: updater-win-arm64
           path: all_updaters/win-arm64
+
+      - name: Download osx-x64
+        uses: actions/download-artifact@v4
+        with:
+          name: updater-osx-x64
+          path: all_updaters/osx-x64
+
+      - name: Download osx-arm64
+        uses: actions/download-artifact@v4
+        with:
+          name: updater-osx-arm64
+          path: all_updaters/osx-arm64
 
       - name: Prepare installers directory
         run: |
@@ -158,6 +186,22 @@ jobs:
           fi
           if [ -f "all_updaters/win-arm64/Installer.Console.Updater.exe" ]; then
             cp all_updaters/win-arm64/Installer.Console.Updater.exe AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_win-arm64.exe
+          fi
+          
+          # macOS x64
+          if [ -f "all_installers/osx-x64/Installer.Console" ]; then
+            cp all_installers/osx-x64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_osx-x64.exe
+          fi
+          if [ -f "all_updaters/osx-x64/Installer.Console.Updater" ]; then
+            cp all_updaters/osx-x64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_osx-x64.exe
+          fi
+          
+          # macOS arm64
+          if [ -f "all_installers/osx-arm64/Installer.Console" ]; then
+            cp all_installers/osx-arm64/Installer.Console AppReleases.Api/wwwroot/static/installers/Installer.Console_osx-arm64.exe
+          fi
+          if [ -f "all_updaters/osx-arm64/Installer.Console.Updater" ]; then
+            cp all_updaters/osx-arm64/Installer.Console.Updater AppReleases.Api/wwwroot/static/installers/Installer.Console.Updater_osx-arm64.exe
           fi
           
           # Проверяем результат
