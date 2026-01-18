@@ -3,7 +3,7 @@ import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Reactiv
 import {tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
-import {TuiChevron, TuiDataListWrapperComponent, TuiSelectDirective} from '@taiga-ui/kit';
+import {TuiChevron, TuiDataListWrapperComponent, TuiInputNumberDirective, TuiSelectDirective} from '@taiga-ui/kit';
 import {TuiLabel, TuiTextfield, TuiTextfieldComponent} from '@taiga-ui/core';
 
 @Component({
@@ -17,7 +17,8 @@ import {TuiLabel, TuiTextfield, TuiTextfieldComponent} from '@taiga-ui/core';
     TuiLabel,
     TuiSelectDirective,
     TuiTextfieldComponent,
-    TuiTextfield
+    TuiTextfield,
+    TuiInputNumberDirective
   ],
   providers: [
     {
@@ -35,6 +36,8 @@ export class ZipInstallerSettings implements ControlValueAccessor, OnInit {
 
   protected readonly control = new FormGroup({
     updaterPlatform: new FormControl<string | null>(null),
+    topLevelDirectory: new FormControl<string | null>(null),
+    installerDirectory: new FormControl<string | null>(null),
   })
 
   ngOnInit() {
@@ -52,6 +55,8 @@ export class ZipInstallerSettings implements ControlValueAccessor, OnInit {
   writeValue(value: any): void {
     this.control.setValue({
       updaterPlatform: value?.updaterPlatform ?? this.updaterPlatforms$[0],
+      topLevelDirectory: value?.topLevelDirectory ?? null,
+      installerDirectory: value?.installerDirectory ?? null,
     })
   }
 

@@ -1,16 +1,17 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {
+  TuiAccordionDirective, TuiAccordionItem, TuiAccordionItemContent,
   TuiButtonLoading,
   TuiChevron,
   TuiDataListWrapperComponent, TuiFade,
   TuiInputChipDirective, TuiInputNumber,
-  TuiMultiSelectGroupDirective, TuiSelect
+  TuiMultiSelectGroupDirective, TuiSelect, TuiTreeChildren, TuiTreeComponent
 } from '@taiga-ui/kit';
 import {
   TuiAppearance,
   TuiButton,
-  TuiDialogContext,
+  TuiDialogContext, TuiIcon,
   TuiSelectLike,
   TuiSurface,
   TuiTextfield,
@@ -54,7 +55,13 @@ import {ZipInstallerSettings} from "../installer-builder-settings/zip-installer-
     TuiLet,
     TuiAppearance,
     ConsoleInstallerSettings,
-    ZipInstallerSettings
+    ZipInstallerSettings,
+    TuiAccordionDirective,
+    TuiAccordionItem,
+    TuiAccordionItemContent,
+    TuiIcon,
+    TuiTreeChildren,
+    TuiTreeComponent
   ],
   templateUrl: './update-installer-builder-dialog.html',
   styleUrl: './update-installer-builder-dialog.scss',

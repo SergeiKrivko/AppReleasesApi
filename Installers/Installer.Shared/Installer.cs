@@ -171,8 +171,8 @@ public class Installer
 
         Console.WriteLine("Установка обновления...");
         foreach (var path in pack.DeletedAssets)
-            File.Delete(Path.IsPathRooted(path) ? path : Path.Join(AppContext.BaseDirectory, path));
-        InstallAssets(tempPath, AppContext.BaseDirectory);
+            File.Delete(Path.IsPathRooted(path) ? path : Path.Join(AppContext.BaseDirectory, _config.InstallationPath, path));
+        InstallAssets(tempPath, Path.Join(AppContext.BaseDirectory, _config.InstallationPath));
 
         Console.WriteLine("Завершение установки...");
         _config.Assets = _config.Assets.Where(a => !pack.DeletedAssets.Contains(a.FileName)).ToArray();

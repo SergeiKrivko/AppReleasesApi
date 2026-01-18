@@ -12,7 +12,7 @@
                 {{ builder?.description }}
             </span>
         </span>
-    </div>
+  </div>
 
   <label tuiLabel>Время хранения установщика:</label>
   <div class="field field-container">
@@ -33,14 +33,21 @@
     />
   </tui-textfield>
 
-  @switch (installer?.builderKey) {
-    @case ("Zip") {
-      <app-zip-installer-settings formControlName="settings"/>
-    }
-    @case ("Console") {
-      <app-console-installer-settings formControlName="settings"/>
-    }
-  }
+  <tui-accordion>
+    <tui-accordion-item class="accordion">
+      Расширенные настройки
+      <ng-template tuiAccordionItemContent>
+        @switch (installer?.builderKey) {
+          @case ("Zip") {
+            <app-zip-installer-settings formControlName="settings"/>
+          }
+          @case ("Console") {
+            <app-console-installer-settings formControlName="settings"/>
+          }
+        }
+      </ng-template>
+    </tui-accordion-item>
+  </tui-accordion>
 
   <div class="bottom-container">
     <button tuiButton appearance="primary" [loading]="loading" iconStart="@tui.save" type="submit">Сохранить</button>

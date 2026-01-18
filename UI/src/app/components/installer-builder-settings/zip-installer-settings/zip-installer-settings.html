@@ -8,4 +8,13 @@
       [items]="updaterPlatforms$"
     />
   </tui-textfield>
+  <label tuiLabel>Папка верхнего уровня:</label>
+  <span tuiSubtitle>По умолчанию все ассеты будет в корне архива</span>
+  <tui-textfield>
+    <input tuiTextfield formControlName="topLevelDirectory"/>
+  </tui-textfield>
+  <label tuiLabel>Путь к Uninstall.exe:</label>
+  <tui-textfield>
+    <input tuiTextfield formControlName="installerDirectory"/>
+  </tui-textfield>
 </form>

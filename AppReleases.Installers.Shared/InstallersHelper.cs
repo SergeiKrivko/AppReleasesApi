@@ -5,18 +5,19 @@ namespace AppReleases.Installers.Shared;
 
 public class InstallersHelper(InstallerBuilderContext context)
 {
-    private JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    public string GenerateConfig()
+    public string GenerateConfig(string? installationPath = null)
     {
         return JsonSerializer.Serialize(new ConfigSchema
         {
             ApiUrl = context.ApiUrl ?? throw new Exception("ApiUrl is empty"),
             ApplicationId = context.Application.Id,
             InstalledReleaseId = context.Release.Id,
+            InstallationPath = installationPath,
             Assets = context.Assets?.Select(a => new InstalledAssetSchema
             {
                 FileName = a.FileName,

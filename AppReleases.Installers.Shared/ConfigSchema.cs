@@ -14,6 +14,9 @@ internal class ConfigSchema
     public Guid InstalledReleaseId { get; set; }
 
     public InstalledAssetSchema[] Assets { get; set; } = [];
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? InstallationPath { get; set; }
 }
 
 internal class InstalledAssetSchema
