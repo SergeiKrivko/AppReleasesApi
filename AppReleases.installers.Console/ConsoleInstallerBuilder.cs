@@ -1,4 +1,5 @@
 ﻿using AppReleases.Core.Abstractions;
+using AppReleases.Installers.Shared;
 using AppReleases.Models;
 
 namespace AppReleases.installers.Console;
@@ -13,8 +14,7 @@ public class ConsoleInstallerBuilder : IInstallerBuilder
 
     private static async Task<byte[]> ReadInstallerAsync(string platform, CancellationToken token)
     {
-        var filename = $"wwwroot/static/installers/Installer.Console_{platform}.exe";
-        return await File.ReadAllBytesAsync(Path.Join(AppContext.BaseDirectory, filename), token);
+        return await InstallersHelper.ReadStaticAsync($"Installer.Console_{platform}.exe", token);
     }
 
     public async Task<BuiltInstaller> Build(InstallerBuilderContext context,
