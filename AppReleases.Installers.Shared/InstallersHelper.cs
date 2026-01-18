@@ -5,6 +5,11 @@ namespace AppReleases.Installers.Shared;
 
 public class InstallersHelper(InstallerBuilderContext context)
 {
+    private JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     public string GenerateConfig()
     {
         return JsonSerializer.Serialize(new ConfigSchema
@@ -18,9 +23,9 @@ public class InstallersHelper(InstallerBuilderContext context)
                 FileHash = a.FileHash,
                 InstalledFileName = a.FileName
             }).ToArray() ?? [],
-        });
+        }, _jsonSerializerOptions);
     }
-    
+
     public static async Task<byte[]> ReadStaticAsync(string name, CancellationToken token = default)
     {
         var filename = $"wwwroot/static/installers/{name}";
