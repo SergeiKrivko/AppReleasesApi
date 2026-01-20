@@ -81,8 +81,8 @@ public class Installer
         foreach (var asset in assets)
         {
             var extractedPath = asset.FileName.StartsWith('/')
-                ? Path.Join(assetsDirectory, asset.FileName)
-                : Path.Join(assetsDirectory, SystemRootDirectory, asset.FileName);
+                ? Path.Join(assetsDirectory, SystemRootDirectory, asset.FileName)
+                : Path.Join(assetsDirectory, asset.FileName);
             var destinationPath = asset.FileName.StartsWith('/')
                 ? systemRoot + asset.FileName.Substring(1)
                 : Path.Join(destinationDirectory, asset.FileName);
