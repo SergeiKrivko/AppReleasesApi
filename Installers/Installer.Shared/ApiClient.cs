@@ -16,13 +16,13 @@ public class ApiClient(string apiUrl)
         return data ?? throw new Exception("Invalid response");
     }
 
-    public async Task<string> GetAssetsUrlAsync(Guid releaseId)
+    public async Task<AssetsPackSchema> GetAssetsPackAsync(Guid releaseId)
     {
         Console.WriteLine($"GET api/v1/releases/{releaseId}/assets/download");
         var resp = await _httpClient.GetAsync($"api/v1/releases/{releaseId}/assets/download");
         resp.EnsureSuccessStatusCode();
-        var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.UrlResponseSchema);
-        return data?.Url ?? throw new Exception("Invalid response");
+        var data = await resp.Content.ReadFromJsonAsync(InstallerJsonSerializerContext.Default.AssetsPackSchema);
+        return data ?? throw new Exception("Invalid response");
     }
 
     public async Task<ReleaseSchema> GetReleaseByIdAsync(Guid releaseId)

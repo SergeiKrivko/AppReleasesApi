@@ -22,6 +22,9 @@ if (arguments.Directory is not null)
         {
             FileName = Path.GetRelativePath(arguments.Directory, f),
             FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
+            IsExecutable = OperatingSystem.IsWindows()
+                ? f.EndsWith(".exe")
+                : (File.GetUnixFileMode(f) & UnixFileMode.UserExecute) != 0,
         })
         .Concat(arguments.FromRootDirectory == null
             ? []
@@ -30,6 +33,9 @@ if (arguments.Directory is not null)
                 {
                     FileName = "/" + Path.GetRelativePath(arguments.FromRootDirectory, f),
                     FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(f))).Replace("-", ""),
+                    IsExecutable = OperatingSystem.IsWindows()
+                        ? f.EndsWith(".exe")
+                        : (File.GetUnixFileMode(f) & UnixFileMode.UserExecute) != 0,
                 }))
         .ToArray();
 

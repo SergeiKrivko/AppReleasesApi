@@ -132,10 +132,15 @@ public class ReleaseService(
 
     private TimeSpan AssetsZipLifetime { get; } = TimeSpan.FromHours(1);
 
-    public async Task<string> PackAssetsAsync(Guid releaseId)
+    public async Task<AssetsPack> PackAssetsAsync(Guid releaseId)
     {
-        var assets = await assetRepository.GetAllAssetsAsync(releaseId);
-        return await PackAssetsZipAsync(assets);
+        var assets = (await assetRepository.GetAllAssetsAsync(releaseId)).ToList();
+        return new AssetsPack
+        {
+            Url = await PackAssetsZipAsync(assets),
+            ModifiedAssets = assets.Select(a => a.GetInfo()).ToArray(),
+            DeletedAssets = [],
+        };
     }
 
     private async Task<string> PackAssetsZipAsync(IEnumerable<Asset> assets)
@@ -186,8 +191,8 @@ public class ReleaseService(
         return new AssetsPack
         {
             Url = zipUrl,
-            DeletedAssets = deletedAssets.Select(a => a.FileName).ToArray(),
-            ModifiedAssets = modifiedAssets.Select(a => a.FileName).ToArray(),
+            DeletedAssets = deletedAssets.ToArray(),
+            ModifiedAssets = modifiedAssets.Select(a => a.GetInfo()).ToArray(),
         };
     }
 }

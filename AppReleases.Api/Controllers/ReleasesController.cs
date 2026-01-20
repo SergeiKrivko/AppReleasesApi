@@ -72,7 +72,7 @@ public class ReleasesController(
 
     [HttpPut("{releaseId:guid}/assets")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [RequestSizeLimit(104857600)]
+    [RequestSizeLimit(100 * 1024 * 1024)]
     public async Task<ActionResult> UploadReleaseAssets(Guid releaseId,
         [FromForm] AssetInfo[] assets, IFormFile zip)
     {
@@ -98,17 +98,14 @@ public class ReleasesController(
     }
 
     [HttpGet("{releaseId:guid}/assets/download")]
-    public async Task<ActionResult<DownloadUrlResponseSchema>> DownloadReleaseAssets(Guid releaseId)
+    public async Task<ActionResult<AssetsPack>> DownloadReleaseAssets(Guid releaseId)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
-        var url = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId),
+        var pack = await metricsHelper.MeasureDownloadAssets(() => releaseService.PackAssetsAsync(releaseId),
             application.Key, branch.Name, release);
-        return Ok(new DownloadUrlResponseSchema
-        {
-            Url = url
-        });
+        return Ok(pack);
     }
 
     [HttpPost("{releaseId:guid}/assets/download")]
@@ -132,7 +129,7 @@ public class ReleasesController(
 
     [HttpPost("{releaseId:guid}/bundles")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [RequestSizeLimit(104857600)]
+    [RequestSizeLimit(100 * 1024 * 1024)]
     public async Task<ActionResult<Bundle>> CreateReleaseBundle(Guid releaseId, IFormFile file)
     {
         var release = await releaseService.GetReleaseByIdAsync(releaseId);

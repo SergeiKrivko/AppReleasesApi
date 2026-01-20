@@ -15,5 +15,7 @@ public class AssetConfiguration : IEntityTypeConfiguration<AssetEntity>
         builder.Property(x => x.FileHash).IsRequired();
         builder.Property(x => x.FileId).IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.DeletedAt);
+        builder.Property(x => x.IsExecutable).IsRequired().HasDefaultValue(false);
     }
 }

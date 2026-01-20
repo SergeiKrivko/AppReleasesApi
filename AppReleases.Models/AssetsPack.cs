@@ -3,6 +3,6 @@
 public class AssetsPack
 {
     public required string Url { get; set; }
-    public string[] ModifiedAssets { get; set; } = [];
-    public string[] DeletedAssets { get; set; } = [];
+    public AssetInfo[] ModifiedAssets { get; set; } = [];
+    public AssetInfo[] DeletedAssets { get; set; } = [];
 }

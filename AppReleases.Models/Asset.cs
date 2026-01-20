@@ -7,4 +7,15 @@ public class Asset
     public required string FileHash { get; init; }
     public required Guid FileId { get; init; }
     public required DateTime CreatedAt { get; init; }
+    public bool IsExecutable { get; init; }
+
+    public AssetInfo GetInfo()
+    {
+        return new AssetInfo
+        {
+            FileName = FileName,
+            FileHash = FileHash,
+            IsExecutable = IsExecutable,
+        };
+    }
 }

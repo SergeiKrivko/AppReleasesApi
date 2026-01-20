@@ -10,6 +10,7 @@ public class AssetEntity
     public required Guid FileId { get; init; }
     public required DateTime CreatedAt { get; init; }
     public DateTime? DeletedAt { get; init; }
+    public bool IsExecutable { get; init; }
 
     public virtual ICollection<ReleaseEntity> Releases { get; init; } = [];
     public virtual ICollection<ReleaseAssetEntity> ReleaseAssets { get; init; } = [];

@@ -4,6 +4,7 @@ public class AssetSchema
 {
     public required string FileName { get; set; }
     public string? FileHash { get; set; }
+    public bool IsExecutable { get; set; }
 }
 
 public class InstalledAssetSchema : AssetSchema

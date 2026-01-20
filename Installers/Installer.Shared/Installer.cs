@@ -68,7 +68,7 @@ public class Installer
 
     private const string SystemRootDirectory = "__system_root__";
 
-    private void InstallAssets(string assetsDirectory, string destinationDirectory)
+    private void InstallAssets(string assetsDirectory, IEnumerable<AssetSchema> assets, string destinationDirectory)
     {
         ThrowIfNotInitialized();
         var assetsList = new List<InstalledAssetSchema>();
@@ -78,21 +78,26 @@ public class Installer
             ? Environment.GetLogicalDrives().First()
             : "/";
 
-        foreach (var file in Directory.EnumerateFiles(assetsDirectory, "*", SearchOption.AllDirectories))
+        foreach (var asset in assets)
         {
-            var relativePath = Path.GetRelativePath(assetsDirectory, file);
-            var destinationPath = relativePath.StartsWith(SystemRootDirectory)
-                ? systemRoot + relativePath.Substring(SystemRootDirectory.Length + 1)
-                : Path.Join(destinationDirectory, relativePath);
+            var extractedPath = asset.FileName.StartsWith('/')
+                ? Path.Join(assetsDirectory, asset.FileName)
+                : Path.Join(assetsDirectory, SystemRootDirectory, asset.FileName);
+            var destinationPath = asset.FileName.StartsWith('/')
+                ? systemRoot + asset.FileName.Substring(1)
+                : Path.Join(destinationDirectory, asset.FileName);
             assetsList.Add(new InstalledAssetSchema
             {
-                FileName = relativePath.StartsWith(SystemRootDirectory)
-                    ? relativePath.Substring(SystemRootDirectory.Length)
-                    : relativePath,
+                FileName = asset.FileName,
                 InstalledFileName = destinationPath,
-                FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(file))).Replace("-", "")
+                FileHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(extractedPath))).Replace("-", "")
             });
-            File.Move(file, destinationPath, true);
+            File.Move(extractedPath, destinationPath, true);
+
+            if (asset.IsExecutable && (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS()))
+                File.SetUnixFileMode(destinationPath,
+                    UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | UnixFileMode.GroupRead |
+                    UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
         }
 
         _config.Assets = _config.Assets.Concat(assetsList).ToArray();
@@ -110,12 +115,12 @@ public class Installer
         var release = await _apiClient.GetReleaseByIdAsync(_config.ReleaseId);
 
         Console.WriteLine("Подготовка к загрузке...");
-        var url = await _apiClient.GetAssetsUrlAsync(_config.ReleaseId);
+        var pack = await _apiClient.GetAssetsPackAsync(_config.ReleaseId);
 
         Console.WriteLine("Загрузка и установка...");
 
-        var tempDirectory = await DownloadAssets(url);
-        InstallAssets(tempDirectory, directory);
+        var tempDirectory = await DownloadAssets(pack.Url);
+        InstallAssets(tempDirectory, pack.ModifiedAssets, directory);
         Directory.Delete(tempDirectory, true);
 
         Console.WriteLine("Завершение установки...");
@@ -170,12 +175,16 @@ public class Installer
         var tempPath = await DownloadAssets(pack.Url);
 
         Console.WriteLine("Установка обновления...");
-        foreach (var path in pack.DeletedAssets)
-            File.Delete(Path.IsPathRooted(path) ? path : Path.Join(AppContext.BaseDirectory, _config.InstallationPath, path));
-        InstallAssets(tempPath, Path.Join(AppContext.BaseDirectory, _config.InstallationPath));
+        foreach (var path in pack.DeletedAssets.Select(a => a.FileName))
+            File.Delete(Path.IsPathRooted(path)
+                ? path
+                : Path.Join(AppContext.BaseDirectory, _config.InstallationPath, path));
+        InstallAssets(tempPath, pack.ModifiedAssets, Path.Join(AppContext.BaseDirectory, _config.InstallationPath));
 
         Console.WriteLine("Завершение установки...");
-        _config.Assets = _config.Assets.Where(a => !pack.DeletedAssets.Contains(a.FileName)).ToArray();
+        _config.Assets = _config.Assets
+            .Where(a => pack.DeletedAssets.FirstOrDefault(e => a.FileName == e.FileName) == null)
+            .ToArray();
         Directory.Delete(tempPath, true);
         _config.InstalledReleaseId = latestRelease.Id;
         await SaveConfig();

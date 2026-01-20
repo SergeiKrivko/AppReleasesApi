@@ -79,6 +79,7 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
             FileHash = entity.FileHash,
             FileId = entity.FileId,
             CreatedAt = entity.CreatedAt,
+            IsExecutable = entity.IsExecutable,
         };
     }
 
@@ -91,6 +92,7 @@ public class AssetRepository(AppReleasesDbContext dbContext) : IAssetRepository
             FileHash = asset.FileHash,
             FileId = asset.FileId,
             CreatedAt = asset.CreatedAt,
+            IsExecutable = asset.IsExecutable,
         };
     }
 }
