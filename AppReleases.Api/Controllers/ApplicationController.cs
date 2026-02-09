@@ -26,7 +26,7 @@ public class ApplicationController(
         Guid tokenId;
         try
         {
-            tokenId = Guid.Parse(User.Claims.Single(c => c.Type == "tokenId").Value);
+            tokenId = Guid.Parse(User.Claims.Single(c => c.Type == "TokenId").Value);
         }
         catch (Exception)
         {

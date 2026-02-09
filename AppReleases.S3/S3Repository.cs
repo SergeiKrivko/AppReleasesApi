@@ -213,7 +213,7 @@ public class S3Repository(ILogger<S3Repository> logger) : IFileRepository
             FileRepositoryBucket.Assets => AssetsBucket,
             FileRepositoryBucket.Temp => TempBucket,
             FileRepositoryBucket.Bundles => BundlesBucket,
-            FileRepositoryBucket.Installers => BundlesBucket,
+            FileRepositoryBucket.Installers => InstallersBucket,
             _ => throw new ArgumentOutOfRangeException(nameof(bucket), bucket, null)
         };
     }

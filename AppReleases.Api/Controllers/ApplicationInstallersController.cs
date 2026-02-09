@@ -4,6 +4,7 @@ using AppReleases.Api.Helpers;
 using AppReleases.Api.Schemas;
 using AppReleases.Core.Abstractions;
 using AppReleases.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppReleases.Api.Controllers;
@@ -32,9 +33,13 @@ public class ApplicationInstallersController(
     }
 
     [HttpGet]
+    [Authorize(AuthenticationSchemes = "Basic,Bearer")]
     public async Task<ActionResult<IEnumerable<InstallerBuilderUsageSchema>>> GetAllInstallerBuilders(Guid applicationId,
         CancellationToken cancellationToken)
     {
+        var application = await applicationService.GetApplicationByIdAsync(applicationId);
+        if (!await authorizationHelper.VerifyApplication(User, application))
+            return Unauthorized();
         var builders =
             await installerService.GetAllInstallerBuildersOfApplicationAsync(applicationId, cancellationToken);
         return Ok(builders.Select(e => new InstallerBuilderUsageSchema

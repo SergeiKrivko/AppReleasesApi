@@ -27,9 +27,18 @@ public class AuthorizationHelper(ITokenService tokenService, BasicAuthService ba
             return true;
         if (tokenIdClaim is null)
             return false;
-        var token = await tokenService.GetTokenByIdAsync(Guid.Parse(tokenIdClaim.Value));
-        var matcher = new Matcher();
-        matcher.AddInclude(token.Mask);
-        return matcher.Match(applicationName).HasMatches;
+        try
+        {
+            var token = await tokenService.GetTokenByIdAsync(Guid.Parse(tokenIdClaim.Value));
+            if (token.RevokedAt != null || token.ExpiresAt <= DateTime.UtcNow)
+                return false;
+            var matcher = new Matcher();
+            matcher.AddInclude(token.Mask);
+            return matcher.Match(applicationName).HasMatches;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

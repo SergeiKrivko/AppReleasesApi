@@ -20,6 +20,8 @@ public class TokenRepository(AppReleasesDbContext dbContext) : ITokenRepository
         var entity = await dbContext.Tokens.FindAsync(tokenId);
         if (entity == null)
             throw new InvalidOperationException("Token not found");
+        if (entity.RevokedAt != null || entity.ExpiresAt <= DateTime.UtcNow)
+            throw new InvalidOperationException("Token is revoked or expired");
         return TokenFromEntity(entity);
     }
 
