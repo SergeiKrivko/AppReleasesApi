@@ -17,7 +17,8 @@ public class ReleasesController(
     IBranchService branchService,
     IBundleService bundleService,
     IInstallerService installerService,
-    IMetricsHelper metricsHelper) : Controller
+    IMetricsHelper metricsHelper,
+    IConfiguration configuration) : Controller
 {
     [HttpGet("{releaseId:guid}")]
     public async Task<ActionResult<Release>> GetReleaseAsync(Guid releaseId)
@@ -169,8 +170,12 @@ public class ReleasesController(
         var release = await releaseService.GetReleaseByIdAsync(releaseId);
         var branch = await branchService.GetBranchByIdAsync(release.BranchId);
         var application = await applicationService.GetApplicationByIdAsync(branch.ApplicationId);
+        var publicBaseUrl = configuration["PublicBaseUrl"];
+        var apiUrl = string.IsNullOrWhiteSpace(publicBaseUrl)
+            ? $"{Request.Scheme}://{Request.Host}"
+            : publicBaseUrl.TrimEnd('/');
         var url = await installerService.BuildInstallerAsync(application, release, builderId,
-            $"{Request.Scheme}://{Request.Host}", cancellationToken);
+            apiUrl, cancellationToken);
         metricsHelper.AddDownloadBundle(application.Key, branch.Name, release, builderId);
         return Ok(new DownloadUrlResponseSchema
         {

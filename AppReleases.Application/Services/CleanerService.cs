@@ -71,7 +71,7 @@ public class CleanerService(
             {
                 logger.LogInformation(
                     "Удаление релиза '{app}' - {version} - {platform}. Срок жизни закончился {expiredAt}",
-                    application.Name, release.Version, release.Id, release.CreatedAt + lifetime
+                    application.Name, release.Version, release.Platform, release.CreatedAt + lifetime
                 );
                 await releaseService.DeleteReleaseAsync(release.Id);
                 count++;

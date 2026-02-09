@@ -12,10 +12,28 @@ public class TokenService(ITokenRepository tokenRepository) : ITokenService
     public const string Issuer = "AppReleasesAPI";
     public const string Audience = "AppDeveloperAccessToken";
 
-    private static string Key => Environment.GetEnvironmentVariable("JWT_SECRET") ?? "";
+    private const int MinKeyBytes = 32;
+
+    private static string Key =>
+        Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET is required");
+
+    public static void ValidateJwtSecret()
+    {
+        var key = Environment.GetEnvironmentVariable("JWT_SECRET");
+        if (string.IsNullOrWhiteSpace(key))
+            throw new InvalidOperationException("JWT_SECRET is required");
+        if (Encoding.UTF8.GetByteCount(key) < MinKeyBytes)
+            throw new InvalidOperationException($"JWT_SECRET must be at least {MinKeyBytes} bytes");
+    }
 
     public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
-        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ValidateAndGetKey()));
+
+    private static string ValidateAndGetKey()
+    {
+        ValidateJwtSecret();
+        return Key;
+    }
 
     public Task<IEnumerable<Token>> GetAllTokensAsync()
     {

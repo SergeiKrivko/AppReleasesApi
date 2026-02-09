@@ -7,12 +7,15 @@ using AppReleases.DataAccess.Repositories;
 using AppReleases.S3;
 using AspNetCore.Authentication.Basic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+
+ValidateRequiredSecrets();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -93,7 +96,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<AppReleasesDbContext>(
     options => { options.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")); });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication()
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -106,13 +109,41 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = TokenService.GetSymmetricSecurityKey(),
             ValidateIssuerSigningKey = true,
         };
-    });
-builder.Services.AddAuthentication(BasicDefaults.AuthenticationScheme)
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var tokenIdClaim = context.Principal?.Claims.FirstOrDefault(c => c.Type == "TokenId");
+                if (tokenIdClaim is null || !Guid.TryParse(tokenIdClaim.Value, out var tokenId))
+                {
+                    context.Fail("TokenId claim is missing or invalid");
+                    return;
+                }
+
+                var tokenRepository = context.HttpContext.RequestServices.GetRequiredService<ITokenRepository>();
+                try
+                {
+                    var token = await tokenRepository.GetTokenByIdAsync(tokenId);
+                    if (token.RevokedAt != null || token.ExpiresAt <= DateTime.UtcNow)
+                        context.Fail("Token is revoked or expired");
+                }
+                catch (Exception)
+                {
+                    context.Fail("Token not found");
+                }
+            }
+        };
+    })
     .AddBasic<BasicAuthService>(options => { options.Realm = "Avalux.AppReleases"; });
-builder.Services.AddAuthorization();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto;
+});
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
 app.UseCors();
 
 // Configure the HTTP request pipeline.
@@ -138,3 +169,15 @@ app.UseSpa(spa =>
 });
 
 app.Run();
+
+void ValidateRequiredSecrets()
+{
+    var adminLogin = Environment.GetEnvironmentVariable("ADMIN_LOGIN");
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+    if (string.IsNullOrWhiteSpace(adminLogin))
+        throw new InvalidOperationException("ADMIN_LOGIN is required");
+    if (string.IsNullOrWhiteSpace(adminPassword))
+        throw new InvalidOperationException("ADMIN_PASSWORD is required");
+
+    TokenService.ValidateJwtSecret();
+}

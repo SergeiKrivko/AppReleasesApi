@@ -40,7 +40,7 @@ public class ZipInstallerBuilder(IFileRepository fileRepository) : IInstallerBui
             if (updaterPlatform?.Length > 4)
             {
                 var updaterBytes =
-                    await InstallersHelper.ReadStaticAsync($"Installer.Console.Updater_{context.Release.Platform}.exe",
+                    await InstallersHelper.ReadStaticAsync($"Installer.Console.Updater_{updaterPlatform}.exe",
                         cancellationToken);
                 await using (var zipEntry =
                              zip.CreateEntry(pathPrefix +
